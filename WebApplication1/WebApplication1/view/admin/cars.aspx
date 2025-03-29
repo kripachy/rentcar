@@ -16,7 +16,7 @@
                 <div class="row mb-3">
                     <div class="col text-center">
                          <h3 class="text-danger">Manage Cars</h3>
-                        <img src="../../assets/images/Слой 1.png" alt="Car Image" class="img-fluid"/>
+                        <img src="../../assets/images/foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" alt="Car Image" class="img-fluid"/>
                     </div>
                 </div>
                 <div class="card">
@@ -44,14 +44,14 @@
                         <div class="form-group mb-3">
                             <label>Available</label>
                             <asp:DropDownList ID="ddlAvailable" runat="server" CssClass="form-control">
-                                <asp:ListItem Text="Available" Value="1"></asp:ListItem>
-                                <asp:ListItem Text="Booked" Value="0"></asp:ListItem>
+                                <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
+                                <asp:ListItem Text="No" Value="0"></asp:ListItem>
                             </asp:DropDownList>
                         </div>
                         <br />
                         <br />
-                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger"/>
+                        <asp:Button ID="btnSubmit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Button2" runat="server" Text="Add" CssClass="btn btn-danger"/>
                         <asp:Button ID="Button1" runat="server" Text="Delete" CssClass="btn btn-danger"/>
                     </div>
                 </div>

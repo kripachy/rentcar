@@ -11,7 +11,7 @@ namespace WebApplication1.view.admin
 {
 
 
-    public partial class cars
+    public partial class сustomers
     {
 
         /// <summary>
