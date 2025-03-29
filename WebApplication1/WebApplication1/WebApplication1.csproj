@@ -51,6 +51,24 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -101,23 +119,6 @@
   <ItemGroup>
     <Content Include="About.aspx" />
     <Content Include="Contact.aspx" />
-    <Content Include="Content\bootstrap-grid.css" />
-    <Content Include="Content\bootstrap-grid.min.css" />
-    <Content Include="Content\bootstrap-grid.rtl.css" />
-    <Content Include="Content\bootstrap-grid.rtl.min.css" />
-    <Content Include="Content\bootstrap-reboot.css" />
-    <Content Include="Content\bootstrap-reboot.min.css" />
-    <Content Include="Content\bootstrap-reboot.rtl.css" />
-    <Content Include="Content\bootstrap-reboot.rtl.min.css" />
-    <Content Include="Content\bootstrap-utilities.css" />
-    <Content Include="Content\bootstrap-utilities.min.css" />
-    <Content Include="Content\bootstrap-utilities.rtl.css" />
-    <Content Include="Content\bootstrap-utilities.rtl.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\bootstrap.rtl.css" />
-    <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -133,27 +134,49 @@
     <Content Include="Scripts\bootstrap.esm.js.map" />
     <Content Include="Scripts\bootstrap.bundle.min.js.map" />
     <Content Include="Scripts\bootstrap.bundle.js.map" />
-    <Content Include="Content\bootstrap.rtl.min.css.map" />
-    <Content Include="Content\bootstrap.rtl.css.map" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.rtl.css.map" />
-    <Content Include="Content\bootstrap-utilities.min.css.map" />
-    <Content Include="Content\bootstrap-utilities.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.rtl.css.map" />
-    <Content Include="Content\bootstrap-reboot.min.css.map" />
-    <Content Include="Content\bootstrap-reboot.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.min.css.map" />
-    <Content Include="Content\bootstrap-grid.rtl.css.map" />
-    <Content Include="Content\bootstrap-grid.min.css.map" />
-    <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-grid.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-grid.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-grid.rtl.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.rtl.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.rtl.css.map" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap.css.map" />
+    <Content Include="Scripts\css\css\bootstrap.min.css.map" />
+    <Content Include="Scripts\css\css\bootstrap.rtl.css.map" />
+    <Content Include="Scripts\css\css\bootstrap.rtl.min.css.map" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\css\css\bootstrap-grid.css" />
+    <Content Include="Scripts\css\css\bootstrap-grid.min.css" />
+    <Content Include="Scripts\css\css\bootstrap-grid.rtl.css" />
+    <Content Include="Scripts\css\css\bootstrap-grid.rtl.min.css" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.css" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.min.css" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.rtl.css" />
+    <Content Include="Scripts\css\css\bootstrap-reboot.rtl.min.css" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.css" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.min.css" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.rtl.css" />
+    <Content Include="Scripts\css\css\bootstrap-utilities.rtl.min.css" />
+    <Content Include="Scripts\css\css\bootstrap.css" />
+    <Content Include="Scripts\css\css\bootstrap.min.css" />
+    <Content Include="Scripts\css\css\bootstrap.rtl.css" />
+    <Content Include="Scripts\css\css\bootstrap.rtl.min.css" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
+    <Content Include="Scripts\js\js\bootstrap.bundle.js" />
+    <Content Include="Scripts\js\js\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\js\js\bootstrap.esm.js" />
+    <Content Include="Scripts\js\js\bootstrap.esm.min.js" />
+    <Content Include="Scripts\js\js\bootstrap.js" />
+    <Content Include="Scripts\js\js\bootstrap.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\WebForms\DetailsView.js" />
     <Content Include="Scripts\WebForms\Focus.js" />
@@ -178,6 +201,12 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
+    <Content Include="view\admin\adminmaster.aspx" />
+    <Content Include="view\admin\cars.aspx" />
+    <Content Include="view\admin\home.aspx" />
+    <Content Include="view\admin\rents.aspx" />
+    <Content Include="view\admin\returns.aspx" />
+    <Content Include="view\admin\сustomers.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -219,24 +248,77 @@
     </Compile>
     <Compile Include="Site.Mobile.Master.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\adminmaster.aspx.cs">
+      <DependentUpon>adminmaster.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\adminmaster.aspx.designer.cs">
+      <DependentUpon>adminmaster.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\cars.aspx.cs">
+      <DependentUpon>cars.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\cars.aspx.designer.cs">
+      <DependentUpon>cars.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\home.aspx.cs">
+      <DependentUpon>home.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\home.aspx.designer.cs">
+      <DependentUpon>home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\rents.aspx.cs">
+      <DependentUpon>rents.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\rents.aspx.designer.cs">
+      <DependentUpon>rents.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\returns.aspx.cs">
+      <DependentUpon>returns.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\returns.aspx.designer.cs">
+      <DependentUpon>returns.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\сustomers.aspx.cs">
+      <DependentUpon>сustomers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\сustomers.aspx.designer.cs">
+      <DependentUpon>сustomers.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="assets\images\" />
+    <Folder Include="Content\" />
+    <Folder Include="view\customer\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
+    <Content Include="Scripts\js\js\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\js\js\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\js\js\bootstrap.esm.js.map" />
+    <Content Include="Scripts\js\js\bootstrap.esm.min.js.map" />
+    <Content Include="Scripts\js\js\bootstrap.js.map" />
+    <Content Include="Scripts\js\js\bootstrap.min.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
