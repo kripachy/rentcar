@@ -11,7 +11,7 @@ namespace WebApplication1.view.admin
 {
 
 
-    public partial class cars
+    public partial class customers
     {
 
         /// <summary>
@@ -40,33 +40,6 @@ namespace WebApplication1.view.admin
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtModel;
-
-        /// <summary>
-        /// txtPrice элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPrice;
-
-        /// <summary>
-        /// txtColor элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtColor;
-
-        /// <summary>
-        /// ddlAvailable элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlAvailable;
 
         /// <summary>
         /// btnSubmit элемент управления.

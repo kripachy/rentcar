@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Manage Cars" Language="C#" MasterPageFile="~/view/admin/adminmaster.master" AutoEventWireup="true" CodeBehind="cars.aspx.cs" Inherits="WebApplication1.view.admin.cars" %>
+﻿<%@ Page Title="Manage Cars" Language="C#" MasterPageFile="~/view/admin/adminmaster.master" AutoEventWireup="true" CodeBehind="customers.aspx.cs" Inherits="WebApplication1.view.admin.customers" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -15,39 +15,24 @@
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-                         <h3 class="text-danger">Manage Cars</h3>
-                        <img src="../../assets/images/foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" alt="Car Image" class="img-fluid"/>
+                         <h3 class="text-danger">Manage Customers</h3>
+                        <img src="" alt="Car Image" class="img-fluid"/>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group mb-3">
-                            <label>Licence Number</label>
+                            <label>Customer Name</label>
                             <asp:TextBox ID="txtLicence" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Brand</label>
+                            <label>Customer Adress</label>
                             <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Model</label>
+                            <label>Customer Phone</label>
                             <asp:TextBox ID="txtModel" runat="server" CssClass="form-control"></asp:TextBox>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Price</label>
-                            <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control"></asp:TextBox>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Color</label>
-                            <asp:TextBox ID="txtColor" runat="server" CssClass="form-control"></asp:TextBox>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Available</label>
-                            <asp:DropDownList ID="ddlAvailable" runat="server" CssClass="form-control">
-                                <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
-                                <asp:ListItem Text="No" Value="0"></asp:ListItem>
-                            </asp:DropDownList>
-                        </div>
+                        
                         <br />
                         <br />
                         <asp:Button ID="btnSubmit" runat="server" Text="Edit" CssClass="btn btn-danger"/>

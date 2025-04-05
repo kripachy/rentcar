@@ -118,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="assets\images\foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" />
     <Content Include="Contact.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
@@ -203,10 +204,10 @@
     <Content Include="ViewSwitcher.ascx" />
     <None Include="view\admin\adminmaster.master" />
     <Content Include="view\admin\cars.aspx" />
+    <Content Include="view\admin\customers.aspx" />
     <Content Include="view\admin\home.aspx" />
     <Content Include="view\admin\rents.aspx" />
     <Content Include="view\admin\returns.aspx" />
-    <Content Include="view\admin\сustomers.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -274,6 +275,13 @@
     <Compile Include="view\admin\cars.aspx.designer.cs">
       <DependentUpon>cars.aspx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\customers.aspx.cs">
+      <DependentUpon>customers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\customers.aspx.designer.cs">
+      <DependentUpon>customers.aspx</DependentUpon>
+    </Compile>
     <Compile Include="view\admin\home.aspx.cs">
       <DependentUpon>home.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -295,17 +303,9 @@
     <Compile Include="view\admin\returns.aspx.designer.cs">
       <DependentUpon>returns.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view\admin\сustomers.aspx.cs">
-      <DependentUpon>сustomers.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="view\admin\сustomers.aspx.designer.cs">
-      <DependentUpon>сustomers.aspx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="assets\images\" />
     <Folder Include="Content\" />
     <Folder Include="view\customer\" />
   </ItemGroup>

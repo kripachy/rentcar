@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace WebApplication1.view.admin
 {
-    public partial class сustomers : System.Web.UI.Page
+    public partial class customers : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
