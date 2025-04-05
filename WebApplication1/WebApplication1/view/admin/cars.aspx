@@ -2,7 +2,6 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-
      <style>
         .form-control:focus {
             border-color: #dc3545 !important;
@@ -11,19 +10,13 @@
 
     </style>
    
-
-    <h1>Manage Cars</h1>
     <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-
                          <h3 class="text-danger">Manage Cars</h3>
                         <img src="../../assets/images/foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" alt="Car Image" class="img-fluid"/>
-
-                        <img src="https://via.placeholder.com/200" alt="Car Image" class="img-fluid"/>
-
                     </div>
                 </div>
                 <div class="card">
@@ -55,15 +48,11 @@
                                 <asp:ListItem Text="No" Value="0"></asp:ListItem>
                             </asp:DropDownList>
                         </div>
-
                         <br />
                         <br />
                         <asp:Button ID="btnSubmit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
                         <asp:Button ID="Button2" runat="server" Text="Add" CssClass="btn btn-danger"/>
                         <asp:Button ID="Button1" runat="server" Text="Delete" CssClass="btn btn-danger"/>
-
-                        <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-primary"/>
-
                     </div>
                 </div>
             </div>
