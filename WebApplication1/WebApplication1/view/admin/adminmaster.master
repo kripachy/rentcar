@@ -1,0 +1,48 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" 
+CodeBehind="adminmaster.master.cs" Inherits="WebApplication1.view.admin.adminmaster" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title><asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">WheelDeal</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("home.aspx") ? "active" : "" %>' href="home.aspx">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("cars.aspx") ? "active" : "" %>' href="cars.aspx">Car</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("customers.aspx") ? "active" : "" %>' href="customers.aspx">Customers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rents.aspx") ? "active" : "" %>' href="rents.aspx">View Rentals</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("returns.aspx") ? "active" : "" %>' href="returns.aspx">View returns</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

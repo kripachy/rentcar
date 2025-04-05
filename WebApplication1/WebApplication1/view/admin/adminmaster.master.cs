@@ -7,11 +7,10 @@ using System.Web.UI.WebControls;
 
 namespace WebApplication1.view.admin
 {
-    public partial class adminmaster : System.Web.UI.Page
+    public partial class adminmaster : System.Web.UI.MasterPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
     }
 }
