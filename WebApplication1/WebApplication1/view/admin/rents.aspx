@@ -2,7 +2,6 @@
 AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view.admin.rents" %>
 
 
-
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
      <style>
@@ -66,4 +65,5 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
             </div>
         </div>
         </div>
+
 </asp:Content>
