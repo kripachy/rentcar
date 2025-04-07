@@ -130,6 +130,12 @@
     <Content Include="assets\images\porshe.png" />
     <Content Include="assets\images\Слой 1.png" />
     <Content Include="assets\images\images.png" />
+    <Content Include="assets\images\jagyar.png" />
+    <Content Include="assets\images\lamba.png" />
+    <Content Include="assets\images\mazerati.png" />
+    <Content Include="assets\images\mustang.png" />
+    <Content Include="assets\images\porshe.png" />
+    <Content Include="assets\images\Слой 1.png" />
     <Content Include="Contact.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
