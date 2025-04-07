@@ -118,9 +118,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="assets\images\aston_martin.png" />
+    <Content Include="assets\images\audi.png" />
     <Content Include="assets\images\car-rental.png" />
-    <Content Include="assets\images\foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" />
+    <Content Include="assets\images\chevrolet.png" />
     <Content Include="assets\images\images.png" />
+    <Content Include="assets\images\jagyar.png" />
+    <Content Include="assets\images\lamba.png" />
+    <Content Include="assets\images\mazerati.png" />
+    <Content Include="assets\images\mustang.png" />
+    <Content Include="assets\images\porshe.png" />
+    <Content Include="assets\images\Слой 1.png" />
     <Content Include="Contact.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
@@ -241,6 +249,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
