@@ -1,17 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="returns.aspx.cs" Inherits="WebApplication1.view.admin.returns" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/view/admin/adminmaster.master" 
+AutoEventWireup="true" CodeBehind="renturns.aspx.cs" Inherits="WebApplication1.view.admin.returns" %>
 
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-</head>
-<body>
-    returns
-    <form id="form1" runat="server">
-        <div>
-        </div>
-    </form>
-</body>
-</html>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <h1>View Returns</h1>
+    <div>
+    </div>
+</asp:Content>

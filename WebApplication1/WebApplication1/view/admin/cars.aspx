@@ -44,14 +44,14 @@
                         <div class="form-group mb-3">
                             <label>Available</label>
                             <asp:DropDownList ID="ddlAvailable" runat="server" CssClass="form-control">
-                                <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
-                                <asp:ListItem Text="No" Value="0"></asp:ListItem>
+                                <asp:ListItem Text="Available" Value="1"></asp:ListItem>
+                                <asp:ListItem Text="Booked" Value="0"></asp:ListItem>
                             </asp:DropDownList>
                         </div>
                         <br />
                         <br />
-                        <asp:Button ID="btnSubmit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Button2" runat="server" Text="Add" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger"/>
                         <asp:Button ID="Button1" runat="server" Text="Delete" CssClass="btn btn-danger"/>
                     </div>
                 </div>

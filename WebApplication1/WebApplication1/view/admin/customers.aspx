@@ -16,28 +16,32 @@
                 <div class="row mb-3">
                     <div class="col text-center">
                          <h3 class="text-danger">Manage Customers</h3>
-                        <img src="" alt="Car Image" class="img-fluid"/>
+                        <img src="../../assets/images/images.png" alt="CustomersImage" class="img-fluid"/>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group mb-3">
                             <label>Customer Name</label>
-                            <asp:TextBox ID="txtLicence" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerName" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Customer Adress</label>
-                            <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerAdress" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Customer Phone</label>
-                            <asp:TextBox ID="txtModel" runat="server" CssClass="form-control"></asp:TextBox>
-                        
+                            <asp:TextBox ID="txtCustomerPhone" runat="server" CssClass="form-control"></asp:TextBox>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Customer Password</label>
+                             <asp:TextBox ID="txtCustomerPassword" runat="server" CssClass="form-control"></asp:TextBox>
+                        </div>
                         <br />
                         <br />
-                        <asp:Button ID="btnSubmit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Button2" runat="server" Text="Add" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Button1" runat="server" Text="Delete" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger"/>
                     </div>
                 </div>
             </div>

@@ -118,7 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="assets\images\car-rental.png" />
     <Content Include="assets\images\foni-papik-pro-qmkz-p-kartinki-krasnaya-mashina-na-prozrachnom-f-19.png" />
+    <Content Include="assets\images\images.png" />
     <Content Include="Contact.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
