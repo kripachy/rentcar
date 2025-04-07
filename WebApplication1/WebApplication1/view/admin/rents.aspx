@@ -64,6 +64,5 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
                 </div>
             </div>
         </div>
-        </div>
-
+    </div>
 </asp:Content>

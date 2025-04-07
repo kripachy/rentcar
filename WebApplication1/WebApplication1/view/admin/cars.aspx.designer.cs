@@ -69,22 +69,22 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.DropDownList ddlAvailable;
 
         /// <summary>
-        /// btnSubmit элемент управления.
+        /// Edit элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSubmit;
+        protected global::System.Web.UI.WebControls.Button Edit;
 
         /// <summary>
-        /// Button2 элемент управления.
+        /// Add элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Button2;
+        protected global::System.Web.UI.WebControls.Button Add;
 
         /// <summary>
         /// Button1 элемент управления.
