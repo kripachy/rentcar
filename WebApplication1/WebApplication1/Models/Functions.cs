@@ -23,8 +23,8 @@ namespace WebApplication1.Models
             cmd = new SqlCommand();
             cmd.Connection = Conn;
         }
-        public DataTable GetData(string Query) 
-        { 
+        public DataTable GetData(string Query)
+        {
             dt = new DataTable();
             sda = new SqlDataAdapter(Query, ConnStr);
             sda.Fill(dt);
@@ -42,5 +42,8 @@ namespace WebApplication1.Models
             Conn.Close();
             return rcnt;
         }
+
 }
-}
+
+    }
+
