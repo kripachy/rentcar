@@ -18,7 +18,7 @@ namespace WebApplication1.Models
 
         public Functions()
         {
-            ConnStr = "";
+            ConnStr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
             Conn = new SqlConnection(ConnStr);
             cmd = new SqlCommand();
             cmd.Connection = Conn;
@@ -43,7 +43,8 @@ namespace WebApplication1.Models
             return rcnt;
         }
 
+    }
 }
 
-    }
+    
 
