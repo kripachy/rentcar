@@ -39,9 +39,9 @@
                         </div>
                         <br />
                         <br />
-                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger" OnClick="Edit_Click"/>
+                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger" OnClick="Add_Click"/>
+                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger" OnClick="Delete_Click"/>
                     </div>
                 </div>
             </div>

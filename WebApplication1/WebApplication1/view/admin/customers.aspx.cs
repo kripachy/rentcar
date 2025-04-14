@@ -13,5 +13,20 @@ namespace WebApplication1.view.admin
         {
 
         }
+
+        protected void Edit_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Add_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Delete_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
