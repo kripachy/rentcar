@@ -78,12 +78,30 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.Button Delete;
 
         /// <summary>
-        /// gvCars элемент управления.
+        /// ErrorMsg элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvCars;
+        protected global::System.Web.UI.WebControls.Label ErrorMsg;
+
+        /// <summary>
+        /// gvCustomers элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvCustomers;
+
+        /// <summary>
+        /// btnExport элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnExport;
     }
 }
