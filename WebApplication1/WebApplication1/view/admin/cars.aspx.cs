@@ -33,14 +33,17 @@ namespace WebApplication1.view.admin
         {
             try
             {
-                string query = "SELECT CPlateNum AS [Licence #], Brand, Model, Price, Color, Status FROM CarTbl";
+                string query = "SELECT CPlateNum AS [Licence], Brand, Model, Price, Color, Status FROM CarTbl";
                 DataTable dt = Conn.GetData(query);
 
                 if (dt.Rows.Count > 0)
                 {
                     using (XLWorkbook wb = new XLWorkbook())
                     {
-                        wb.Worksheets.Add(dt, "Cars");
+                        var ws = wb.Worksheets.Add("Cars");
+                        ws.Cell(1, 1).InsertTable(dt, false);
+                       
+                        ws.Columns().AdjustToContents();
 
                         using (MemoryStream ms = new MemoryStream())
                         {
@@ -55,6 +58,7 @@ namespace WebApplication1.view.admin
                             Response.End();
                         }
                     }
+
                 }
                 else
                 {

@@ -36,16 +36,13 @@ namespace WebApplication1.view.admin
                 GridViewRow row = gvCustomers.SelectedRow;
                 if (row != null)
                 {
-                    // Получаем CustId из DataKeys
                     string custId = gvCustomers.DataKeys[row.RowIndex].Value.ToString();
                     ViewState["SelectedCustomerId"] = custId;
 
-                    // Получаем значения из ячеек (учитывая CommandField)
-                    txtCustomerName.Text = HttpUtility.HtmlDecode(row.Cells[2].Text); // Name
-                    txtCustomerAdress.Text = HttpUtility.HtmlDecode(row.Cells[3].Text); // Address
-                    txtCustomerPhone.Text = HttpUtility.HtmlDecode(row.Cells[4].Text); // Phone
+                    txtCustomerName.Text = HttpUtility.HtmlDecode(row.Cells[2].Text);
+                    txtCustomerAdress.Text = HttpUtility.HtmlDecode(row.Cells[3].Text);
+                    txtCustomerPhone.Text = HttpUtility.HtmlDecode(row.Cells[4].Text);
 
-                    // Для пароля используем FindControl, так как он может быть скрыт
                     Label lblPassword = (Label)row.FindControl("lblPassword");
                     if (lblPassword != null)
                     {
@@ -53,7 +50,6 @@ namespace WebApplication1.view.admin
                     }
                     else
                     {
-                        // Альтернативный вариант, если FindControl не работает
                         txtCustomerPassword.Text = HttpUtility.HtmlDecode(row.Cells[5].Text);
                     }
                 }
@@ -88,8 +84,10 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string query = $"INSERT INTO CustomerTbl (CustName, CustAdd, CustPhone, CustPassword) " +
-                               $"VALUES ('{name}', '{address}', '{phone}', '{password}')";
+                int newId = GetAvailableCustomerId();
+
+                string query = $"INSERT INTO CustomerTbl (CustId, CustName, CustAdd, CustPhone, CustPassword) " +
+                               $"VALUES ({newId}, '{name}', '{address}', '{phone}', '{password}')";
                 Conn.SetData(query);
 
                 ShowCustomers();
@@ -101,6 +99,7 @@ namespace WebApplication1.view.admin
                 ShowError("Error adding customer: " + ex.Message);
             }
         }
+
 
         protected void Edit_Click(object sender, EventArgs e)
         {
@@ -146,6 +145,30 @@ namespace WebApplication1.view.admin
                 ShowError("Error updating customer: " + ex.Message);
             }
         }
+        private int GetAvailableCustomerId()
+        {
+            string query = @"
+        SELECT TOP 1 n AS AvailableId
+        FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
+            FROM CustomerTbl
+        ) AS Numbers
+        WHERE NOT EXISTS (
+            SELECT 1 FROM CustomerTbl WHERE CustId = Numbers.n
+        )
+        ORDER BY AvailableId";
+
+            DataTable dt = Conn.GetData(query);
+            if (dt.Rows.Count > 0)
+            {
+                return Convert.ToInt32(dt.Rows[0]["AvailableId"]);
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
 
         protected void Delete_Click(object sender, EventArgs e)
         {
@@ -157,15 +180,15 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string id = ViewState["SelectedCustomerId"].ToString();
-                ShowSuccess($"Selected Customer ID: {id}"); // Добавим вывод для отладки
+                string id = ViewState["SelectedCustomerId"].ToString().Trim();
 
-                // Удаляем сначала аренды
-                string deleteRentalsQuery = $"DELETE FROM RentTbl WHERE CustId = {id}";
-                Conn.SetData(deleteRentalsQuery);
+                if (!int.TryParse(id, out int custId))
+                {
+                    ShowError("Invalid Customer ID.");
+                    return;
+                }
 
-                // Потом клиента
-                string deleteCustomerQuery = $"DELETE FROM CustomerTbl WHERE CustId = {id}";
+                string deleteCustomerQuery = $"DELETE FROM CustomerTbl WHERE CustId = {custId}";
                 Conn.SetData(deleteCustomerQuery);
 
                 ShowCustomers();
@@ -177,9 +200,6 @@ namespace WebApplication1.view.admin
                 ShowError("Error deleting customer: " + ex.Message);
             }
         }
-
-
-
 
         private void ClearFields()
         {
@@ -220,7 +240,9 @@ namespace WebApplication1.view.admin
                 {
                     using (XLWorkbook wb = new XLWorkbook())
                     {
-                        wb.Worksheets.Add(dt, "Customers");
+                        var ws = wb.Worksheets.Add("Customers");
+                        ws.Cell(1, 1).InsertTable(dt, false);
+                        ws.Columns().AdjustToContents();
 
                         using (MemoryStream ms = new MemoryStream())
                         {
@@ -246,5 +268,8 @@ namespace WebApplication1.view.admin
                 ShowError("Export failed: " + ex.Message);
             }
         }
+
     }
 }
+
+    

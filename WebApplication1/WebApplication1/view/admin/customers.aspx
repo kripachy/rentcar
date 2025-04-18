@@ -65,9 +65,7 @@
                                 <asp:BoundField DataField="CustAdd" HeaderText="Address" />
                                 <asp:BoundField DataField="CustPhone" HeaderText="Phone" />
                                  <asp:BoundField DataField="CustPassword" HeaderText="Password" />
-                                <asp:TemplateField HeaderText="Password">
-                                    
-                                </asp:TemplateField>
+
                             </Columns>
                         </asp:GridView>
 

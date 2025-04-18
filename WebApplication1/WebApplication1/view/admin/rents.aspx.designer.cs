@@ -15,6 +15,15 @@ namespace WebApplication1.view.admin
     {
 
         /// <summary>
+        /// ErrorMsg элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ErrorMsg;
+
+        /// <summary>
         /// txtCustomerName элемент управления.
         /// </summary>
         /// <remarks>
@@ -49,6 +58,15 @@ namespace WebApplication1.view.admin
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCustomerPassword;
+
+        /// <summary>
+        /// ddlCarPlate элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCarPlate;
 
         /// <summary>
         /// Edit элемент управления.

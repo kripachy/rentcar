@@ -23,6 +23,8 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
                 </div>
                 <div class="card">
                     <div class="card-body">
+                        <asp:Label ID="ErrorMsg" runat="server" CssClass="text-danger" Visible="false"></asp:Label>
+
                         <div class="form-group mb-3">
                             <label>Customer Name</label>
                             <asp:TextBox ID="txtCustomerName" runat="server" CssClass="form-control"></asp:TextBox>
@@ -39,11 +41,16 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
                             <label>Customer Password</label>
                              <asp:TextBox ID="txtCustomerPassword" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
+                        <div class="form-group mb-3">
+    <label>Select Car</label>
+    <asp:DropDownList ID="ddlCarPlate" runat="server" CssClass="form-control"></asp:DropDownList>
+</div>
+
                         <br />
                         <br />
-                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger"/>
-                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger"/>
+                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger" OnClick="Edit_Click"/>
+                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger" OnClick="Add_Click"/>
+                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger" OnClick="Delete_Click"/>
                     </div>
                 </div>
             </div>
@@ -52,7 +59,7 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
                     <div class="card-body">
                         <asp:GridView ID="gvCars" runat="server" CssClass="table table-striped">
                             <Columns>
-                                <asp:BoundField DataField="LicenceNumber" HeaderText="Licence #" />
+                                <asp:BoundField DataField="LicenceNumber" HeaderText="Licence" />
                                 <asp:BoundField DataField="Brand" HeaderText="Brand" />
                                 <asp:BoundField DataField="Model" HeaderText="Model" />
                                 <asp:BoundField DataField="Price" HeaderText="Price" />
