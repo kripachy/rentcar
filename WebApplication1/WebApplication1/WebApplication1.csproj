@@ -261,6 +261,9 @@
     <Content Include="view\admin\cars.aspx" />
     <Content Include="view\admin\customers.aspx" />
     <Content Include="view\admin\home.aspx" />
+    <Content Include="view\admin\login.aspx" />
+    <Content Include="view\admin\profile.aspx" />
+    <Content Include="view\admin\register.aspx" />
     <Content Include="view\admin\rents.aspx" />
     <Content Include="view\admin\returns.aspx" />
     <Content Include="Web.config" />
@@ -344,6 +347,27 @@
     </Compile>
     <Compile Include="view\admin\home.aspx.designer.cs">
       <DependentUpon>home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\profile.aspx.cs">
+      <DependentUpon>profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\profile.aspx.designer.cs">
+      <DependentUpon>profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\register.aspx.cs">
+      <DependentUpon>register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\register.aspx.designer.cs">
+      <DependentUpon>register.aspx</DependentUpon>
     </Compile>
     <Compile Include="view\admin\rents.aspx.cs">
       <DependentUpon>rents.aspx</DependentUpon>

@@ -15,9 +15,8 @@ namespace WebApplication1.view.admin
             if (!IsPostBack)
             {
                 ShowRents();
-                LoadAvailableCars(); 
+                LoadAvailableCars();
             }
-
         }
 
         private void LoadAvailableCars()
@@ -41,94 +40,53 @@ namespace WebApplication1.view.admin
             gvCars.DataBind();
         }
 
-        protected void Add_Click(object sender, EventArgs e)
+        protected void gvCars_RowEditing(object sender, GridViewEditEventArgs e)
+        {
+            gvCars.EditIndex = e.NewEditIndex;
+            ShowRents();
+        }
+
+        protected void gvCars_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        {
+            gvCars.EditIndex = -1;
+            ShowRents();
+        }
+
+        protected void gvCars_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             try
             {
-                string name = txtCustomerName.Text.Trim().Replace("'", "''");
-                string address = txtCustomerAdress.Text.Trim().Replace("'", "''");
-                string phone = txtCustomerPhone.Text.Trim().Replace("'", "''");
-                string password = txtCustomerPassword.Text.Trim().Replace("'", "''");
+                GridViewRow row = gvCars.Rows[e.RowIndex];
+                int rentId = Convert.ToInt32(gvCars.DataKeys[e.RowIndex].Value);
 
-                int customerId = GetCustomerIdByPhone(phone);
-                if (customerId == -1)
-                {
-                    ShowError("Customer not found.");
-                    return;
-                }
+                string car = ((TextBox)row.Cells[1].Controls[0]).Text.Trim();
+                string customer = ((TextBox)row.Cells[2].Controls[0]).Text.Trim();
+                string rentDate = ((TextBox)row.Cells[3].Controls[0]).Text.Trim();
+                string returnDate = ((TextBox)row.Cells[4].Controls[0]).Text.Trim();
+                string fees = ((TextBox)row.Cells[5].Controls[0]).Text.Trim();
 
-                string carPlate = ddlCarPlate.SelectedValue;
-                DateTime rentDate = DateTime.Now;
-                DateTime returnDate = DateTime.Now.AddDays(7); // Example
-                int fees = 100; // Example
+                // Обновляем только RentTbl, а имя клиента и номер машины лучше не менять в продакшене.
+                string query = $"UPDATE RentTbl SET RentDate = '{rentDate}', ReturnDate = '{returnDate}', Fees = {fees} WHERE RentId = {rentId}";
+                Conn.SetData(query);
 
-                int rentId = GetAvailableRentId();
-
-                string insertQuery = $"INSERT INTO RentTbl (RentId, Car, Customer, RentDate, ReturnDate, Fees) " +
-                                     $"VALUES ({rentId}, '{carPlate}', {customerId}, '{rentDate:yyyy-MM-dd}', '{returnDate:yyyy-MM-dd}', {fees})";
-
-                Conn.SetData(insertQuery);
-                ShowSuccess("Rent added successfully.");
+                ShowSuccess("Rent updated successfully.");
+                gvCars.EditIndex = -1;
                 ShowRents();
             }
             catch (Exception ex)
             {
-                ShowError("Error adding rent: " + ex.Message);
+                ShowError("Error updating rent: " + ex.Message);
             }
         }
 
-        private int GetAvailableRentId()
-        {
-            string query = @"
-                SELECT TOP 1 n AS AvailableId
-                FROM (
-                    SELECT ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS n
-                    FROM RentTbl
-                ) AS Numbers
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM RentTbl WHERE RentId = Numbers.n
-                )
-                ORDER BY AvailableId";
-
-            DataTable dt = Conn.GetData(query);
-            if (dt.Rows.Count > 0)
-                return Convert.ToInt32(dt.Rows[0]["AvailableId"]);
-            else
-                return 1;
-        }
-
-        private int GetCustomerIdByPhone(string phone)
-        {
-            string query = $"SELECT CustId FROM CustomerTbl WHERE CustPhone = '{phone}'";
-            DataTable dt = Conn.GetData(query);
-            return dt.Rows.Count > 0 ? Convert.ToInt32(dt.Rows[0][0]) : -1;
-        }
-        protected void Edit_Click(object sender, EventArgs e)
+        protected void gvCars_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             try
             {
-                // Здесь логика редактирования записи
-                ShowSuccess("Edit clicked - implement logic here.");
-            }
-            catch (Exception ex)
-            {
-                ShowError("Error during edit: " + ex.Message);
-            }
-        }
-
-        protected void Delete_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // Пример удаления первой записи в гриде — обнови под свой выбор
-                if (gvCars.Rows.Count == 0) return;
-
-                GridViewRow row = gvCars.Rows[0];
-                int rentId = Convert.ToInt32(row.Cells[0].Text);
-                string delQuery = $"DELETE FROM RentTbl WHERE RentId = {rentId}";
-
-                Conn.SetData(delQuery);
-                ShowSuccess("Rent deleted.");
+                int rentId = Convert.ToInt32(gvCars.DataKeys[e.RowIndex].Value);
+                string query = $"DELETE FROM RentTbl WHERE RentId = {rentId}";
+                Conn.SetData(query);
+                ShowSuccess("Rent deleted successfully.");
                 ShowRents();
             }
             catch (Exception ex)
@@ -150,7 +108,5 @@ namespace WebApplication1.view.admin
             ErrorMsg.CssClass = "text-success";
             ErrorMsg.Visible = true;
         }
-
-      
     }
 }
