@@ -41,7 +41,6 @@ namespace WebApplication1
         {
             string email = txtRecoveryEmail.Text.Trim();
 
-            // Проверяем существование email
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
@@ -58,10 +57,8 @@ namespace WebApplication1
                 }
             }
 
-            // Генерируем временный пароль (8 символов: буквы и цифры)
             string tempPassword = GenerateRandomPassword(8);
 
-            // Обновляем пароль в базе данных
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
@@ -72,18 +69,17 @@ namespace WebApplication1
                 cmd.ExecuteNonQuery();
             }
 
-            // Отправляем email с временным паролем
             try
             {
                 MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("kirillloban61@gmail.com"); 
+                mail.From = new MailAddress("wheeldeal989@gmail.com"); 
                 mail.To.Add(email);
                 mail.Subject = "Временный пароль для WheelDeal";
                 mail.Body = $"Ваш временный пароль: {tempPassword}\n\n" +
                            "Используйте его для входа в систему. Рекомендуем сразу сменить пароль после входа.";
 
                 SmtpClient smtp = new SmtpClient("smtp.gmail.com", 25); 
-                smtp.Credentials = new NetworkCredential("почта с которой придет  сообщение", "tmxx hwxx clud vsfd");
+                smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "xqwj lscl uvgw gusf");
                 smtp.EnableSsl = true;
                 smtp.Send(mail);
 
