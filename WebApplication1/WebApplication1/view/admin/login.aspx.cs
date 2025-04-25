@@ -18,20 +18,20 @@ namespace WebApplication1
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                string checkUser = "SELECT COUNT(*) FROM CustomerAuthTbl WHERE CustEmail = @Email AND CustPassword = @Password";
-                SqlCommand cmd = new SqlCommand(checkUser, conn);
+                string запрос = "SELECT COUNT(*) FROM CustomerAuthTbl WHERE CustEmail = @Email AND CustPassword = @Password";
+                SqlCommand cmd = new SqlCommand(запрос, conn);
                 cmd.Parameters.AddWithValue("@Email", email);
                 cmd.Parameters.AddWithValue("@Password", password);
 
-                int exists = (int)cmd.ExecuteScalar();
-                if (exists > 0)
+                int найдено = (int)cmd.ExecuteScalar();
+                if (найдено > 0)
                 {
                     Session["UserEmail"] = email;
                     Response.Redirect("home.aspx");
                 }
                 else
                 {
-                    lblMsg.Text = "Invalid email or password!";
+                    lblMsg.Text = "Неверный email или пароль!";
                     lblMsg.Visible = true;
                 }
             }
@@ -40,48 +40,55 @@ namespace WebApplication1
         protected void btnSendCode_Click(object sender, EventArgs e)
         {
             string email = txtRecoveryEmail.Text.Trim();
+            string временныйПароль = GenerateRandomPassword(8);
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                string checkEmail = "SELECT COUNT(*) FROM CustomerAuthTbl WHERE CustEmail = @Email";
-                SqlCommand cmd = new SqlCommand(checkEmail, conn);
-                cmd.Parameters.AddWithValue("@Email", email);
 
-                int exists = (int)cmd.ExecuteScalar();
-                if (exists == 0)
+                string проверка = "SELECT COUNT(*) FROM CustomerAuthTbl WHERE CustEmail = @Email";
+                SqlCommand checkCmd = new SqlCommand(проверка, conn);
+                checkCmd.Parameters.AddWithValue("@Email", email);
+
+                int существует = (int)checkCmd.ExecuteScalar();
+                if (существует == 0)
                 {
                     lblMsg.Text = "Email не найден!";
                     lblMsg.Visible = true;
                     return;
                 }
-            }
 
-            string tempPassword = GenerateRandomPassword(8);
+                string обновитьAuth = "UPDATE CustomerAuthTbl SET CustPassword = @Password WHERE CustEmail = @Email";
+                SqlCommand updateCmd = new SqlCommand(обновитьAuth, conn);
+                updateCmd.Parameters.AddWithValue("@Password", временныйПароль);
+                updateCmd.Parameters.AddWithValue("@Email", email);
+                updateCmd.ExecuteNonQuery();
 
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                string updatePassword = "UPDATE CustomerAuthTbl SET CustPassword = @Password WHERE CustEmail = @Email";
-                SqlCommand cmd = new SqlCommand(updatePassword, conn);
-                cmd.Parameters.AddWithValue("@Password", tempPassword);
-                cmd.Parameters.AddWithValue("@Email", email);
-                cmd.ExecuteNonQuery();
+                string обновитьMain = @"
+                    UPDATE CustomerTbl 
+                    SET CustPassword = @Password 
+                    WHERE CustId = (
+                        SELECT CustId FROM CustomerAuthTbl WHERE CustEmail = @Email
+                    )";
+                SqlCommand updateMainCmd = new SqlCommand(обновитьMain, conn);
+                updateMainCmd.Parameters.AddWithValue("@Password", временныйПароль);
+                updateMainCmd.Parameters.AddWithValue("@Email", email);
+                updateMainCmd.ExecuteNonQuery();
             }
 
             try
             {
-                MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("wheeldeal989@gmail.com"); 
-                mail.To.Add(email);
-                mail.Subject = "Временный пароль для WheelDeal";
-                mail.Body = $"Ваш временный пароль: {tempPassword}\n\n" +
-                           "Используйте его для входа в систему. Рекомендуем сразу сменить пароль после входа.";
+                MailMessage письмо = new MailMessage();
+                письмо.From = new MailAddress("wheeldeal989@gmail.com");
+                письмо.To.Add(email);
+                письмо.Subject = "Временный пароль для WheelDeal";
+                письмо.Body = $"Ваш временный пароль: {временныйПароль}\n\n" +
+                              "Используйте его для входа в систему. Рекомендуем сразу сменить пароль после входа.";
 
-                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 25); 
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 25);
                 smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "xqwj lscl uvgw gusf");
                 smtp.EnableSsl = true;
-                smtp.Send(mail);
+                smtp.Send(письмо);
 
                 lblMsg.Text = "Временный пароль отправлен на вашу почту!";
                 lblMsg.Visible = true;
@@ -94,65 +101,62 @@ namespace WebApplication1
             }
         }
 
-        private string GenerateRandomPassword(int length)
+        private string GenerateRandomPassword(int длина)
         {
-            const string validChars = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            const string допустимыеСимволы = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
             Random random = new Random();
-            char[] chars = new char[length];
-            for (int i = 0; i < length; i++)
+            char[] символы = new char[длина];
+            for (int i = 0; i < длина; i++)
             {
-                chars[i] = validChars[random.Next(validChars.Length)];
+                символы[i] = допустимыеСимволы[random.Next(допустимыеСимволы.Length)];
             }
-            return new string(chars);
+            return new string(символы);
         }
 
         protected void btnResetPassword_Click(object sender, EventArgs e)
         {
             string email = txtRecoveryEmail.Text.Trim();
-            string code = txtResetCode.Text;
-            string newPassword = txtNewPassword.Text;
-            string confirmPassword = txtConfirmPassword.Text;
+            string код = txtResetCode.Text;
+            string новыйПароль = txtNewPassword.Text;
+            string подтверждениеПароля = txtConfirmPassword.Text;
 
-            if (newPassword != confirmPassword)
+            if (новыйПароль != подтверждениеПароля)
             {
-                lblResetMsg.Text = "Passwords do not match!";
+                lblResetMsg.Text = "Пароли не совпадают!";
                 lblResetMsg.Visible = true;
                 return;
             }
 
-            // Verify code
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                string checkCode = @"SELECT COUNT(*) FROM PasswordResetCodes 
-                                   WHERE Email = @Email AND Code = @Code 
-                                   AND Expiration > GETDATE()";
-                SqlCommand cmd = new SqlCommand(checkCode, conn);
+                string проверкаКода = @"SELECT COUNT(*) FROM PasswordResetCodes 
+                                        WHERE Email = @Email AND Code = @Code 
+                                        AND Expiration > GETDATE()";
+                SqlCommand cmd = new SqlCommand(проверкаКода, conn);
                 cmd.Parameters.AddWithValue("@Email", email);
-                cmd.Parameters.AddWithValue("@Code", code);
+                cmd.Parameters.AddWithValue("@Code", код);
 
-                int valid = (int)cmd.ExecuteScalar();
-                if (valid == 0)
+                int действителен = (int)cmd.ExecuteScalar();
+                if (действителен == 0)
                 {
-                    lblResetMsg.Text = "Invalid or expired code!";
+                    lblResetMsg.Text = "Неверный или просроченный код!";
                     lblResetMsg.Visible = true;
                     return;
                 }
 
-                // Update password
-                string updatePassword = "UPDATE CustomerAuthTbl SET CustPassword = @Password WHERE CustEmail = @Email";
-                cmd = new SqlCommand(updatePassword, conn);
-                cmd.Parameters.AddWithValue("@Password", newPassword);
+                string обновитьПароль = "UPDATE CustomerAuthTbl SET CustPassword = @Password WHERE CustEmail = @Email";
+                cmd = new SqlCommand(обновитьПароль, conn);
+                cmd.Parameters.AddWithValue("@Password", новыйПароль);
                 cmd.Parameters.AddWithValue("@Email", email);
                 cmd.ExecuteNonQuery();
 
-                // Delete used code
-                string deleteCode = "DELETE FROM PasswordResetCodes WHERE Email = @Email";
-                cmd = new SqlCommand(deleteCode, conn);
+                string удалитьКод = "DELETE FROM PasswordResetCodes WHERE Email = @Email";
+                cmd = new SqlCommand(удалитьКод, conn);
                 cmd.Parameters.AddWithValue("@Email", email);
                 cmd.ExecuteNonQuery();
 
-                lblResetMsg.Text = "Password updated successfully!";
+                lblResetMsg.Text = "Пароль успешно обновлён!";
                 lblResetMsg.Visible = true;
                 lblResetMsg.CssClass = "text-success d-block text-center mt-2";
             }

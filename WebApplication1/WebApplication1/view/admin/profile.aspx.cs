@@ -16,9 +16,9 @@ namespace WebApplication1
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            if (!ValidateInputs())
+            if (!ValidateInput())
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Please enter valid information (English characters only)');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Пожалуйста, введите корректную информацию');", true);
                 return;
             }
 
@@ -29,57 +29,59 @@ namespace WebApplication1
             }
             catch (Exception ex)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "error", $"alert('Error: {ex.Message}');", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "error", $"alert('Ошибка: {ex.Message}');", true);
             }
         }
 
-        private bool ValidateInputs()
+        private bool ValidateInput()
         {
-            return IsValidEnglish(txtName.Text) &&
-                   IsValidPhone(txtPhone.Text) &&
-                   IsValidEnglishAddress(txtAddress.Text);
+            return ValidateName(txtName.Text) &&
+                   ValidatePhone(txtPhone.Text) &&
+                   ValidateAddress(txtAddress.Text);
         }
 
-        private bool IsValidEnglish(string text)
+        private bool ValidateName(string text)
         {
             return !string.IsNullOrWhiteSpace(text) &&
-                   Regex.IsMatch(text, @"^[a-zA-Z\s'-]+$");
+                   Regex.IsMatch(text, @"^[a-zA-Zа-яА-ЯёЁ\s'-]+$");
         }
 
-        private bool IsValidPhone(string text)
+        private bool ValidatePhone(string text)
         {
             return Regex.IsMatch(text, @"^80\d{9}$");
         }
 
-
-        private bool IsValidEnglishAddress(string text)
+        private bool ValidateAddress(string text)
         {
-            // Разрешаем буквы, пробелы, а затем пробел и число
-            return Regex.IsMatch(text, @"^[a-zA-Z\s]+ \d+$");
+            return Regex.IsMatch(text.Trim(), @"^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$");
         }
-
-
-
 
         private void SaveProfileData()
         {
-            string connStr = @"Your_Connection_String";
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
 
-            using (var conn = new SqlConnection(connStr))
+            using (var connection = new SqlConnection(connectionString))
             {
-                conn.Open();
+                connection.Open();
+                var getIdCmd = new SqlCommand("SELECT CustId FROM CustomerAuthTbl WHERE CustEmail = @Email", connection);
+                getIdCmd.Parameters.AddWithValue("@Email", Session["UserEmail"]);
 
-                var cmd = new SqlCommand(
-                    "INSERT INTO CustomerTbl (CustId, CustName, CustAdd, CustPhone, CustPassword) " +
-                    "SELECT CustId, @Name, @Address, @Phone, CustPassword " +
-                    "FROM CustomerAuthTbl WHERE CustEmail = @Email", conn);
+                object result = getIdCmd.ExecuteScalar();
+                if (result == null)
+                {
+                    throw new Exception("Пользователь не найден");
+                }
 
-                cmd.Parameters.AddWithValue("@Email", Session["UserEmail"]);
-                cmd.Parameters.AddWithValue("@Name", txtName.Text);
-                cmd.Parameters.AddWithValue("@Address", txtAddress.Text);
-                cmd.Parameters.AddWithValue("@Phone", txtPhone.Text);
+                int custId = (int)result;
+                var updateCmd = new SqlCommand(
+                    "UPDATE CustomerTbl SET CustName = @Name, CustAdd = @Address, CustPhone = @Phone WHERE CustId = @CustId", connection);
 
-                cmd.ExecuteNonQuery();
+                updateCmd.Parameters.AddWithValue("@Name", txtName.Text);
+                updateCmd.Parameters.AddWithValue("@Address", txtAddress.Text);
+                updateCmd.Parameters.AddWithValue("@Phone", txtPhone.Text);
+                updateCmd.Parameters.AddWithValue("@CustId", custId);
+
+                updateCmd.ExecuteNonQuery();
             }
         }
     }

@@ -1,8 +1,12 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/view/admin/adminmaster.master" AutoEventWireup="true" CodeBehind="home.aspx.cs" Inherits="WebApplication1.view.admin.home" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="userdashboard.aspx.cs" Inherits="WebApplication1.view.admin.userdashboard" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
 <style>
+    body {
+        background-color: #fff;
+    }
+
     .car-box {
         display: flex;
         flex-direction: column;
@@ -43,22 +47,16 @@
 
 <div class="custom-jumbotron text-white text-center py-5 mb-5">
     <div class="container">
-        <h1 class="display-4 font-weight-bold">WheelDeal Management System Admin Panel</h1>
-        <p class="lead mb-0">Администратор может управлять автомобилями, клиентами, арендой и возвратами</p>
+        <h1 class="display-4 font-weight-bold">WheelDeal - Панель пользователя</h1>
+        <p class="lead mb-0">Добро пожаловать! Выберите автомобиль для аренды</p>
     </div>
 </div>
 
 <div class="row text-center mb-4">
     <div class="col-lg-3">
         <div class="car-box">
-            <img src="../../assets/images/aston_martin.png" alt="Aston Martin" />
-            <h6 class="text-danger">Aston Martin</h6>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="car-box">
-            <img src="../../assets/images/porshe.png" alt="Porsche" />
-            <h6 class="text-danger">Porsche</h6>
+            <img src="../../assets/images/audi.png" alt="Audi" />
+            <h6 class="text-danger">Audi</h6>
         </div>
     </div>
     <div class="col-lg-3">
@@ -69,8 +67,14 @@
     </div>
     <div class="col-lg-3">
         <div class="car-box">
-            <img src="../../assets/images/audi.png" alt="Audi" />
-            <h6 class="text-danger">Audi</h6>
+            <img src="../../assets/images/mustang.png" alt="Ford Mustang" />
+            <h6 class="text-danger">Ford Mustang</h6>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="car-box">
+            <img src="../../assets/images/chevrolet.png" alt="Chevrolet" />
+            <h6 class="text-danger">Chevrolet</h6>
         </div>
     </div>
 </div>
@@ -84,20 +88,20 @@
     </div>
     <div class="col-lg-3">
         <div class="car-box">
-            <img src="../../assets/images/chevrolet.png" alt="Chevrolet" />
-            <h6 class="text-danger">Chevrolet</h6>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div class="car-box">
             <img src="../../assets/images/lamba.png" alt="Lamborghini" />
             <h6 class="text-danger">Lamborghini</h6>
         </div>
     </div>
     <div class="col-lg-3">
         <div class="car-box">
-            <img src="../../assets/images/mustang.png" alt="Ford Mustang" />
-            <h6 class="text-danger">Ford Mustang</h6>
+            <img src="../../assets/images/porshe.png" alt="Porsche" />
+            <h6 class="text-danger">Porsche</h6>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="car-box">
+            <img src="../../assets/images/aston_martin.png" alt="Aston Martin" />
+            <h6 class="text-danger">Aston Martin</h6>
         </div>
     </div>
 </div>

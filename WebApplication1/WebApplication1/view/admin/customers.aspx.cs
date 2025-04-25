@@ -56,50 +56,9 @@ namespace WebApplication1.view.admin
             }
             catch (Exception ex)
             {
-                ShowError("Error selecting customer: " + ex.Message);
+                ShowError("Ошибка при выборе клиента: " + ex.Message);
             }
         }
-
-        protected void Add_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string name = txtCustomerName.Text.Trim().Replace("'", "''");
-                string address = txtCustomerAdress.Text.Trim().Replace("'", "''");
-                string phone = txtCustomerPhone.Text.Trim().Replace("'", "''");
-                string password = txtCustomerPassword.Text.Trim().Replace("'", "''");
-
-                if (!IsValidPhoneNumber(phone))
-                {
-                    ShowError("Invalid phone number format.");
-                    return;
-                }
-
-                string checkQuery = $"SELECT COUNT(*) FROM CustomerTbl WHERE CustPhone = '{phone}'";
-                DataTable result = Conn.GetData(checkQuery);
-
-                if (Convert.ToInt32(result.Rows[0][0]) > 0)
-                {
-                    ShowError("A customer with this phone number already exists.");
-                    return;
-                }
-
-                int newId = GetAvailableCustomerId();
-
-                string query = $"INSERT INTO CustomerTbl (CustId, CustName, CustAdd, CustPhone, CustPassword) " +
-                               $"VALUES ({newId}, '{name}', '{address}', '{phone}', '{password}')";
-                Conn.SetData(query);
-
-                ShowCustomers();
-                ClearFields();
-                ShowSuccess("Customer Added");
-            }
-            catch (Exception ex)
-            {
-                ShowError("Error adding customer: " + ex.Message);
-            }
-        }
-
 
         protected void Edit_Click(object sender, EventArgs e)
         {
@@ -107,7 +66,7 @@ namespace WebApplication1.view.admin
             {
                 if (ViewState["SelectedCustomerId"] == null)
                 {
-                    ShowError("Please select a customer to edit.");
+                    ShowError("Пожалуйста, выберите клиента для редактирования");
                     return;
                 }
 
@@ -119,7 +78,7 @@ namespace WebApplication1.view.admin
 
                 if (!IsValidPhoneNumber(phone))
                 {
-                    ShowError("Invalid phone number format.");
+                    ShowError("Неверный формат номера телефона");
                     return;
                 }
 
@@ -128,7 +87,7 @@ namespace WebApplication1.view.admin
 
                 if (Convert.ToInt32(result.Rows[0][0]) > 0)
                 {
-                    ShowError("This phone number is already used by another customer.");
+                    ShowError("Этот номер телефона уже используется другим клиентом");
                     return;
                 }
 
@@ -138,13 +97,14 @@ namespace WebApplication1.view.admin
 
                 ShowCustomers();
                 ClearFields();
-                ShowSuccess("Customer Updated");
+                ShowSuccess("Клиент успешно обновлён");
             }
             catch (Exception ex)
             {
-                ShowError("Error updating customer: " + ex.Message);
+                ShowError("Ошибка при обновлении клиента: " + ex.Message);
             }
         }
+
         private int GetAvailableCustomerId()
         {
             string query = @"
@@ -169,14 +129,13 @@ namespace WebApplication1.view.admin
             }
         }
 
-
         protected void Delete_Click(object sender, EventArgs e)
         {
             try
             {
                 if (ViewState["SelectedCustomerId"] == null)
                 {
-                    ShowError("Please select a customer to delete.");
+                    ShowError("Пожалуйста, выберите клиента для удаления");
                     return;
                 }
 
@@ -184,20 +143,23 @@ namespace WebApplication1.view.admin
 
                 if (!int.TryParse(id, out int custId))
                 {
-                    ShowError("Invalid Customer ID.");
+                    ShowError("Недопустимый идентификатор клиента");
                     return;
                 }
-
+                string deleteRentsQuery = $"DELETE FROM RentTbl WHERE Customer = {custId}";
+                Conn.SetData(deleteRentsQuery);
+                string deleteAuthQuery = $"DELETE FROM CustomerAuthTbl WHERE CustId = {custId}";
+                Conn.SetData(deleteAuthQuery);
                 string deleteCustomerQuery = $"DELETE FROM CustomerTbl WHERE CustId = {custId}";
                 Conn.SetData(deleteCustomerQuery);
 
                 ShowCustomers();
                 ClearFields();
-                ShowSuccess("Customer and related rentals deleted.");
+                ShowSuccess("Клиент и все связанные данные удалены");
             }
             catch (Exception ex)
             {
-                ShowError("Error deleting customer: " + ex.Message);
+                ShowError("Ошибка при удалении клиента: " + ex.Message);
             }
         }
 
@@ -240,7 +202,7 @@ namespace WebApplication1.view.admin
                 {
                     using (XLWorkbook wb = new XLWorkbook())
                     {
-                        var ws = wb.Worksheets.Add("Customers");
+                        var ws = wb.Worksheets.Add("Клиенты");
                         ws.Cell(1, 1).InsertTable(dt, false);
                         ws.Columns().AdjustToContents();
 
@@ -251,7 +213,7 @@ namespace WebApplication1.view.admin
                             Response.Buffer = true;
                             Response.Charset = "";
                             Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                            Response.AddHeader("content-disposition", "attachment;filename=CustomerExport_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
+                            Response.AddHeader("content-disposition", "attachment;filename=ЭкспортКлиентов_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
                             Response.BinaryWrite(ms.ToArray());
                             Response.Flush();
                             Response.End();
@@ -260,16 +222,13 @@ namespace WebApplication1.view.admin
                 }
                 else
                 {
-                    ShowError("No data to export.");
+                    ShowError("Нет данных для экспорта");
                 }
             }
             catch (Exception ex)
             {
-                ShowError("Export failed: " + ex.Message);
+                ShowError("Ошибка экспорта: " + ex.Message);
             }
         }
-
     }
 }
-
-    

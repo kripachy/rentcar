@@ -257,6 +257,7 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
+    <Content Include="view\admin\usermaster.master" />
     <None Include="view\admin\adminmaster.master" />
     <Content Include="view\admin\cars.aspx" />
     <Content Include="view\admin\customers.aspx" />
@@ -266,6 +267,7 @@
     <Content Include="view\admin\register.aspx" />
     <Content Include="view\admin\rents.aspx" />
     <Content Include="view\admin\returns.aspx" />
+    <Content Include="view\admin\userdashboard.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -319,6 +321,13 @@
     </Compile>
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\usermaster.master.cs">
+      <DependentUpon>usermaster.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\usermaster.master.designer.cs">
+      <DependentUpon>usermaster.master</DependentUpon>
     </Compile>
     <Compile Include="view\admin\adminmaster.master.cs">
       <DependentUpon>adminmaster.master</DependentUpon>
@@ -382,6 +391,13 @@
     </Compile>
     <Compile Include="view\admin\returns.aspx.designer.cs">
       <DependentUpon>returns.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\userdashboard.aspx.cs">
+      <DependentUpon>userdashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\userdashboard.aspx.designer.cs">
+      <DependentUpon>userdashboard.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

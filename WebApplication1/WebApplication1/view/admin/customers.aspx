@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Manage Customers" Language="C#" MasterPageFile="~/view/admin/adminmaster.master" AutoEventWireup="true" CodeBehind="customers.aspx.cs" Inherits="WebApplication1.view.admin.customers" %>
+﻿<%@ Page Title="Управление клиентами" Language="C#" MasterPageFile="~/view/admin/adminmaster.master" AutoEventWireup="true" CodeBehind="customers.aspx.cs" Inherits="WebApplication1.view.admin.customers" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -6,46 +6,44 @@
             border-color: #dc3545 !important;
             box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
-        
+
         .export-btn {
             margin-top: 20px;
             margin-bottom: 30px;
         }
-
     </style>
-   
+
     <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-                        <h3 class="text-danger">Manage Customers</h3>
+                        <h3 class="text-danger">Управление клиентами</h3>
                         <img src="../../assets/images/images.png" alt="CustomersImage" class="img-fluid"/>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group mb-3">
-                            <label>Customer Name</label>
+                            <label>Имя клиента</label>
                             <asp:TextBox ID="txtCustomerName" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Customer Address</label>
+                            <label>Адрес клиента</label>
                             <asp:TextBox ID="txtCustomerAdress" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Customer Phone</label>
+                            <label>Телефон клиента</label>
                             <asp:TextBox ID="txtCustomerPhone" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Customer Password</label>
+                            <label>Пароль клиента</label>
                             <asp:TextBox ID="txtCustomerPassword" runat="server" CssClass="form-control"></asp:TextBox>
                         </div>
                         <br />
                         <br />
-                        <asp:Button ID="Edit" runat="server" Text="Edit" CssClass="btn btn-danger" OnClick="Edit_Click"/>
-                        <asp:Button ID="Add" runat="server" Text="Add" CssClass="btn btn-danger" OnClick="Add_Click"/>
-                        <asp:Button ID="Delete" runat="server" Text="Delete" CssClass="btn btn-danger" OnClick="Delete_Click" OnClientClick="return confirm('Are you sure you want to delete this customer?');"/>
+                        <asp:Button ID="Edit" runat="server" Text="Редактировать" CssClass="btn btn-danger" OnClick="Edit_Click"/>
+                        <asp:Button ID="Delete" runat="server" Text="Удалить" CssClass="btn btn-danger" OnClick="Delete_Click" OnClientClick="return confirm('Вы уверены, что хотите удалить этого клиента?');"/>
                         <asp:Label ID="ErrorMsg" runat="server" CssClass="text-danger" Visible="false"></asp:Label>
                     </div>
                 </div>
@@ -57,20 +55,15 @@
                             AutoGenerateColumns="False" OnSelectedIndexChanged="gvCustomers_SelectedIndexChanged" 
                             DataKeyNames="CustId">
                             <Columns>
-                                <asp:CommandField ShowSelectButton="True" 
-                                    ButtonType="Button" 
-                                    ControlStyle-CssClass="btn btn-sm btn-outline-danger" 
-                                    SelectText="Select" />
+                                <asp:CommandField ShowSelectButton="True" ButtonType="Button" ControlStyle-CssClass="btn btn-sm btn-outline-danger" SelectText="Выбрать" />
                                 <asp:BoundField DataField="CustId" HeaderText="ID"/>
-                                <asp:BoundField DataField="CustName" HeaderText="Name" />
-                                <asp:BoundField DataField="CustAdd" HeaderText="Address" />
-                                <asp:BoundField DataField="CustPhone" HeaderText="Phone" />
-                                 <asp:BoundField DataField="CustPassword" HeaderText="Password" />
-
+                                <asp:BoundField DataField="CustName" HeaderText="Имя" />
+                                <asp:BoundField DataField="CustAdd" HeaderText="Адрес" />
+                                <asp:BoundField DataField="CustPhone" HeaderText="Телефон" />
+                                <asp:BoundField DataField="CustPassword" HeaderText="Пароль" />
                             </Columns>
                         </asp:GridView>
-
-                        <asp:Button ID="btnExport" runat="server" Text="Export to Excel" OnClick="btnExport_Click" CssClass="btn btn-success export-btn" />
+                        <asp:Button ID="btnExport" runat="server" Text="Экспорт в Excel" OnClick="btnExport_Click" CssClass="btn btn-success export-btn" />
                     </div>
                 </div>
             </div>

@@ -9,9 +9,7 @@
 
 namespace WebApplication1.view.admin
 {
-
-
-    public partial class home
+    public partial class userdashboard
     {
     }
 }
