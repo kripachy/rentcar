@@ -37,31 +37,35 @@
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-                        <h3 class="text-danger">Управление автомобилями</h3>
+                        <h3 class="text-danger fw-bold text-center">Управление автомобилями</h3>
                         <img src="../../assets/images/Слой 1.png" alt="Car Image" class="img-fluid"/>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group mb-3">
-                            <label>Номерной знак</label>
-                            <asp:TextBox ID="txtLicence" runat="server" CssClass="form-control"></asp:TextBox>
+                            <label>Номер лицензии</label>
+                            <asp:TextBox ID="txtLicence" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
-                            <label>Марка</label>
-                            <asp:TextBox ID="txtBrand" runat="server" CssClass="form-control"></asp:TextBox>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Модель</label>
-                            <asp:TextBox ID="txtModel" runat="server" CssClass="form-control"></asp:TextBox>
+                            <div class="form-group mb-3">
+    <label>Марка</label>
+    <asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlBrand_SelectedIndexChanged" />
+</div>
+
+<div class="form-group mb-3">
+    <label>Модель</label>
+    <asp:DropDownList ID="ddlModel" runat="server" CssClass="form-control" />
+</div>
+
                         </div>
                         <div class="form-group mb-3">
                             <label>Цена</label>
-                            <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Цвет</label>
-                            <asp:TextBox ID="txtColor" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtColor" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Статус</label>
@@ -86,24 +90,27 @@
                 <div class="card">
                     <div class="card-body">
                         <asp:GridView ID="carlist" runat="server" CssClass="table table-bordered table-striped"
-                            AutoGenerateColumns="False" OnSelectedIndexChanged="carlist_SelectedIndexChanged">
-                            <Columns>
-                                <asp:CommandField ShowSelectButton="True" ButtonType="Button" ControlStyle-CssClass="btn btn-sm btn-outline-danger" SelectText="Выбрать" />
-                                <asp:BoundField DataField="CPlateNum" HeaderText="Номерной лицензии" />
-                                <asp:BoundField DataField="Brand" HeaderText="Марка" />
-                                <asp:BoundField DataField="Model" HeaderText="Модель" />
-                                <asp:BoundField DataField="Price" HeaderText="Цена" DataFormatString="{0:$#,0}" />
-                                <asp:BoundField DataField="Color" HeaderText="Цвет" />
-                                <asp:TemplateField HeaderText="Статус">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblStatus" runat="server" 
-                                            Text='<%# Eval("Status").ToString() == "Available" ? "Доступен" : "Забронирован" %>' 
-                                            CssClass='<%# Eval("Status").ToString() == "Available" ? "badge bg-success" : "badge bg-danger" %>'>
-                                        </asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                        </asp:GridView>
+    AutoGenerateColumns="False" OnSelectedIndexChanged="carlist_SelectedIndexChanged"
+    DataKeyNames="CPlateNum,Price">
+    <Columns>
+        <asp:CommandField ShowSelectButton="True" ButtonType="Button" 
+            ControlStyle-CssClass="btn btn-sm btn-outline-danger" SelectText="Выбрать" />
+        <asp:BoundField DataField="CPlateNum" HeaderText="Номер лицензии" />
+        <asp:BoundField DataField="Brand" HeaderText="Марка" />
+        <asp:BoundField DataField="Model" HeaderText="Модель" />
+        <asp:BoundField DataField="Price" HeaderText="Цена" DataFormatString="{0:$#,0}" />
+        <asp:BoundField DataField="Color" HeaderText="Цвет" HtmlEncode="false"/>
+        <asp:TemplateField HeaderText="Статус">
+            <ItemTemplate>
+                <asp:Label ID="lblStatus" runat="server" 
+                    Text='<%# Eval("Status").ToString() == "Available" ? "Доступен" : "Забронирован" %>' 
+                    CssClass='<%# Eval("Status").ToString() == "Available" ? "badge bg-success" : "badge bg-danger" %>'>
+                </asp:Label>
+            </ItemTemplate>
+        </asp:TemplateField>
+    </Columns>
+</asp:GridView>
+
                         <asp:Button ID="btnExport" runat="server" Text="Экспорт в Excel" CssClass="btn btn-success export-btn" OnClick="btnExport_Click" />
                     </div>
                 </div>

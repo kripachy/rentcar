@@ -14,7 +14,7 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-                        <h3 class="text-danger">Rented Cars</h3>
+                        <h3 class="text-danger fw-bold text-center">Rented Cars</h3>
                         <img src="../../assets/images/car-rental.png" alt="CustomersImage" class="img-fluid"/>
                     </div>
                 </div>

@@ -54,21 +54,21 @@
             <h2 class="text-center mb-4">Заполните профиль</h2>
 
             <div class="form-group">
-                <asp:TextBox ID="txtName" runat="server" CssClass="form-control"
+                <asp:TextBox ID="txtName" runat="server" CssClass="form-control" autocomplete="off"
                     Placeholder="ФИО"
                     oninput="validateName(this, 'nameError')" />
                 <div id="nameError" class="error-message"></div>
             </div>
 
             <div class="form-group">
-                <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control"
+                <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control" autocomplete="off"
                     Placeholder="Телефон"
                     oninput="validatePhone(this, 'phoneError')" />
                 <div id="phoneError" class="error-message"></div>
             </div>
 
             <div class="form-group">
-                <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control"
+                <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control" autocomplete="off"
                     Placeholder="Адрес"
                     oninput="validateAddress(this, 'addressError')" />
                 <div id="addressError" class="error-message"></div>

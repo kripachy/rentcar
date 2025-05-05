@@ -1,33 +1,88 @@
 ﻿using System;
 using System.Data;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ClosedXML.Excel;
 using System.IO;
+using System.Collections.Generic;
+using System.Text;
 
 namespace WebApplication1.view.admin
 {
     public partial class cars : System.Web.UI.Page
     {
         Models.Functions Conn;
+        private Dictionary<string, string> brandModelMap = new Dictionary<string, string>()
+        {
+            {"Ford", "Mustang S550"},
+            {"Chevrolet", "Camaro"},
+            {"Lamborghini", "Huracan"},
+            {"Jaguar", "XJ"},
+            {"Porsche", "911"},
+            {"Maserati", "GranTurismo"},
+            {"Aston Martin", "Vanquish"},
+            {"Audi", "TT"}
+        };
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            Response.ContentType = "text/html; charset=utf-8";
+            Response.Charset = "utf-8";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.HeaderEncoding = Encoding.UTF8;
+
             Conn = new Models.Functions();
+
             if (!IsPostBack)
             {
+                ddlBrand.Items.Clear();
+                ddlBrand.Items.Insert(0, new ListItem("Выберите марку", ""));
+                foreach (var brand in brandModelMap.Keys)
+                {
+                    ddlBrand.Items.Add(brand);
+                }
+
+                ddlModel.Items.Clear();
+                ddlModel.Items.Add(new ListItem("Выберите модель", ""));
+                ddlModel.Enabled = false;
+
                 LoadCars();
             }
         }
 
         private void LoadCars()
         {
-            string query = "SELECT * FROM CarTbl";
-            carlist.DataSource = Conn.GetData(query);
-            carlist.DataBind();
+            try
+            {
+                string query = "SELECT * FROM CarTbl";
+                carlist.DataSource = Conn.GetData(query);
+                carlist.DataBind();
+            }
+            catch (Exception ex)
+            {
+                ErrorMsg.InnerText = "Ошибка загрузки автомобилей: " + ex.Message;
+            }
+        }
+
+        protected void ddlBrand_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedBrand = ddlBrand.SelectedValue;
+
+            if (!string.IsNullOrWhiteSpace(selectedBrand) && brandModelMap.ContainsKey(selectedBrand))
+            {
+                ddlModel.Items.Clear();
+                ddlModel.Items.Add(new ListItem(brandModelMap[selectedBrand], selectedBrand));
+                ddlModel.SelectedIndex = 0;
+                ddlModel.Enabled = false;
+            }
+            else
+            {
+                ddlModel.Items.Clear();
+                ddlModel.Items.Add(new ListItem("Выберите модель", ""));
+                ddlModel.Enabled = false;
+            }
         }
 
         protected void btnExport_Click(object sender, EventArgs e)
@@ -74,58 +129,95 @@ namespace WebApplication1.view.admin
         {
             try
             {
-                if (txtLicence.Text == "" || txtBrand.Text == "" || txtModel.Text == "" || txtPrice.Text == "" || txtColor.Text == "")
+                if (string.IsNullOrWhiteSpace(txtLicence.Text) ||
+                    ddlBrand.SelectedIndex <= 0 ||
+                    ddlModel.SelectedIndex < 0 ||
+                    string.IsNullOrWhiteSpace(txtPrice.Text) ||
+                    string.IsNullOrWhiteSpace(txtColor.Text))
                 {
-                    ErrorMsg.InnerText = "Отсутствует информация";
+                    ErrorMsg.InnerText = "Заполните все обязательные поля";
                     return;
                 }
 
                 string CPlateNum = txtLicence.Text.Trim().Replace("'", "''");
-                string checkQuery = $"SELECT COUNT(*) AS Count FROM CarTbl WHERE CPlateNum = '{CPlateNum}'";
+                string checkQuery = $"SELECT COUNT(*) AS Count FROM CarTbl WHERE CPlateNum = N'{CPlateNum}'";
+
                 var result = Conn.GetData(checkQuery);
 
                 if (Convert.ToInt32(result.Rows[0]["Count"]) > 0)
                 {
-                    ErrorMsg.InnerText = "Номер уже существует";
+                    ErrorMsg.InnerText = "Автомобиль с таким номером уже существует";
                     return;
                 }
 
-                string Brand = txtBrand.Text.Trim().Replace("'", "''");
-                string Model = txtModel.Text.Trim().Replace("'", "''");
-                string rawPrice = HttpUtility.HtmlDecode(txtPrice.Text);
-                string cleanPrice = Regex.Replace(rawPrice, @"[^\d]", "");
-                int Price = Convert.ToInt32(cleanPrice);
+                string Brand = ddlBrand.SelectedValue.Replace("'", "''");
+                string Model = brandModelMap.ContainsKey(Brand) ? brandModelMap[Brand] : "";
+                string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
+                if (!int.TryParse(cleanPrice, out int Price))
+                {
+                    ErrorMsg.InnerText = "Некорректная цена";
+                    return;
+                }
                 string Color = txtColor.Text.Trim().Replace("'", "''");
-                string Status = ddlAvailable.SelectedItem.Text.Replace("'", "''");
 
-                string Query = $"INSERT INTO CarTbl VALUES('{CPlateNum}','{Brand}','{Model}',{Price},'{Color}','{Status}')";
+                // Исправлено: сохраняем "Available" или "Booked"
+                string Status = ddlAvailable.SelectedValue == "1" ? "Available" : "Booked";
+
+                string Query = $"INSERT INTO CarTbl VALUES(N'{CPlateNum}',N'{Brand}',N'{Model}',{Price},N'{Color}',N'{Status}')";
+
+
                 Conn.SetData(Query);
                 LoadCars();
                 ClearFields();
-                ErrorMsg.InnerText = "Автомобиль добавлен";
+                ErrorMsg.Style["color"] = "green";
+                ErrorMsg.InnerText = "Автомобиль успешно добавлен";
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = ex.Message;
+                ErrorMsg.InnerText = "Ошибка при сохранении: " + ex.Message;
             }
         }
 
         protected void carlist_SelectedIndexChanged(object sender, EventArgs e)
         {
-            GridViewRow row = carlist.SelectedRow;
-            txtLicence.Text = row.Cells[1].Text;
-            txtBrand.Text = row.Cells[2].Text;
-            txtModel.Text = row.Cells[3].Text;
+            try
+            {
+                if (carlist.SelectedRow == null || carlist.SelectedDataKey == null) return;
 
-            string rawPrice = HttpUtility.HtmlDecode(row.Cells[4].Text);
-            string cleanPrice = Regex.Replace(rawPrice, @"[^\d]", "");
-            txtPrice.Text = cleanPrice;
+                GridViewRow row = carlist.SelectedRow;
 
-            txtColor.Text = row.Cells[5].Text;
-            string status = row.Cells[6].Text;
-            ddlAvailable.SelectedValue = (status == "Available") ? "1" : "0";
+                // Номер
+                txtLicence.Text = row.Cells[1].Text;
 
-            ViewState["SelectedCarKey"] = row.Cells[1].Text;
+                // Марка
+                string brand = row.Cells[2].Text;
+                ddlBrand.SelectedValue = brand;
+
+                // Автоматически устанавливаем модель
+                ddlBrand_SelectedIndexChanged(null, null);
+
+                // Цена
+                int price = Convert.ToInt32(carlist.SelectedDataKey["Price"]);
+                txtPrice.Text = price.ToString();
+
+                // Цвет
+                txtColor.Text = row.Cells[5].Text;
+
+                // Статус
+                Label lblStatus = (Label)row.FindControl("lblStatus");
+                if (lblStatus != null)
+                {
+                    // Исправлено: правильно определяем статус
+                    string statusText = lblStatus.Text.Trim();
+                    ddlAvailable.SelectedValue = (statusText == "Доступен" || statusText == "Available") ? "1" : "0";
+                }
+
+                ViewState["SelectedCarKey"] = txtLicence.Text;
+            }
+            catch (Exception ex)
+            {
+                ErrorMsg.InnerText = "Ошибка при выборе автомобиля: " + ex.Message;
+            }
         }
 
         protected void Edit_Click(object sender, EventArgs e)
@@ -134,29 +226,57 @@ namespace WebApplication1.view.admin
             {
                 if (ViewState["SelectedCarKey"] == null)
                 {
-                    ErrorMsg.InnerText = "Выберите автомобиль для редактирования.";
+                    ErrorMsg.InnerText = "Выберите автомобиль для редактирования";
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtLicence.Text) ||
+                    ddlBrand.SelectedIndex <= 0 ||
+                    string.IsNullOrWhiteSpace(txtPrice.Text) ||
+                    string.IsNullOrWhiteSpace(txtColor.Text))
+                {
+                    ErrorMsg.InnerText = "Заполните все обязательные поля";
                     return;
                 }
 
                 string originalPlate = ViewState["SelectedCarKey"].ToString().Replace("'", "''");
                 string newPlate = txtLicence.Text.Trim().Replace("'", "''");
-                string Brand = txtBrand.Text.Trim().Replace("'", "''");
-                string Model = txtModel.Text.Trim().Replace("'", "''");
-                string rawPrice = HttpUtility.HtmlDecode(txtPrice.Text);
-                string cleanPrice = Regex.Replace(rawPrice, @"[^\d]", "");
-                int Price = Convert.ToInt32(cleanPrice);
-                string Color = txtColor.Text.Trim().Replace("'", "''");
-                string Status = ddlAvailable.SelectedItem.Text.Replace("'", "''");
+                string Brand = ddlBrand.SelectedValue.Replace("'", "''");
+                string Model = brandModelMap.ContainsKey(Brand) ? brandModelMap[Brand] : "";
 
-                string query = $"UPDATE CarTbl SET CPlateNum='{newPlate}', Brand='{Brand}', Model='{Model}', Price={Price}, Color='{Color}', Status='{Status}' WHERE CPlateNum='{originalPlate}'";
+                string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
+                if (!int.TryParse(cleanPrice, out int Price))
+                {
+                    ErrorMsg.InnerText = "Некорректная цена";
+                    return;
+                }
+
+                string Color = txtColor.Text.Trim().Replace("'", "''");
+
+                // Исправлено: сохраняем "Available" или "Booked"
+                string Status = ddlAvailable.SelectedValue == "1" ? "Available" : "Booked";
+
+                if (originalPlate != newPlate)
+                {
+                    string checkQuery = $"SELECT COUNT(*) AS Count FROM CarTbl WHERE CPlateNum = '{newPlate}'";
+                    var result = Conn.GetData(checkQuery);
+                    if (Convert.ToInt32(result.Rows[0]["Count"]) > 0)
+                    {
+                        ErrorMsg.InnerText = "Автомобиль с таким номером уже существует";
+                        return;
+                    }
+                }
+
+                string query = $"UPDATE CarTbl SET CPlateNum=N'{newPlate}', Brand=N'{Brand}', Model=N'{Model}', Price={Price}, Color=N'{Color}', Status=N'{Status}' WHERE CPlateNum=N'{originalPlate}'";
+
                 Conn.SetData(query);
                 LoadCars();
                 ClearFields();
-                ErrorMsg.InnerText = "Автомобиль обновлён";
+                ErrorMsg.InnerText = "Автомобиль успешно обновлён";
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = ex.Message;
+                ErrorMsg.InnerText = "Ошибка при редактировании: " + ex.Message;
             }
         }
 
@@ -166,7 +286,7 @@ namespace WebApplication1.view.admin
             {
                 if (ViewState["SelectedCarKey"] == null)
                 {
-                    ErrorMsg.InnerText = "Выберите автомобиль для удаления.";
+                    ErrorMsg.InnerText = "Выберите автомобиль для удаления";
                     return;
                 }
 
@@ -175,23 +295,26 @@ namespace WebApplication1.view.admin
                 Conn.SetData(query);
                 LoadCars();
                 ClearFields();
-                ErrorMsg.InnerText = "Автомобиль удалён";
+                ErrorMsg.InnerText = "Автомобиль успешно удалён";
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = ex.Message;
+                ErrorMsg.InnerText = "Ошибка при удалении: " + ex.Message;
             }
         }
 
         private void ClearFields()
         {
             txtLicence.Text = "";
-            txtBrand.Text = "";
-            txtModel.Text = "";
+            ddlBrand.SelectedIndex = 0;
+            ddlModel.Items.Clear();
+            ddlModel.Items.Add(new ListItem("Выберите модель", ""));
+            ddlModel.Enabled = false;
             txtPrice.Text = "";
             txtColor.Text = "";
             ddlAvailable.SelectedIndex = 0;
             ViewState["SelectedCarKey"] = null;
+            carlist.SelectedIndex = -1;
         }
     }
 }

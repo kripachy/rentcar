@@ -24,22 +24,22 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.TextBox txtLicence;
 
         /// <summary>
-        /// txtBrand элемент управления.
+        /// ddlBrand элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBrand;
+        protected global::System.Web.UI.WebControls.DropDownList ddlBrand;
 
         /// <summary>
-        /// txtModel элемент управления.
+        /// ddlModel элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtModel;
+        protected global::System.Web.UI.WebControls.DropDownList ddlModel;
 
         /// <summary>
         /// txtPrice элемент управления.

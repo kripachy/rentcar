@@ -91,8 +91,8 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string query = $"UPDATE CustomerTbl SET CustName='{name}', CustAdd='{address}', " +
-                               $"CustPhone='{phone}', CustPassword='{password}' WHERE CustId={id}";
+                string query = $"UPDATE CustomerTbl SET CustName=N'{name}', CustAdd=N'{address}', CustPhone='{phone}', CustPassword=N'{password}' WHERE CustId={id}";
+
                 Conn.SetData(query);
 
                 ShowCustomers();

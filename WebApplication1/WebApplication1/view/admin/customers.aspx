@@ -18,7 +18,8 @@
             <div class="col-md-4">
                 <div class="row mb-3">
                     <div class="col text-center">
-                        <h3 class="text-danger">Управление клиентами</h3>
+                        <h3 class="text-danger fw-bold text-center">Управление клиентами</h3>
+
                         <img src="../../assets/images/images.png" alt="CustomersImage" class="img-fluid"/>
                     </div>
                 </div>
@@ -26,19 +27,19 @@
                     <div class="card-body">
                         <div class="form-group mb-3">
                             <label>Имя клиента</label>
-                            <asp:TextBox ID="txtCustomerName" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerName" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Адрес клиента</label>
-                            <asp:TextBox ID="txtCustomerAdress" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerAdress" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Телефон клиента</label>
-                            <asp:TextBox ID="txtCustomerPhone" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerPhone" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <div class="form-group mb-3">
                             <label>Пароль клиента</label>
-                            <asp:TextBox ID="txtCustomerPassword" runat="server" CssClass="form-control"></asp:TextBox>
+                            <asp:TextBox ID="txtCustomerPassword" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
                         <br />
                         <br />
