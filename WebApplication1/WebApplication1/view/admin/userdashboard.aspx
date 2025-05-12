@@ -192,7 +192,7 @@
 <div class="hero-section text-center">
     <div class="container">
         <h1 class="hero-title">WheelDeal</h1>
-        <p class="hero-subtitle">Премиальный сервис аренды автомобилей</p>
+        <p class="hero-subtitle">Сервис аренды автомобилей</p>
     </div>
 </div>
 

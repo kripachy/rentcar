@@ -63,10 +63,20 @@
                             <label>Цена</label>
                             <asp:TextBox ID="txtPrice" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
                         </div>
-                        <div class="form-group mb-3">
-                            <label>Цвет</label>
-                            <asp:TextBox ID="txtColor" runat="server" CssClass="form-control" autocomplete="off"></asp:TextBox>
-                        </div>
+                       <div class="form-group mb-3">
+    <label>Цвет</label>
+    <asp:DropDownList ID="ddlColor" runat="server" CssClass="form-control">
+        <asp:ListItem Text="Выберите цвет" Value=""></asp:ListItem>
+        <asp:ListItem Text="Красный" Value="red"></asp:ListItem>
+        <asp:ListItem Text="Жёлтый" Value="yellow"></asp:ListItem>
+        <asp:ListItem Text="Чёрный" Value="black"></asp:ListItem>
+        <asp:ListItem Text="Белый" Value="white"></asp:ListItem>
+        <asp:ListItem Text="Синий" Value="blue"></asp:ListItem>
+        <asp:ListItem Text="Оранжевый" Value="orange"></asp:ListItem>
+    </asp:DropDownList>
+</div>
+
+
                         <div class="form-group mb-3">
                             <label>Статус</label>
                             <asp:DropDownList ID="ddlAvailable" runat="server" CssClass="form-control">
@@ -99,7 +109,12 @@
         <asp:BoundField DataField="Brand" HeaderText="Марка" />
         <asp:BoundField DataField="Model" HeaderText="Модель" />
         <asp:BoundField DataField="Price" HeaderText="Цена" DataFormatString="{0:$#,0}" />
-        <asp:BoundField DataField="Color" HeaderText="Цвет" HtmlEncode="false"/>
+        <asp:TemplateField HeaderText="Цвет">
+    <ItemTemplate>
+        <div style='width:20px; height:20px; border-radius:50%; background-color:<%# Eval("Color") %>; border:1px solid #ccc;' title='<%# Eval("Color") %>'></div>
+    </ItemTemplate>
+</asp:TemplateField>
+
         <asp:TemplateField HeaderText="Статус">
             <ItemTemplate>
                 <asp:Label ID="lblStatus" runat="server" 

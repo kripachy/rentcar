@@ -8,6 +8,10 @@ using ClosedXML.Excel;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Globalization;
 
 namespace WebApplication1.view.admin
 {
@@ -48,9 +52,22 @@ namespace WebApplication1.view.admin
                 ddlModel.Items.Add(new ListItem("Выберите модель", ""));
                 ddlModel.Enabled = false;
 
+                ddlColor.Items.Clear();
+                ddlColor.Items.Add(new ListItem("Выберите цвет", ""));
+                ddlColor.Items.Add(new ListItem("Красный", "Red"));
+                ddlColor.Items.Add(new ListItem("Синий", "Blue"));
+                ddlColor.Items.Add(new ListItem("Зелёный", "Green"));
+                ddlColor.Items.Add(new ListItem("Чёрный", "Black"));
+                ddlColor.Items.Add(new ListItem("Белый", "White"));
+                ddlColor.Items.Add(new ListItem("Жёлтый", "Yellow"));
+                ddlColor.Items.Add(new ListItem("Серый", "Gray"));
+                ddlColor.Items.Add(new ListItem("Оранжевый", "Orange"));
+                ddlColor.Items.Add(new ListItem("Фиолетовый", "Purple"));
+
                 LoadCars();
             }
         }
+
 
         private void LoadCars()
         {
@@ -87,42 +104,146 @@ namespace WebApplication1.view.admin
 
         protected void btnExport_Click(object sender, EventArgs e)
         {
-            try
+            var colorMapping = new Dictionary<string, XLColor>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "красный", XLColor.Red },
+        { "синий", XLColor.Blue },
+        { "зелёный", XLColor.Green },
+        { "зеленый", XLColor.Green },
+        { "чёрный", XLColor.Black },
+        { "черный", XLColor.Black },
+        { "белый", XLColor.White },
+        { "жёлтый", XLColor.Yellow },
+        { "желтый", XLColor.Yellow },
+        { "оранжевый", XLColor.Orange },
+        { "серый", XLColor.Gray },
+        { "фиолетовый", XLColor.Purple }
+    };
+
+            var statusMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Available", "Доступен" },
+        { "Booked", "Забронирован" }
+    };
+
+            string constr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=False";
+
+            DataTable dt = new DataTable();
+
+            using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = "SELECT CPlateNum AS [Licence], Brand, Model, Price, Color, Status FROM CarTbl";
-                DataTable dt = Conn.GetData(query);
-
-                if (dt.Rows.Count > 0)
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM CarTbl", con))
                 {
-                    using (XLWorkbook wb = new XLWorkbook())
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
-                        var ws = wb.Worksheets.Add("Cars");
-                        ws.Cell(1, 1).InsertTable(dt, false);
-                        ws.Columns().AdjustToContents();
+                        da.Fill(dt);
+                    }
+                }
+            }
 
-                        using (MemoryStream ms = new MemoryStream())
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                var ws = wb.Worksheets.Add("Экспорт автомобилей");
+
+                string[] russianColumnNames = {
+            "Номер лицензии",
+            "Марка",
+            "Модель",
+            "Цена",
+            "Цвет",
+            "Статус"
+        };
+
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    if (i < russianColumnNames.Length)
+                    {
+                        ws.Cell(1, i + 1).Value = russianColumnNames[i];
+                    }
+                    else
+                    {
+                        ws.Cell(1, i + 1).Value = dt.Columns[i].ColumnName;
+                    }
+                    ws.Cell(1, i + 1).Style.Font.Bold = true;
+                }
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        var value = dt.Rows[i][j].ToString();
+                        var columnName = dt.Columns[j].ColumnName;
+                        var cell = ws.Cell(i + 2, j + 1);
+
+                        if (columnName.Equals("Color", StringComparison.OrdinalIgnoreCase) ||
+                            columnName.Equals("Цвет", StringComparison.OrdinalIgnoreCase))
                         {
-                            wb.SaveAs(ms);
-                            Response.Clear();
-                            Response.Buffer = true;
-                            Response.Charset = "";
-                            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                            Response.AddHeader("content-disposition", "attachment;filename=CarRental_Export_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx");
-                            Response.BinaryWrite(ms.ToArray());
-                            Response.Flush();
-                            Response.End();
+                            if (colorMapping.TryGetValue(value.Trim().ToLower(), out var xlColor))
+                            {
+                                cell.Style.Fill.BackgroundColor = xlColor;
+                                
+                                var russianColor = colorMapping.FirstOrDefault(x => x.Value.Equals(xlColor)).Key;
+                                cell.Value = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(russianColor);
+                            }
+                            else
+                            {
+                                cell.Value = value;
+                            }
+                        }
+                       
+                        else if (columnName.Equals("Status", StringComparison.OrdinalIgnoreCase) ||
+                                 columnName.Equals("Статус", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (statusMapping.TryGetValue(value, out var russianStatus))
+                            {
+                                cell.Value = russianStatus;
+                            }
+                            else
+                            {
+                                cell.Value = value;
+                            }
+                        }
+                       
+                        else if (columnName.Equals("Price", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (int.TryParse(value, out int price))
+                            {
+                                cell.Value = price;
+                                cell.Style.NumberFormat.Format = "#,##0"; 
+                            }
+                            else
+                            {
+                                cell.Value = value;
+                            }
+                        }
+                        else
+                        {
+                            cell.Value = value;
                         }
                     }
                 }
-                else
+
+                ws.Columns().AdjustToContents();
+
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    ErrorMsg.InnerText = "Нет данных для экспорта";
+                    wb.SaveAs(stream);
+                    byte[] bytes = stream.ToArray();
+
+                    Response.Clear();
+                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    Response.AddHeader("content-disposition", "attachment;filename=Экспорт_автомобилей.xlsx");
+                    Response.BinaryWrite(bytes);
+                    Response.Flush();
+                    Response.End();
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorMsg.InnerText = "Ошибка экспорта: " + ex.Message;
-            }
+        }
+
+        private void ShowError(string message)
+        {
+            ErrorMsg.Style["color"] = "red";
+            ErrorMsg.InnerText = message;
         }
 
         protected void Save_Click(object sender, EventArgs e)
@@ -133,7 +254,7 @@ namespace WebApplication1.view.admin
                     ddlBrand.SelectedIndex <= 0 ||
                     ddlModel.SelectedIndex < 0 ||
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
-                    string.IsNullOrWhiteSpace(txtColor.Text))
+                    ddlColor.SelectedIndex <= 0)
                 {
                     ErrorMsg.InnerText = "Заполните все обязательные поля";
                     return;
@@ -141,7 +262,6 @@ namespace WebApplication1.view.admin
 
                 string CPlateNum = txtLicence.Text.Trim().Replace("'", "''");
                 string checkQuery = $"SELECT COUNT(*) AS Count FROM CarTbl WHERE CPlateNum = N'{CPlateNum}'";
-
                 var result = Conn.GetData(checkQuery);
 
                 if (Convert.ToInt32(result.Rows[0]["Count"]) > 0)
@@ -158,14 +278,11 @@ namespace WebApplication1.view.admin
                     ErrorMsg.InnerText = "Некорректная цена";
                     return;
                 }
-                string Color = txtColor.Text.Trim().Replace("'", "''");
 
-                // Исправлено: сохраняем "Available" или "Booked"
+                string Color = ddlColor.SelectedValue;
                 string Status = ddlAvailable.SelectedValue == "1" ? "Available" : "Booked";
 
                 string Query = $"INSERT INTO CarTbl VALUES(N'{CPlateNum}',N'{Brand}',N'{Model}',{Price},N'{Color}',N'{Status}')";
-
-
                 Conn.SetData(Query);
                 LoadCars();
                 ClearFields();
@@ -186,32 +303,30 @@ namespace WebApplication1.view.admin
 
                 GridViewRow row = carlist.SelectedRow;
 
-                // Номер
                 txtLicence.Text = row.Cells[1].Text;
-
-                // Марка
                 string brand = row.Cells[2].Text;
                 ddlBrand.SelectedValue = brand;
-
-                // Автоматически устанавливаем модель
                 ddlBrand_SelectedIndexChanged(null, null);
 
-                // Цена
                 int price = Convert.ToInt32(carlist.SelectedDataKey["Price"]);
                 txtPrice.Text = price.ToString();
 
-                // Цвет
-                txtColor.Text = row.Cells[5].Text;
+                string color = row.Cells[5].Text;
 
-                // Статус
-                Label lblStatus = (Label)row.FindControl("lblStatus");
-                if (lblStatus != null)
+                ListItem item = ddlColor.Items.Cast<ListItem>()
+                    .FirstOrDefault(i => i.Value.Equals(color, StringComparison.OrdinalIgnoreCase));
+
+                if (item != null)
                 {
-                    // Исправлено: правильно определяем статус
-                    string statusText = lblStatus.Text.Trim();
-                    ddlAvailable.SelectedValue = (statusText == "Доступен" || statusText == "Available") ? "1" : "0";
+                    ddlColor.ClearSelection();
+                    item.Selected = true;
+                }
+                else
+                {
+                    ErrorMsg.InnerText = $"Цвет '{color}' не найден в списке.";
                 }
 
+                // Сохраняем ключ выбранного авто
                 ViewState["SelectedCarKey"] = txtLicence.Text;
             }
             catch (Exception ex)
@@ -219,6 +334,7 @@ namespace WebApplication1.view.admin
                 ErrorMsg.InnerText = "Ошибка при выборе автомобиля: " + ex.Message;
             }
         }
+
 
         protected void Edit_Click(object sender, EventArgs e)
         {
@@ -233,7 +349,7 @@ namespace WebApplication1.view.admin
                 if (string.IsNullOrWhiteSpace(txtLicence.Text) ||
                     ddlBrand.SelectedIndex <= 0 ||
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
-                    string.IsNullOrWhiteSpace(txtColor.Text))
+                    ddlColor.SelectedIndex <= 0)
                 {
                     ErrorMsg.InnerText = "Заполните все обязательные поля";
                     return;
@@ -251,9 +367,7 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string Color = txtColor.Text.Trim().Replace("'", "''");
-
-                // Исправлено: сохраняем "Available" или "Booked"
+                string Color = ddlColor.SelectedValue;
                 string Status = ddlAvailable.SelectedValue == "1" ? "Available" : "Booked";
 
                 if (originalPlate != newPlate)
@@ -268,7 +382,6 @@ namespace WebApplication1.view.admin
                 }
 
                 string query = $"UPDATE CarTbl SET CPlateNum=N'{newPlate}', Brand=N'{Brand}', Model=N'{Model}', Price={Price}, Color=N'{Color}', Status=N'{Status}' WHERE CPlateNum=N'{originalPlate}'";
-
                 Conn.SetData(query);
                 LoadCars();
                 ClearFields();
@@ -311,7 +424,7 @@ namespace WebApplication1.view.admin
             ddlModel.Items.Add(new ListItem("Выберите модель", ""));
             ddlModel.Enabled = false;
             txtPrice.Text = "";
-            txtColor.Text = "";
+            ddlColor.SelectedIndex = 0;
             ddlAvailable.SelectedIndex = 0;
             ViewState["SelectedCarKey"] = null;
             carlist.SelectedIndex = -1;

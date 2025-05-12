@@ -51,13 +51,13 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.TextBox txtPrice;
 
         /// <summary>
-        /// txtColor элемент управления.
+        /// ddlColor элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtColor;
+        protected global::System.Web.UI.WebControls.DropDownList ddlColor;
 
         /// <summary>
         /// ddlAvailable элемент управления.
