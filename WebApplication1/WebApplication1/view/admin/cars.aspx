@@ -13,6 +13,12 @@
             transition: all 0.3s ease;
         }
 
+        #carImage {
+    width: 200px;
+    height: 200px;
+    object-fit: contain; 
+}
+
         .btn-outline-danger:hover {
             background-color: #dc3545;
             color: white;
@@ -38,7 +44,8 @@
                 <div class="row mb-3">
                     <div class="col text-center">
                         <h3 class="text-danger fw-bold text-center">Управление автомобилями</h3>
-                        <img src="../../assets/images/Слой 1.png" alt="Car Image" class="img-fluid"/>
+                        <img id="carImage" runat="server" src="../../assets/images/Слой 1.png" alt="Car Image" class="img-fluid" style="width: 200px; height: 150px; object-fit: contain;" />
+
                     </div>
                 </div>
                 <div class="card">
@@ -132,4 +139,22 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('<%= ddlBrand.ClientID %>').addEventListener('change', function () {
+            var brand = this.value;
+            var imageMap = {
+                'Aston Martin': '../../assets/images/logo/Aston-Martin-Logo.jpg',
+                'Ford': '../../assets/images/logo/mustang.png',
+                'Chevrolet': '../../assets/images/logo/chevrolet.jpg',
+                'Lamborghini': '../../assets/images/logo/Lanborghini.jpg',
+                'Jaguar': '../../assets/images/logo/jaguar.jpg',
+                'Porsche': '../../assets/images/logo/porsche.png',
+                'Maserati': '../../assets/images/logo/MASERATI.jpg',
+                'Audi': '../../assets/images/logo/audi.jpg'
+            };
+
+            var carImage = document.getElementById('carImage');
+            carImage.src = imageMap[brand] || '../../assets/images/Слой 1.png';
+        });
+    </script>
 </asp:Content>

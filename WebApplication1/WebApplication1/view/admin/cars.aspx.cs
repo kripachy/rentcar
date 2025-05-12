@@ -63,11 +63,20 @@ namespace WebApplication1.view.admin
                 ddlColor.Items.Add(new ListItem("Серый", "Gray"));
                 ddlColor.Items.Add(new ListItem("Оранжевый", "Orange"));
                 ddlColor.Items.Add(new ListItem("Фиолетовый", "Purple"));
-
                 LoadCars();
             }
         }
-
+        private Dictionary<string, string> brandImageMap = new Dictionary<string, string>()
+        {
+            {"Aston Martin", "../../assets/images/logo/Aston-Martin-Logo.jpg"},
+            {"Ford","../../assets/images/logo/mustang.png"},
+            {"Chevrolet", "../../assets/images/logo/chevrolet.jpg"},
+            {"Lamborghini", "../../assets/images/logo/Lamborghini.jpg"},
+            {"Jaguar", "../../assets/images/logo/jaguar.jpg"},
+            {"Porsche", "../../assets/images/logo/porsche.png"},
+            {"Maserati", "../../assets/images/logo/MASERATI.jpg"},
+            {"Audi", "../../assets/images/logo/audi.jpg"}
+        };
 
         private void LoadCars()
         {
@@ -86,6 +95,15 @@ namespace WebApplication1.view.admin
         protected void ddlBrand_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedBrand = ddlBrand.SelectedValue;
+            if (brandImageMap.ContainsKey(selectedBrand))
+            {
+                carImage.Src = brandImageMap[selectedBrand];
+
+            }
+            else
+            {
+                carImage.Src = "../../assets/images/Слой 1.png";
+            }
 
             if (!string.IsNullOrWhiteSpace(selectedBrand) && brandModelMap.ContainsKey(selectedBrand))
             {
@@ -326,7 +344,6 @@ namespace WebApplication1.view.admin
                     ErrorMsg.InnerText = $"Цвет '{color}' не найден в списке.";
                 }
 
-                // Сохраняем ключ выбранного авто
                 ViewState["SelectedCarKey"] = txtLicence.Text;
             }
             catch (Exception ex)

@@ -15,6 +15,15 @@ namespace WebApplication1.view.admin
     {
 
         /// <summary>
+        /// carImage элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlImage carImage;
+
+        /// <summary>
         /// txtLicence элемент управления.
         /// </summary>
         /// <remarks>
