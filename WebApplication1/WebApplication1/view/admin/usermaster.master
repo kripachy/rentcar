@@ -22,7 +22,7 @@
                             <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("userdashboard.aspx") ? "active text-white fw-bold" : "text-white" %>' href="userdashboard.aspx">Главная</a>
                         </li>
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rentcar.aspx") ? "active text-white fw-bold" : "text-white" %>' href="rentcar.aspx">Арендовать</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rentauto.aspx") ? "active text-white fw-bold" : "text-white" %>' href="rentauto.aspx">Арендовать</a>
                         </li>
                         <li class="nav-item">
                             <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("myrentals.aspx") ? "active text-white fw-bold" : "text-white" %>' href="myrentals.aspx">Просмотреть аренды</a>

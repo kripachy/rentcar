@@ -127,15 +127,10 @@ namespace WebApplication1.view.admin
         { "красный", XLColor.Red },
         { "синий", XLColor.Blue },
         { "зелёный", XLColor.Green },
-        { "зеленый", XLColor.Green },
         { "чёрный", XLColor.Black },
-        { "черный", XLColor.Black },
         { "белый", XLColor.White },
         { "жёлтый", XLColor.Yellow },
-        { "желтый", XLColor.Yellow },
-        { "оранжевый", XLColor.Orange },
-        { "серый", XLColor.Gray },
-        { "фиолетовый", XLColor.Purple }
+        { "оранжевый", XLColor.Orange }
     };
 
             var statusMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

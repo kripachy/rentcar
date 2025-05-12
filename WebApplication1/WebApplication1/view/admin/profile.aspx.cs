@@ -42,8 +42,20 @@ namespace WebApplication1
 
         private bool ValidateName(string text)
         {
-            return !string.IsNullOrWhiteSpace(text) &&
-                   Regex.IsMatch(text, @"^[a-zA-Zа-яА-ЯёЁ\s'-]+$");
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
+
+            var parts = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 3)
+                return false;
+
+            foreach (var part in parts)
+            {
+                if (!Regex.IsMatch(part, @"^[A-ZА-ЯЁ][a-zа-яё-]*$"))
+                    return false;
+            }
+
+            return true;
         }
 
         private bool ValidatePhone(string text)
