@@ -1,108 +1,166 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="rentauto.aspx.cs" Inherits="WebApplication1.view.admin.rentauto" %>
+﻿<%@ Page Title="Аренда авто" Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="rentauto.aspx.cs" Inherits="WebApplication1.view.admin.rentauto" %>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Аренда автомобиля - WheelDeal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<asp:Content ID="TitleContent" ContentPlaceHolderID="TitleContent" runat="server">
+    WheelDeal - Аренда авто
+</asp:Content>
+
+<asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
     <style>
-        body { background-color: #f8f9fa; }
-        .car-image {
+        body { font-family: 'Segoe UI', sans-serif; }
+        .card-custom { border-radius: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .car-image-wrapper {
+            position: relative;
             max-width: 100%;
+            max-height: 450px;
+            margin-bottom: 1rem;
+        }
+        .car-image {
+            width: 100%;
             height: auto;
-            object-fit: contain;
-            margin-bottom: 10px;
+            border-radius: 12px;
+            object-fit: cover;
+            max-height: 450px;
+            display: block;
         }
-        .color-circle {
-            width: 30px;
-            height: 30px;
+        .arrow-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 3px solid white;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            display: inline-block;
-            margin: 5px;
-            border: 2px solid #ddd;
             cursor: pointer;
-        }
-        .selected {
-            border-color: #000;
-        }
-        .color-container {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            user-select: none;
             display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
+            justify-content: center;
+            align-items: center;
         }
-        .btn-red { background-color: #dc3545; color: white; }
-        .btn-red:hover { background-color: #bb2d3b; }
-        .form-control:focus {
-            border-color: #dc3545 !important;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        .car-image-wrapper:hover .arrow-btn { opacity: 1; }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+        .color-circle {
+            width: 32px; height: 32px; border-radius: 50%; display: inline-block;
+            border: 2px solid #ccc; cursor: pointer; transition: 0.2s;
+            margin-right: 6px;
+        }
+        .color-circle:hover, .selected { border-color: #dc3545; }
+        .form-label { font-weight: 600; }
+        #carDetails { min-height: 40px; }
+        #dotsContainer {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            padding: 0;
+        }
+        .dot.active {
+            background-color: #dc3545;
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div class="container mt-4">
-            <h3 class="text-danger text-center mb-4">Аренда автомобиля</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label>Марка автомобиля</label>
-                        <asp:DropDownList ID="ddlBrand" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlBrand_SelectedIndexChanged">
-                            <asp:ListItem Text="Выберите марку" Value=""></asp:ListItem>
-                            <asp:ListItem Text="Ford" Value="Ford"></asp:ListItem>
-                            <asp:ListItem Text="Chevrolet" Value="Chevrolet"></asp:ListItem>
-                            <asp:ListItem Text="Lamborghini" Value="Lamborghini"></asp:ListItem>
-                            <asp:ListItem Text="Jaguar" Value="Jaguar"></asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Модель</label>
-                        <asp:Label ID="lblModel" runat="server" CssClass="form-control"></asp:Label>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Цвет автомобиля</label>
-                        <div id="colorContainer" class="color-container">
-                            <div class="color-circle" style="background-color: red;" onclick="selectColor('red')"></div>
-                            <div class="color-circle" style="background-color: blue;" onclick="selectColor('blue')"></div>
-                            <div class="color-circle" style="background-color: green;" onclick="selectColor('green')"></div>
-                            <div class="color-circle" style="background-color: black;" onclick="selectColor('black')"></div>
-                            <div class="color-circle" style="background-color: white;" onclick="selectColor('white')"></div>
-                            <div class="color-circle" style="background-color: yellow;" onclick="selectColor('yellow')"></div>
-                            <div class="color-circle" style="background-color: orange;" onclick="selectColor('orange')"></div>
+    <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+    <asp:UpdatePanel runat="server" ID="UpdatePanel1">
+        <ContentTemplate>
+            <div class="card-custom p-4 my-5">
+                <div class="row align-items-center">
+                    <!-- Блок параметров слева -->
+                    <div class="col-lg-6">
+                        <h3>Выберите параметры</h3>
+
+                        <label class="form-label" for="ddlBrand">Марка:</label>
+                        <asp:DropDownList ID="ddlBrand" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlBrand_SelectedIndexChanged" CssClass="form-select" />
+                        <br />
+
+                        <label class="form-label">Модель:</label>
+                        <asp:Label ID="lblModel" runat="server" CssClass="form-control-plaintext"></asp:Label>
+                        <br />
+
+                        <label class="form-label">Цена за аренду (в день):</label>
+                        <asp:Label ID="lblPrice" runat="server" CssClass="form-control-plaintext text-danger fs-5"></asp:Label>
+                        <br />
+
+                        <label class="form-label">Цвет:</label>
+                        <div>
+                            <span class="color-circle" style="background-color: white;" onclick="setColor('white', this)"></span>
+                            <span class="color-circle" style="background-color: black;" onclick="setColor('black', this)"></span>
+                            <span class="color-circle" style="background-color: gray;" onclick="setColor('gray', this)"></span>
+                            <span class="color-circle" style="background-color: red;" onclick="setColor('red', this)"></span>
+                            <span class="color-circle" style="background-color: blue;" onclick="setColor('blue', this)"></span>
+                            <span class="color-circle" style="background-color: yellow;" onclick="setColor('yellow', this)"></span>
+                            <span class="color-circle" style="background-color: green;" onclick="setColor('green', this)"></span>
                         </div>
                         <asp:HiddenField ID="hfSelectedColor" runat="server" />
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Дата начала аренды</label>
+
+                        <br />
+
+                        <label class="form-label" for="txtStartDate">Начало аренды (дата):</label>
                         <asp:TextBox ID="txtStartDate" runat="server" CssClass="form-control" TextMode="Date" />
-                        <asp:TextBox ID="txtStartTime" runat="server" CssClass="form-control mt-2" TextMode="Time" />
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Дата окончания аренды</label>
+                        <br />
+
+                        <label class="form-label" for="txtStartTime">Начало аренды (время):</label>
+                        <asp:TextBox ID="txtStartTime" runat="server" CssClass="form-control" TextMode="Time" />
+                        <br />
+
+                        <label class="form-label" for="txtEndDate">Конец аренды (дата):</label>
                         <asp:TextBox ID="txtEndDate" runat="server" CssClass="form-control" TextMode="Date" />
-                        <asp:TextBox ID="txtEndTime" runat="server" CssClass="form-control mt-2" TextMode="Time" />
+                        <br />
+
+                        <label class="form-label" for="txtEndTime">Конец аренды (время):</label>
+                        <asp:TextBox ID="txtEndTime" runat="server" CssClass="form-control" TextMode="Time" />
+                        <br />
+
+                        <asp:Button ID="btnRent" runat="server" Text="Арендовать" CssClass="btn btn-danger mt-3" OnClick="btnRent_Click" />
+
+                        <div id="carDetails" runat="server" class="mt-3 text-danger"></div>
+
+                        <asp:HiddenField ID="hfImageFiles" runat="server" />
+                        <asp:HiddenField ID="hfCurrentImageIndex" runat="server" />
                     </div>
-                    <asp:Button ID="btnRent" runat="server" Text="Арендовать" CssClass="btn btn-red w-100" OnClick="btnRent_Click" />
-                </div>
-                <div class="col-md-6 text-center">
-                    <asp:Image ID="carImage" runat="server" CssClass="car-image" ImageUrl="~/assets/images/default-car.png" />
-                    <div class="mt-3">
-                        <h5 id="carDetails" runat="server" class="text-danger"></h5>
+
+                    <!-- Блок с картинкой машины справа -->
+                    <div class="col-lg-6">
+                        <div class="car-image-wrapper">
+                            <asp:Image ID="carImage" runat="server" CssClass="car-image" ImageUrl="~/assets/images/default-car.png" />
+                            <asp:Button ID="btnPrevImage" runat="server" Text="&lt;" CssClass="arrow-btn arrow-left" OnClick="btnPrevImage_Click" />
+                            <asp:Button ID="btnNextImage" runat="server" Text="&gt;" CssClass="arrow-btn arrow-right" OnClick="btnNextImage_Click" />
+                            <div id="dotsContainer" runat="server"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 
-    <script>
-        function selectColor(color) {
+    <script type="text/javascript">
+        function setColor(color, elem) {
+            // Снять выделение со всех кружков
             var circles = document.querySelectorAll('.color-circle');
-            circles.forEach(circle => circle.classList.remove('selected'));
-            var selectedCircle = Array.from(circles).find(c => c.style.backgroundColor === color);
-            if (selectedCircle) selectedCircle.classList.add('selected');
-            document.getElementById('<%= hfSelectedColor.ClientID %>').value = color;
+            circles.forEach(c => c.classList.remove('selected'));
+
+            // Выделить выбранный кружок
+            elem.classList.add('selected');
+
+            // Записать в скрытое поле и вызвать постбэк
+            var hf = document.getElementById('<%= hfSelectedColor.ClientID %>');
+            hf.value = color;
+
+            __doPostBack('<%= hfSelectedColor.UniqueID %>', ''); // вызвать постбэк, чтобы сервер узнал цвет и загрузил картинки
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</asp:Content>

@@ -7,5 +7,6 @@ namespace WebApplication1.view.admin
         protected void Page_Load(object sender, EventArgs e)
         {
         }
+
     }
 }

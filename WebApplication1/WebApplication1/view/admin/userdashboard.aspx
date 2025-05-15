@@ -149,21 +149,26 @@
     }
 
     .btn-cta {
-        background-color: #dc3545;
-        color: white;
-        padding: 0.8rem 2.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        border: none;
-        transition: all 0.3s ease;
-    }
+  text-decoration: none; 
+  display: inline-block; 
+  padding: 10px 20px; 
+  background-color: #dc3545; 
+  color: white;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
 
-    .btn-cta:hover {
-        background-color: #bb2d3b;
-        transform: scale(1.1);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+.btn-cta:hover {
+  background-color: #bb2d3b; 
+  transform: scale(1.2);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  text-decoration: none;
+}
+
+
 
     .testimonial-card {
         background: white;
@@ -280,7 +285,7 @@
     <div class="cta-section">
         <h2 class="cta-title">Готовы к незабываемым впечатлениям?</h2>
         <p class="lead mb-4">Выберите автомобиль своей мечты прямо сейчас</p>
-        <asp:Button ID="btnRentNow" runat="server" Text="Арендовать сейчас" CssClass="btn-cta" />
+        <a href="rentauto.aspx" class="btn-cta">Арендовать сейчас</a>
     </div>
 </div>
 
