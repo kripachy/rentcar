@@ -69,42 +69,6 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.HiddenField hfSelectedColor;
 
         /// <summary>
-        /// txtStartDate элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtStartDate;
-
-        /// <summary>
-        /// txtStartTime элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtStartTime;
-
-        /// <summary>
-        /// txtEndDate элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEndDate;
-
-        /// <summary>
-        /// txtEndTime элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEndTime;
-
-        /// <summary>
         /// btnRent элемент управления.
         /// </summary>
         /// <remarks>
@@ -112,33 +76,6 @@ namespace WebApplication1.view.admin
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRent;
-
-        /// <summary>
-        /// carDetails элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl carDetails;
-
-        /// <summary>
-        /// hfImageFiles элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfImageFiles;
-
-        /// <summary>
-        /// hfCurrentImageIndex элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfCurrentImageIndex;
 
         /// <summary>
         /// carImage элемент управления.
@@ -168,12 +105,12 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.Button btnNextImage;
 
         /// <summary>
-        /// dotsContainer элемент управления.
+        /// colorCirclesContainer элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl dotsContainer;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl colorCirclesContainer;
     }
 }

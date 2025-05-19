@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using ClosedXML.Excel;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +11,7 @@ using System.Web;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
+using ClosedXML.Excel;
 
 namespace WebApplication1.view.admin
 {
@@ -30,6 +30,18 @@ namespace WebApplication1.view.admin
             {"Audi", "TT"}
         };
 
+        private Dictionary<string, string> brandImageMap = new Dictionary<string, string>()
+        {
+            {"Aston Martin", "../../assets/images/logo/Aston-Martin-Logo.jpg"},
+            {"Ford","../../assets/images/logo/mustang.png"},
+            {"Chevrolet", "../../assets/images/logo/chevrolet.jpg"},
+            {"Lamborghini", "../../assets/images/logo/Lamborghini.jpg"},
+            {"Jaguar", "../../assets/images/logo/jaguar.jpg"},
+            {"Porsche", "../../assets/images/logo/porsche.png"},
+            {"Maserati", "../../assets/images/logo/MASERATI.jpg"},
+            {"Audi", "../../assets/images/logo/audi.jpg"}
+        };
+
         protected void Page_Load(object sender, EventArgs e)
         {
             Response.ContentType = "text/html; charset=utf-8";
@@ -41,6 +53,8 @@ namespace WebApplication1.view.admin
 
             if (!IsPostBack)
             {
+                carImage.Src = "~/assets/images/Слой 1.png";
+                carImage.Visible = true;  // Убедимся, что картинка видна при загрузке страницы
                 ddlBrand.Items.Clear();
                 ddlBrand.Items.Insert(0, new ListItem("Выберите марку", ""));
                 foreach (var brand in brandModelMap.Keys)
@@ -66,17 +80,24 @@ namespace WebApplication1.view.admin
                 LoadCars();
             }
         }
-        private Dictionary<string, string> brandImageMap = new Dictionary<string, string>()
+
+        private List<string> GetImagePaths(string directory)
         {
-            {"Aston Martin", "../../assets/images/logo/Aston-Martin-Logo.jpg"},
-            {"Ford","../../assets/images/logo/mustang.png"},
-            {"Chevrolet", "../../assets/images/logo/chevrolet.jpg"},
-            {"Lamborghini", "../../assets/images/logo/Lamborghini.jpg"},
-            {"Jaguar", "../../assets/images/logo/jaguar.jpg"},
-            {"Porsche", "../../assets/images/logo/porsche.png"},
-            {"Maserati", "../../assets/images/logo/MASERATI.jpg"},
-            {"Audi", "../../assets/images/logo/audi.jpg"}
-        };
+            var images = new List<string>();
+            if (Directory.Exists(directory))
+            {
+                for (int i = 1; i <= 5; i++)
+                {
+                    string imagePath = Path.Combine(directory, $"{i}.jpg");
+                    if (File.Exists(imagePath))
+                    {
+                        string relativePath = imagePath.Replace(Server.MapPath("~"), "").Replace("\\", "/");
+                        images.Add("~" + relativePath);
+                    }
+                }
+            }
+            return images;
+        }
 
         private void LoadCars()
         {
@@ -95,28 +116,30 @@ namespace WebApplication1.view.admin
         protected void ddlBrand_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedBrand = ddlBrand.SelectedValue;
-            if (brandImageMap.ContainsKey(selectedBrand))
+            if (!string.IsNullOrEmpty(selectedBrand))
             {
-                carImage.Src = brandImageMap[selectedBrand];
-
-            }
-            else
-            {
-                carImage.Src = "../../assets/images/Слой 1.png";
-            }
-
-            if (!string.IsNullOrWhiteSpace(selectedBrand) && brandModelMap.ContainsKey(selectedBrand))
-            {
+                ddlModel.Enabled = true;
                 ddlModel.Items.Clear();
-                ddlModel.Items.Add(new ListItem(brandModelMap[selectedBrand], selectedBrand));
-                ddlModel.SelectedIndex = 0;
-                ddlModel.Enabled = false;
+                ddlModel.Items.Add(new ListItem(brandModelMap[selectedBrand], brandModelMap[selectedBrand]));
+
+                if (brandImageMap.ContainsKey(selectedBrand))
+                {
+                    carImage.Src = brandImageMap[selectedBrand];
+                    carImage.Visible = true;
+                }
+                else
+                {
+                    carImage.Src = "~/assets/images/Слой 1.png";
+                    carImage.Visible = true; 
+                }
             }
             else
             {
+                ddlModel.Enabled = false;
                 ddlModel.Items.Clear();
                 ddlModel.Items.Add(new ListItem("Выберите модель", ""));
-                ddlModel.Enabled = false;
+                carImage.Src = "~/assets/images/Слой 1.png";
+                carImage.Visible = true;  
             }
         }
 
@@ -319,6 +342,19 @@ namespace WebApplication1.view.admin
                 txtLicence.Text = row.Cells[1].Text;
                 string brand = row.Cells[2].Text;
                 ddlBrand.SelectedValue = brand;
+                
+                // Показываем логотип марки при выборе из таблицы
+                if (brandImageMap.ContainsKey(brand))
+                {
+                    carImage.Src = brandImageMap[brand];
+                    carImage.Visible = true;
+                }
+                else
+                {
+                    carImage.Src = "~/assets/images/Слой 1.png";
+                    carImage.Visible = true;  // Показываем дефолтную картинку
+                }
+
                 ddlBrand_SelectedIndexChanged(null, null);
 
                 int price = Convert.ToInt32(carlist.SelectedDataKey["Price"]);
@@ -440,6 +476,8 @@ namespace WebApplication1.view.admin
             ddlAvailable.SelectedIndex = 0;
             ViewState["SelectedCarKey"] = null;
             carlist.SelectedIndex = -1;
+            carImage.Src = "~/assets/images/Слой 1.png";
+            carImage.Visible = true;  // Показываем дефолтную картинку при очистке полей
         }
     }
 }

@@ -13,11 +13,11 @@
             transition: all 0.3s ease;
         }
 
-        #carImage {
-    width: 200px;
-    height: 200px;
-    object-fit: contain; 
-}
+        .car-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
 
         .btn-outline-danger:hover {
             background-color: #dc3545;
@@ -33,9 +33,8 @@
             background-color: rgba(220, 53, 69, 0.05);
         }
         #ErrorMsg {
-    transition: all 0.3s ease;
-}
-
+            transition: all 0.3s ease;
+        }
     </style>
 
     <div class="container">
@@ -44,8 +43,7 @@
                 <div class="row mb-3">
                     <div class="col text-center">
                         <h3 class="text-danger fw-bold text-center">Управление автомобилями</h3>
-                        <img id="carImage" runat="server" src="../../assets/images/Слой 1.png" alt="Car Image" class="img-fluid" style="width: 200px; height: 150px; object-fit: contain;" />
-
+                        <img id="carImage" runat="server" class="car-image" src="~/assets/images/default-car.png" alt="Car Image" />
                     </div>
                 </div>
                 <div class="card">
@@ -74,12 +72,15 @@
     <label>Цвет</label>
     <asp:DropDownList ID="ddlColor" runat="server" CssClass="form-control">
         <asp:ListItem Text="Выберите цвет" Value=""></asp:ListItem>
-        <asp:ListItem Text="Красный" Value="red"></asp:ListItem>
-        <asp:ListItem Text="Жёлтый" Value="yellow"></asp:ListItem>
-        <asp:ListItem Text="Чёрный" Value="black"></asp:ListItem>
-        <asp:ListItem Text="Белый" Value="white"></asp:ListItem>
-        <asp:ListItem Text="Синий" Value="blue"></asp:ListItem>
-        <asp:ListItem Text="Оранжевый" Value="orange"></asp:ListItem>
+        <asp:ListItem Text="Красный" Value="Red"></asp:ListItem>
+        <asp:ListItem Text="Синий" Value="Blue"></asp:ListItem>
+        <asp:ListItem Text="Зелёный" Value="Green"></asp:ListItem>
+        <asp:ListItem Text="Чёрный" Value="Black"></asp:ListItem>
+        <asp:ListItem Text="Белый" Value="White"></asp:ListItem>
+        <asp:ListItem Text="Жёлтый" Value="Yellow"></asp:ListItem>
+        <asp:ListItem Text="Серый" Value="Gray"></asp:ListItem>
+        <asp:ListItem Text="Оранжевый" Value="Orange"></asp:ListItem>
+        <asp:ListItem Text="Фиолетовый" Value="Purple"></asp:ListItem>
     </asp:DropDownList>
 </div>
 
@@ -146,7 +147,7 @@
                 'Aston Martin': '../../assets/images/logo/Aston-Martin-Logo.jpg',
                 'Ford': '../../assets/images/logo/mustang.png',
                 'Chevrolet': '../../assets/images/logo/chevrolet.jpg',
-                'Lamborghini': '../../assets/images/logo/Lanborghini.jpg',
+                'Lamborghini': '../../assets/images/logo/Lamborghini.jpg',
                 'Jaguar': '../../assets/images/logo/jaguar.jpg',
                 'Porsche': '../../assets/images/logo/porsche.png',
                 'Maserati': '../../assets/images/logo/MASERATI.jpg',
