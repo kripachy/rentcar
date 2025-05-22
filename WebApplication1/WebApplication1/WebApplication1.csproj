@@ -302,11 +302,13 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
+    <Content Include="view\admin\adminprofile.aspx" />
     <Content Include="view\admin\AstonMartinVanquish.aspx" />
     <Content Include="view\admin\carlistt.aspx" />
     <Content Include="view\admin\info.aspx" />
     <Content Include="view\admin\login.aspx" />
     <Content Include="view\admin\logout.aspx" />
+    <Content Include="view\admin\rentttt.aspx" />
     <Content Include="view\admin\usermaster.master" />
     <None Include="view\admin\adminmaster.master" />
     <Content Include="view\admin\cars.aspx" />
@@ -320,7 +322,6 @@
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
-    <Content Include="view\login.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -372,6 +373,13 @@
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\adminprofile.aspx.cs">
+      <DependentUpon>adminprofile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\adminprofile.aspx.designer.cs">
+      <DependentUpon>adminprofile.aspx</DependentUpon>
+    </Compile>
     <Compile Include="view\admin\AstonMartinVanquish.aspx.cs">
       <DependentUpon>AstonMartinVanquish.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -403,6 +411,13 @@
     <Compile Include="view\admin\logout.aspx.cs">
       <DependentUpon>logout.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\rentttt.aspx.cs">
+      <DependentUpon>rentttt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\rentttt.aspx.designer.cs">
+      <DependentUpon>rentttt.aspx</DependentUpon>
     </Compile>
     <Compile Include="view\admin\usermaster.master.cs">
       <DependentUpon>usermaster.master</DependentUpon>
@@ -473,13 +488,6 @@
     </Compile>
     <Compile Include="view\admin\userdashboard.aspx.designer.cs">
       <DependentUpon>userdashboard.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="view\login.aspx.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="view\login.aspx.designer.cs">
-      <DependentUpon>login.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

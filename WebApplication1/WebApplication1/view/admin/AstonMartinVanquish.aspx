@@ -123,18 +123,24 @@
                     </div>
                     <div class="card-body">
                         <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="price-tag">
-                                    <h4 class="text-danger mb-0">Цена за день: $<asp:Label ID="lblPrice" runat="server" CssClass="font-weight-bold" style="white-space: nowrap;"></asp:Label></h4>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="txtStartDate" class="form-label">Дата и время начала аренды:</label>
+                                    <asp:TextBox ID="txtStartDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal"></asp:TextBox>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="txtEndDate" class="form-label">Дата и время конца аренды:</label>
+                                    <asp:TextBox ID="txtEndDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal"></asp:TextBox>
+                                </div>
+                                 <asp:Label ID="lblRentalMessage" runat="server" CssClass="d-block text-center mt-2" Visible="false"></asp:Label>
                             </div>
-                            <div class="col-md-2">
-                                <div class="color-info">
-                                    <h5 class="mb-2">Доступный цвет:</h5>
-                                    <div class="d-flex align-items-center">
-                                        <div class="color-swatch" style="background-color: white; width: 50px; height: 50px; border: 1px solid #ddd;"></div>
-                                        <span class="ml-2">Белый</span>
-                                    </div>
+                            <div class="col-md-4 text-center">
+                                <div class="price-tag mb-3">
+                                    <h4 class="text-danger mb-0">Цена за день: <asp:Label ID="lblPrice" runat="server" CssClass="font-weight-bold" style="white-space: nowrap;"></asp:Label> $</h4>
+                                </div>
+                                <div class="color-info mb-3">
+                                    <h5 class="mb-1">Доступный цвет: Белый</h5>
+                                     <div class="color-swatch mx-auto" style="background-color: white; width: 50px; height: 50px; border: 1px solid #ddd; border-radius: 50%;"></div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -148,7 +154,53 @@
     </div>
 
     <script>
+        // Ограничиваем выбор прошедших дат/времени в календаре
         document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            // Округляем до ближайшей минуты
+            now.setSeconds(0, 0);
+            // Устанавливаем минимальное время на текущий момент
+            const minDateTime = now.toISOString().slice(0, 16);
+
+            const startDateInput = document.getElementById('<%= txtStartDate.ClientID %>');
+            const endDateInput = document.getElementById('<%= txtEndDate.ClientID %>');
+
+            if (startDateInput) {
+                startDateInput.min = minDateTime;
+                // Если текущее значение меньше минимального, сбрасываем его
+                if (startDateInput.value && new Date(startDateInput.value) < now) {
+                    startDateInput.value = minDateTime;
+                }
+            }
+            if (endDateInput) {
+                endDateInput.min = minDateTime;
+                // Если текущее значение меньше минимального, сбрасываем его
+                if (endDateInput.value && new Date(endDateInput.value) < now) {
+                    endDateInput.value = minDateTime;
+                }
+            }
+
+            // Обновляем минимальное время окончания при изменении времени начала
+            if (startDateInput && endDateInput) {
+                startDateInput.addEventListener('change', function() {
+                    if (startDateInput.value) {
+                        const startDate = new Date(startDateInput.value);
+                        // Устанавливаем время окончания ровно через 24 часа после начала
+                        const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+                        endDateInput.value = endDate.toISOString().slice(0, 16);
+                        
+                        // Убеждаемся, что минимальное время окончания тоже установлено корректно (хотя оно будет переопределено установленным значением)
+                        endDateInput.min = endDate.toISOString().slice(0, 16);
+
+                    } else {
+                        // Если дата начала очищена, также очищаем дату окончания и сбрасываем минимальное значение
+                        endDateInput.value = '';
+                        endDateInput.min = minDateTime;
+                    }
+                });
+            }
+
+            // Инициализация карусели
             var carousel = new bootstrap.Carousel(document.getElementById('carCarousel'), {
                 interval: 5000,
                 wrap: true

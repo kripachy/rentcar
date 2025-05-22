@@ -4,8 +4,16 @@
 
 <style>
     body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Minimum height of the viewport */
         background-color: #f8f9fa;
         font-family: 'Segoe UI', sans-serif;
+    }
+
+    .main-content {
+        flex-grow: 1; /* Main content takes up all available space */
+        padding: 20px 0;
     }
 
     .hero-section {
@@ -100,41 +108,6 @@
         text-align: center;
     }
 
-    .car-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .car-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .car-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .car-card img {
-        width: 100%;
-        height: 120px;
-        object-fit: contain;
-        margin-bottom: 1rem;
-    }
-
-    .car-card h5 {
-        color: #dc3545;
-        font-weight: 600;
-        margin: 0;
-    }
-
     .section-title {
         color: #343a40;
         font-weight: 700;
@@ -151,6 +124,11 @@
 
     .animate-fade-in {
         animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .footer {
+        flex-shrink: 0;
+        /* ... other styles ... */
     }
 </style>
 
@@ -169,81 +147,36 @@
 </div>
 
 <div class="container">
-    <!-- Статистика -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="stats-card animate-fade-in">
-                <i class="fas fa-car stats-icon"></i>
-                <div class="stats-number">8</div>
-                <div class="stats-label">Всего автомобилей</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stats-card animate-fade-in" style="animation-delay: 0.1s">
-                <i class="fas fa-key stats-icon"></i>
-                <div class="stats-number">5</div>
-                <div class="stats-label">Доступно для аренды</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stats-card animate-fade-in" style="animation-delay: 0.2s">
-                <i class="fas fa-users stats-icon"></i>
-                <div class="stats-number">12</div>
-                <div class="stats-label">Активных клиентов</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stats-card animate-fade-in" style="animation-delay: 0.3s">
-                <i class="fas fa-file-invoice-dollar stats-icon"></i>
-                <div class="stats-number">3</div>
-                <div class="stats-label">Активных аренд</div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Быстрые действия -->
     <div class="row">
-        <!-- Быстрые действия -->
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="quick-actions animate-fade-in">
                 <h3 class="section-title">Быстрые действия</h3>
-                <a href="cars.aspx" class="action-button">
-                    <i class="fas fa-plus-circle"></i>
-                    Добавить автомобиль
-                </a>
-                <a href="carlistt.aspx" class="action-button">
-                    <i class="fas fa-list"></i>
-                    Список автомобилей
-                </a>
-                <a href="rents.aspx" class="action-button">
-                    <i class="fas fa-key"></i>
-                    Управление арендой
-                </a>
-                <a href="returns.aspx" class="action-button">
-                    <i class="fas fa-undo"></i>
-                    Возврат автомобилей
-                </a>
-            </div>
-        </div>
-
-        <!-- Список автомобилей -->
-        <div class="col-md-8">
-            <h3 class="section-title">Наш автопарк</h3>
-            <div class="car-grid">
-                <div class="car-card animate-fade-in">
-                    <img src="../../assets/images/aston_martin.png" alt="Aston Martin" />
-                    <h5>Aston Martin Vanquish</h5>
-                </div>
-                <div class="car-card animate-fade-in" style="animation-delay: 0.1s">
-                    <img src="../../assets/images/porshe.png" alt="Porsche" />
-                    <h5>Porsche 911</h5>
-                </div>
-                <div class="car-card animate-fade-in" style="animation-delay: 0.2s">
-                    <img src="../../assets/images/lamba.png" alt="Lamborghini" />
-                    <h5>Lamborghini Huracan</h5>
-                </div>
-                <div class="car-card animate-fade-in" style="animation-delay: 0.3s">
-                    <img src="../../assets/images/mazerati.png" alt="Maserati" />
-                    <h5>Maserati GranTurismo</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="cars.aspx" class="action-button">
+                            <i class="fas fa-car"></i>
+                            Управление автомобилями
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="customers.aspx" class="action-button">
+                            <i class="fas fa-users"></i>
+                            Управление клиентами
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="rents.aspx" class="action-button">
+                            <i class="fas fa-key"></i>
+                            Управление арендой
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="returns.aspx" class="action-button">
+                            <i class="fas fa-undo"></i>
+                            Возврат автомобилей
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

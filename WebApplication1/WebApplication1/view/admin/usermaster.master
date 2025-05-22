@@ -67,7 +67,7 @@
                         </li>
                         <% if (Session["UserEmail"] != null) { %>
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("myrentals.aspx") ? "active text-white fw-bold" : "text-white" %>' href="myrentals.aspx">Просмотреть аренды</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rentttt.aspx") ? "active text-white fw-bold" : "text-white" %>' href="rentttt.aspx">Просмотреть аренды</a>
                         </li>
                         <% } %>
                         <li class="nav-item">

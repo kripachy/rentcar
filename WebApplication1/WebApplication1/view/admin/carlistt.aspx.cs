@@ -152,7 +152,7 @@ namespace WebApplication1.view.admin
             }
             else
             {
-                return Convert.ToInt32(price).ToString("N0") + " $/день";
+                return "$" + Convert.ToInt32(price).ToString("N0") + "/день";
             }
         }
 

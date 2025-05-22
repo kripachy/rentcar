@@ -1,172 +1,99 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="login.aspx.cs" Inherits="WebApplication1.view.login" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="login.aspx.cs" Inherits="WebApplication1.view.admin.login" %>
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head runat="server">
-    <title>WheelDeal - Вход</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <title>Вход - WheelDeal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body { background-color: #f8f9fa; }
+        .container-box {
+            max-width: 450px; margin: 60px auto; padding: 30px;
+            border-radius: 12px; background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.15);
         }
-
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
+        .btn-red { background-color: #dc3545; color: white; }
+        .btn-red:hover { background-color: #bb2d3b; }
+        .error-message {
+            color: #ff0000;
+            font-size: 13px;
+            margin-bottom: 10px;
+            display: none;
         }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-header h1 {
-            color: #dc3545;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-header p {
-            color: #6c757d;
-            margin: 0;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            border: 1px solid #dee2e6;
-            transition: all 0.3s ease;
-        }
-
         .form-control:focus {
-            border-color: #dc3545;
+            border-color: #dc3545 !important;
             box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
-
-        .input-group-text {
-            background: transparent;
-            border: 1px solid #dee2e6;
-            border-right: none;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-login:hover {
-            background: linear-gradient(135deg, #bb2d3b 0%, #a52834 100%);
-            transform: translateY(-1px);
-        }
-
-        .error-message {
-            color: #dc3545;
+        .forgot-password {
             text-align: center;
-            margin-top: 1rem;
-            font-weight: 500;
+            margin-top: 10px;
         }
-
-        .links {
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-
-        .links a {
+        .forgot-password a {
             color: #6c757d;
             text-decoration: none;
-            transition: color 0.3s ease;
-            display: block;
-            margin: 0.5rem 0;
+            font-size: 14px;
         }
-
-        .links a:hover {
+        .forgot-password a:hover {
             color: #dc3545;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 1rem 0;
-            color: #6c757d;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .divider span {
-            padding: 0 1rem;
         }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-        <div class="login-container">
-            <div class="login-header">
-                <h1><i class="fas fa-car-side me-2"></i>WheelDeal</h1>
-                <p>Вход в систему</p>
+        <div class="container-box">
+            <h3 class="text-center text-danger">WheelDeal</h3>
+            <h5 class="mt-3 text-center">Вход в аккаунт</h5>
+
+            <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control mb-3" Placeholder="Email" />
+
+            <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control mb-2" TextMode="Password"
+                         Placeholder="Пароль" oninput="validatePassword(this)" />
+            <div id="passwordError" class="error-message">Кириллические символы не допускаются</div>
+
+            <asp:Button ID="btnLogin" runat="server" Text="Войти" CssClass="btn btn-red w-100 mb-2" OnClick="btnLogin_Click" />
+            <asp:Label ID="lblMsg" runat="server" CssClass="text-danger d-block text-center" Visible="false" />
+
+            <div class="forgot-password">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Забыли пароль?</a>
             </div>
 
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-envelope"></i>
-                    </span>
-                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" placeholder="Email" TextMode="Email" required></asp:TextBox>
-                </div>
+            <div class="text-center mt-3">
+                <a href="register.aspx" class="text-decoration-none text-danger">Нет аккаунта? Зарегистрироваться</a>
             </div>
+        </div>
 
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-lock"></i>
-                    </span>
-                    <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" placeholder="Пароль" TextMode="Password" required></asp:TextBox>
+        <!-- Модальное окно восстановления пароля -->
+        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="forgotPasswordModalLabel">Восстановление пароля</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Введите ваш email для получения временного пароля:</p>
+                        <asp:TextBox ID="txtRecoveryEmail" runat="server" CssClass="form-control mb-3" Placeholder="Ваш email" TextMode="Email" />
+                        <asp:Button ID="btnSendPassword" runat="server" Text="Получить временный пароль" 
+                            CssClass="btn btn-red w-100" OnClick="btnSendPassword_Click" />
+                        <asp:Label ID="lblRecoveryMessage" runat="server" CssClass="d-block text-center mt-2 text-danger" Visible="false"></asp:Label>
+                    </div>
                 </div>
-            </div>
-
-            <asp:Button ID="btnLogin" runat="server" Text="Войти" CssClass="btn btn-login" OnClick="btnLogin_Click" />
-            
-            <asp:Label ID="ErrorMsg" runat="server" CssClass="error-message" Visible="false"></asp:Label>
-
-            <div class="links">
-                <a href="~/view/forgotpassword.aspx" runat="server">
-                    <i class="fas fa-key me-1"></i>Забыли пароль?
-                </a>
-                <div class="divider">
-                    <span>или</span>
-                </div>
-                <a href="~/view/register.aspx" runat="server">
-                    <i class="fas fa-user-plus me-1"></i>Зарегистрироваться
-                </a>
             </div>
         </div>
     </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function validatePassword(input) {
+            const errorDiv = document.getElementById('passwordError');
+            const containsCyrillic = /[а-яА-ЯёЁ]/.test(input.value);
+
+            if (containsCyrillic) {
+                errorDiv.style.display = "block";
+            } else {
+                errorDiv.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html> 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 using WebApplication1.Models;
 
@@ -84,10 +85,63 @@ namespace WebApplication1.view.admin
             try
             {
                 int rentId = Convert.ToInt32(gvCars.DataKeys[e.RowIndex].Value);
-                string query = $"DELETE FROM RentTbl WHERE RentId = {rentId}";
-                Conn.SetData(query);
-                ShowSuccess("Rent deleted successfully.");
-                ShowRents();
+                string carPlateNum = null;
+
+                // Use the connection string from your Functions class or define it here if needed
+                // Assuming connectionString is accessible or passed from Functions.
+                // If Functions.Conn is a SqlConnection, you might need to get the connection from it.
+                // For simplicity, I'll define it here assuming it's available.
+                string connectionString = Conn.ConStr; // Assuming ConStr is a public property in Functions
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlTransaction transaction = conn.BeginTransaction(); // Start transaction
+
+                    try
+                    {
+                        // 1. Retrieve the Car Plate Number before deleting the rent record
+                        string getCarPlateQuery = "SELECT Car FROM RentTbl WHERE RentId = @RentId";
+                        using (SqlCommand cmd = new SqlCommand(getCarPlateQuery, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@RentId", rentId);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                            {
+                                carPlateNum = result.ToString();
+                            }
+                        }
+
+                        // 2. Delete the rent record from RentTbl
+                        string deleteRentQuery = "DELETE FROM RentTbl WHERE RentId = @RentId";
+                        using (SqlCommand cmd = new SqlCommand(deleteRentQuery, conn, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("@RentId", rentId);
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // 3. Update the car status to 'Available' in CarTbl if carPlateNum was found
+                        if (!string.IsNullOrEmpty(carPlateNum))
+                        {
+                            string updateCarStatusQuery = "UPDATE CarTbl SET Status = 'Available' WHERE CPlateNum = @CPlateNum";
+                            using (SqlCommand cmd = new SqlCommand(updateCarStatusQuery, conn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@CPlateNum", carPlateNum);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit(); // Commit transaction if all operations are successful
+
+                        ShowSuccess("Rent deleted and car status updated successfully.");
+                        ShowRents();
+                    }
+                    catch (Exception exT)
+                    {
+                        transaction.Rollback(); // Rollback transaction on error
+                        throw exT; // Re-throw exception to be caught by the outer catch block
+                    }
+                }
             }
             catch (Exception ex)
             {
