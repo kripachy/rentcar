@@ -8,7 +8,9 @@
             <div class="col-12">
                 <asp:GridView ID="GridViewRents" runat="server" AutoGenerateColumns="False" 
                     CssClass="table table-bordered table-hover" 
-                    EmptyDataText="У вас пока нет активных аренд." >
+                    EmptyDataText="У вас пока нет активных аренд."
+                    OnRowCommand="GridViewRents_RowCommand"
+                    OnRowDataBound="GridViewRents_RowDataBound">
                     <Columns>
                         <asp:TemplateField HeaderText="Автомобиль">
                             <ItemTemplate>
@@ -34,9 +36,21 @@
                                 <asp:Label ID="lblRemainingTime" runat="server"></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Действия">
+                            <ItemTemplate>
+                                <asp:Button ID="btnCancelRent" runat="server" 
+                                    Text="Отменить аренду" 
+                                    CssClass="btn btn-danger btn-sm" 
+                                    CommandName="CancelRent" 
+                                    CommandArgument='<%# Eval("RentId") %>'
+                                    OnClientClick='<%# "return confirm(\"Вы уверены, что хотите отменить аренду?\");" %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
             </div>
         </div>
     </div>
+
+    <asp:Label ID="lblMessage" runat="server" CssClass="d-block text-center mt-3" Visible="false"></asp:Label>
 </asp:Content>

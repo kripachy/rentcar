@@ -1,0 +1,1 @@
+<%@ WebService Language="C#" CodeBehind="CheckColorAvailability.aspx.cs" Class="WebApplication1.view.admin.CheckColorAvailability" %> 

@@ -25,7 +25,7 @@ namespace WebApplication1.view.admin
         private Dictionary<string, string> specificCarImages = new Dictionary<string, string>
         {
             {"Aston Martin Vanquish", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Aston Martin Vanquish\white\1.jpg"},
-            {"Audi TT", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Audi TT\blue\1.jpg"},
+            {"Audi TT", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Audi TT\orange\3.jpg"},
             {"Chevrolet Camaro", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Chevrolet Camaro\yellow\1.jpg"},
             {"Ford Mustang S550", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Ford Mustang S550\orange\1.jpg"},
             {"Jaguar XJ", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Jaguar XJ\black\1.jpg"},
@@ -183,8 +183,16 @@ namespace WebApplication1.view.admin
         protected string GetCarDetailUrl(object brand, object model)
         {
             string carName = $"{brand} {model}";
-            // Return the correct path to the car detail page in the admin view folder
-            return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
+            switch (carName)
+            {
+                case "Aston Martin Vanquish":
+                    return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
+                case "Audi TT":
+                    return ResolveUrl("~/view/admin/AudiTT.aspx");
+                default:
+                    // Для других машин можно добавить дополнительные case или вернуть дефолтную страницу
+                    return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
+            }
         }
     }
 }

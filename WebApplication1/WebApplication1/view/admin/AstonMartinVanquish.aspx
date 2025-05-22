@@ -132,7 +132,7 @@
                                     <label for="txtEndDate" class="form-label">Дата и время конца аренды:</label>
                                     <asp:TextBox ID="txtEndDate" runat="server" CssClass="form-control" TextMode="DateTimeLocal"></asp:TextBox>
                                 </div>
-                                 <asp:Label ID="lblRentalMessage" runat="server" CssClass="d-block text-center mt-2" Visible="false"></asp:Label>
+                                
                             </div>
                             <div class="col-md-4 text-center">
                                 <div class="price-tag mb-3">
@@ -147,6 +147,19 @@
                                 <asp:Button ID="btnRent" runat="server" Text="Арендовать" CssClass="btn btn-danger btn-lg w-100" OnClick="btnRent_Click" />
                             </div>
                         </div>
+                         <div class="mt-3">
+                             <p class="text-muted text-center">
+                                 После аренды на вашу почту придет примерный договор. Вам нужно будет подъехать к нам, чтобы подписать его и забрать машину.
+                             </p>
+                              <p class="text-muted text-center mt-2">
+                                 Пожалуйста, не забудьте взять с собой:
+                             </p>
+                             <ul class="list-unstyled text-center text-muted">
+                                 <li><i class="fas fa-id-card me-1"></i> Паспорт</li>
+                                 <li><i class="fas fa-address-card me-1"></i> Водительское удостоверение</li>
+                             </ul>
+                         </div>
+                        <asp:Label ID="lblRentalMessage" runat="server" CssClass="d-block text-center mt-2" Visible="false"></asp:Label>
                     </div>
                 </div>
             </div>
@@ -154,53 +167,71 @@
     </div>
 
     <script>
-        // Ограничиваем выбор прошедших дат/времени в календаре
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
-            // Округляем до ближайшей минуты
             now.setSeconds(0, 0);
-            // Устанавливаем минимальное время на текущий момент
             const minDateTime = now.toISOString().slice(0, 16);
 
             const startDateInput = document.getElementById('<%= txtStartDate.ClientID %>');
             const endDateInput = document.getElementById('<%= txtEndDate.ClientID %>');
+            const btnRent = document.getElementById('<%= btnRent.ClientID %>');
+            const lblPrice = document.getElementById('<%= lblPrice.ClientID %>');
 
+            // Set only minimum dates, not values
             if (startDateInput) {
                 startDateInput.min = minDateTime;
-                // Если текущее значение меньше минимального, сбрасываем его
-                if (startDateInput.value && new Date(startDateInput.value) < now) {
-                    startDateInput.value = minDateTime;
-                }
             }
             if (endDateInput) {
-                endDateInput.min = minDateTime;
-                // Если текущее значение меньше минимального, сбрасываем его
-                if (endDateInput.value && new Date(endDateInput.value) < now) {
-                    endDateInput.value = minDateTime;
-                }
+                const endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                endDateInput.min = endDate.toISOString().slice(0, 16);
             }
 
-            // Обновляем минимальное время окончания при изменении времени начала
+            // Add click handler for rent button
+            if (btnRent) {
+                btnRent.addEventListener('click', function(e) {
+                    if (!startDateInput.value || !endDateInput.value) {
+                        e.preventDefault();
+                        alert('Пожалуйста, выберите даты начала и конца аренды');
+                        return false;
+                    }
+
+                    const startDate = new Date(startDateInput.value);
+                    const endDate = new Date(endDateInput.value);
+                    const rentalDuration = endDate - startDate;
+                    const days = Math.ceil(rentalDuration / (1000 * 60 * 60 * 24));
+                    const pricePerDay = parseFloat(lblPrice.textContent);
+                    const totalPrice = days * pricePerDay;
+
+                    const message = `Вы уверены, что хотите арендовать Aston Martin Vanquish белого цвета?\n\n` +
+                                  `Период аренды: ${startDate.toLocaleString()} - ${endDate.toLocaleString()}\n` +
+                                  `Количество дней: ${days}\n` +
+                                  `Стоимость за день: $${pricePerDay}\n` +
+                                  `Общая стоимость: $${totalPrice}\n\n` +
+                                  `После подтверждения на вашу почту придет договор аренды.`;
+
+                    if (!confirm(message)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+
+            // Update end date when start date changes
             if (startDateInput && endDateInput) {
                 startDateInput.addEventListener('change', function() {
                     if (startDateInput.value) {
                         const startDate = new Date(startDateInput.value);
-                        // Устанавливаем время окончания ровно через 24 часа после начала
                         const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
                         endDateInput.value = endDate.toISOString().slice(0, 16);
-                        
-                        // Убеждаемся, что минимальное время окончания тоже установлено корректно (хотя оно будет переопределено установленным значением)
                         endDateInput.min = endDate.toISOString().slice(0, 16);
-
                     } else {
-                        // Если дата начала очищена, также очищаем дату окончания и сбрасываем минимальное значение
                         endDateInput.value = '';
                         endDateInput.min = minDateTime;
                     }
                 });
             }
 
-            // Инициализация карусели
+            // Initialize carousel
             var carousel = new bootstrap.Carousel(document.getElementById('carCarousel'), {
                 interval: 5000,
                 wrap: true

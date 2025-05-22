@@ -4,6 +4,9 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Web.UI;
 using WebApplication1.Models;
+using System.Net.Mail;
+using System.IO;
+using System.Net;
 
 namespace WebApplication1.view.admin
 {
@@ -22,6 +25,7 @@ namespace WebApplication1.view.admin
             if (!IsPostBack)
             {
                 LoadCarDetails();
+                CheckUserRentals();
             }
         }
 
@@ -160,8 +164,20 @@ namespace WebApplication1.view.admin
 
                          transaction.Commit(); // Подтверждаем транзакцию
                          ShowRentalMessage("Автомобиль успешно арендован!", true);
-                         // Можно перенаправить пользователя на страницу с его арендами
-                         // Response.Redirect("~/view/admin/rentttt.aspx"); // Пока не перенаправляем, ждем создания страницы
+
+                         // Добавляем текст инструкции после успешной аренды
+                         string instructionsMessage = "<br/>Вам на почту придет примерный договор аренды. Вы сможете подъехать к нам, подписать его и забрать машину.";
+                         lblRentalMessage.Text += instructionsMessage;
+
+                         // Get user email and send the agreement
+                         int currentCustId = custId.Value; // Assuming custId has a value here
+                         string userEmail = GetUserEmail(currentCustId);
+
+                         if (!string.IsNullOrEmpty(userEmail))
+                         {
+                             string agreementFilePath = @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Договор_аренды_WheelDeal.docx";
+                             SendRentalAgreementEmail(userEmail, agreementFilePath);
+                         }
 
                      }
                      catch (Exception exT)
@@ -194,6 +210,87 @@ namespace WebApplication1.view.admin
             }
             // Если UserId нет в сессии, возможно, пользователь не авторизован как обычный пользователь.
             return null;
+        }
+
+        // Метод для получения email пользователя по CustId
+        private string GetUserEmail(int custId)
+        {
+            string email = null;
+            // Use the same connection string as the rest of the page
+            // string authConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT CustEmail FROM CustomerAuthTbl WHERE CustId = @CustId";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CustId", custId);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        email = result.ToString();
+                    }
+                }
+            }
+            return email;
+        }
+
+        // Метод для отправки договора аренды по email
+        private void SendRentalAgreementEmail(string recipientEmail, string attachmentPath)
+        {
+            try
+            {
+                // Basic email validation
+                if (string.IsNullOrWhiteSpace(recipientEmail) || !recipientEmail.Contains("@"))
+                {
+                    // Log or handle invalid email
+                    System.Diagnostics.Debug.WriteLine("Invalid recipient email address.");
+                    return;
+                }
+
+                // Check if the attachment file exists
+                if (!File.Exists(attachmentPath))
+                {
+                     System.Diagnostics.Debug.WriteLine($"Rental agreement file not found at: {attachmentPath}");
+                     // ShowRentalMessage("Автомобиль успешно арендован! Но не удалось отправить договор аренды (файл не найден).", false); // Inform user about email failure
+                    return; // Don't throw an error, just don't send the email
+                }
+
+                using (MailMessage mail = new MailMessage())
+                {
+                    mail.From = new MailAddress("your_email@example.com", "WheelDeal Rentals"); // Replace with your sender email and name
+                    mail.To.Add(recipientEmail);
+                    mail.Subject = "Ваш договор аренды автомобиля WheelDeal";
+                    mail.Body = "Здравствуйте,\n\nБлагодарим вас за аренду автомобиля в WheelDeal. В приложении к этому письму вы найдете копию вашего договора аренды.\n\nС уважением,\nКоманда WheelDeal";
+                    mail.IsBodyHtml = false; // Set to true if using HTML body
+
+                    // Attach the document
+                    Attachment attachment = new Attachment(attachmentPath);
+                    mail.Attachments.Add(attachment);
+
+                    // Configure SMTP client - REPLACE WITH YOUR SMTP SERVER DETAILS
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587)) // Replace with your SMTP server and port
+                    {
+                        smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "xqwj lscl uvgw gusf"); // Replace with your email credentials
+                        smtp.EnableSsl = true; // Set to true if your SMTP server requires SSL/TLS
+                        smtp.DeliveryMethod = SmtpDeliveryMethod.Network; // Ensure sending over network
+
+                        smtp.Send(mail);
+                    }
+
+                     System.Diagnostics.Debug.WriteLine($"Rental agreement email sent to {recipientEmail}");
+                     // You might want to show a message indicating email sent successfully if needed, but maybe not on the rental page itself.
+                     // ShowRentalMessage("Автомобиль успешно арендован и договор отправлен на ваш email!", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the email sending error
+                System.Diagnostics.Debug.WriteLine($"Error sending rental agreement email: {ex.Message}");
+                // Optionally inform the user that the email sending failed, but avoid showing internal errors
+                 // ShowRentalMessage("Автомобиль успешно арендован! Но не удалось отправить договор аренды по email.", false);
+            }
         }
 
         // Метод для получения цены автомобиля из CarTbl
@@ -282,6 +379,23 @@ namespace WebApplication1.view.admin
                 }
             }
             return maxId + 1;
+        }
+
+        private void CheckUserRentals()
+        {
+            int? custId = GetCurrentUserId();
+            if (!custId.HasValue)
+            {
+                btnRent.Visible = false;
+                lblRentalMessage.Text = "Пожалуйста, войдите в систему для аренды автомобиля.";
+                lblRentalMessage.CssClass = "d-block text-center mt-2 text-danger";
+                lblRentalMessage.Visible = true;
+                return;
+            }
+
+            // Если пользователь авторизован, показываем кнопку аренды
+            btnRent.Visible = true;
+            lblRentalMessage.Visible = false;
         }
     }
 } 

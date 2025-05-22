@@ -16,18 +16,7 @@ namespace WebApplication1.view.admin
             if (!IsPostBack)
             {
                 ShowRents();
-                LoadAvailableCars();
             }
-        }
-
-        private void LoadAvailableCars()
-        {
-            string query = "SELECT CPlateNum FROM CarTbl WHERE Status = 'Available'";
-            DataTable dt = Conn.GetData(query);
-            ddlCarPlate.DataSource = dt;
-            ddlCarPlate.DataTextField = "CPlateNum";
-            ddlCarPlate.DataValueField = "CPlateNum";
-            ddlCarPlate.DataBind();
         }
 
         private void ShowRents()
@@ -70,13 +59,11 @@ namespace WebApplication1.view.admin
                 string query = $"UPDATE RentTbl SET RentDate = '{rentDate}', ReturnDate = '{returnDate}', Fees = {fees} WHERE RentId = {rentId}";
                 Conn.SetData(query);
 
-                ShowSuccess("Rent updated successfully.");
-                gvCars.EditIndex = -1;
                 ShowRents();
             }
             catch (Exception ex)
             {
-                ShowError("Error updating rent: " + ex.Message);
+                // For debugging, you could log the error or use Response.Write(ex.Message);
             }
         }
 
@@ -87,11 +74,8 @@ namespace WebApplication1.view.admin
                 int rentId = Convert.ToInt32(gvCars.DataKeys[e.RowIndex].Value);
                 string carPlateNum = null;
 
-                // Use the connection string from your Functions class or define it here if needed
-                // Assuming connectionString is accessible or passed from Functions.
-                // If Functions.Conn is a SqlConnection, you might need to get the connection from it.
-                // For simplicity, I'll define it here assuming it's available.
-                string connectionString = Conn.ConStr; // Assuming ConStr is a public property in Functions
+                // Define connection string locally
+                string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbfilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
@@ -133,34 +117,19 @@ namespace WebApplication1.view.admin
 
                         transaction.Commit(); // Commit transaction if all operations are successful
 
-                        ShowSuccess("Rent deleted and car status updated successfully.");
-                        ShowRents();
+                        ShowRents(); // Refresh the GridView
                     }
                     catch (Exception exT)
                     {
                         transaction.Rollback(); // Rollback transaction on error
-                        throw exT; // Re-throw exception to be caught by the outer catch block
+                        throw exT; // Re-throw exception
                     }
                 }
             }
             catch (Exception ex)
             {
-                ShowError("Error deleting rent: " + ex.Message);
+                // For debugging, you could log the error or use Response.Write(ex.Message);
             }
-        }
-
-        private void ShowError(string message)
-        {
-            ErrorMsg.Text = message;
-            ErrorMsg.CssClass = "text-danger";
-            ErrorMsg.Visible = true;
-        }
-
-        private void ShowSuccess(string message)
-        {
-            ErrorMsg.Text = message;
-            ErrorMsg.CssClass = "text-success";
-            ErrorMsg.Visible = true;
         }
     }
 }

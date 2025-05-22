@@ -125,11 +125,6 @@
     .animate-fade-in {
         animation: fadeIn 0.5s ease-out forwards;
     }
-
-    .footer {
-        flex-shrink: 0;
-        /* ... other styles ... */
-    }
 </style>
 
 <div class="hero-section">

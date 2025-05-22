@@ -4,6 +4,13 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         /* Add some general styles for better appearance */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
         .container {
             padding-top: 20px;
             padding-bottom: 20px;
@@ -73,35 +80,13 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
     <div class="container">
         <h3 class="fw-bold text-center">Управление Арендами</h3>
         <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">Действия</div>
-                    <div class="card-body">
-                         <img src="../../assets/images/car-rental.png" alt="Rents Image" class="img-fluid"/>
-                        <asp:Label ID="ErrorMsg" runat="server" CssClass="text-danger" Visible="false"></asp:Label>
-
-                        <div class="form-group mb-3">
-                            <label>Выбрать Автомобиль</label>
-                            <asp:DropDownList ID="ddlCarPlate" runat="server" CssClass="form-control"></asp:DropDownList>
-                        </div>
-
-                        <%-- These buttons are currently not visible based on the original code --%>
-                        <asp:Button ID="Edit" runat="server" Text="Редактировать" CssClass="btn btn-danger w-100 mb-2" Visible="false" />
-                        <asp:Button ID="Add" runat="server" Text="Добавить" CssClass="btn btn-danger w-100 mb-2" Visible="false" />
-                        <asp:Button ID="Delete" runat="server" Text="Удалить" CssClass="btn btn-danger w-100" Visible="false" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">Список Аренд</div>
                     <div class="card-body">
                         <asp:GridView ID="gvCars" runat="server" CssClass="table table-striped table-hover" 
                             AutoGenerateColumns="False"
                             DataKeyNames="RentId"
-                            OnRowEditing="gvCars_RowEditing"
-                            OnRowUpdating="gvCars_RowUpdating"
                             OnRowCancelingEdit="gvCars_RowCancelingEdit"
                             OnRowDeleting="gvCars_RowDeleting">
 
@@ -112,7 +97,12 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
                                 <asp:BoundField DataField="RentDate" HeaderText="Дата Начала" DataFormatString="{0:d}" />
                                 <asp:BoundField DataField="ReturnDate" HeaderText="Дата Окончания" DataFormatString="{0:d}" />
                                 <asp:BoundField DataField="Fees" HeaderText="Стоимость ($)" DataFormatString="{0:N2}" />
-                                <asp:CommandField ShowEditButton="True" ShowDeleteButton="True" HeaderText="Действия" ButtonType="Button" />
+                                <asp:TemplateField HeaderText="Действия">
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnDelete" runat="server" CommandName="Delete" Text="Удалить" 
+                                            CssClass="btn btn-sm btn-danger" OnClientClick="return confirm('Вы уверены, что хотите удалить эту аренду?');" />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
                     </div>

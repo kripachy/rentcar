@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net.Mail;
+using System.Net;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Collections.Generic;
@@ -26,107 +29,153 @@ namespace WebApplication1.view.admin
         {
             if (!IsPostBack)
             {
-                LoadUserRents();
+                LoadRentals();
             }
         }
 
-        private void LoadUserRents()
+        protected void GridViewRents_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            // Получаем CustId текущего пользователя из сессии
-            int? custId = GetCurrentUserId();
-            if (!custId.HasValue)
+            if (e.CommandName == "CancelRent")
             {
-                // Если пользователь не авторизован, можно перенаправить на страницу входа
-                Response.Redirect("~/view/admin/login.aspx");
-                return;
-            }
-
-            // Запрос для получения активных аренд пользователя с информацией об автомобиле
-            string query = @"SELECT r.Car, c.Brand, c.Model, c.Color, r.RentDate, r.ReturnDate, r.Fees 
-                           FROM RentTbl r 
-                           JOIN CarTbl c ON r.Car = c.CPlateNum 
-                           WHERE r.Customer = @CustId AND (r.ReturnDate >= GETDATE() OR r.ReturnDate IS NULL)";
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CustId", custId.Value);
-                    conn.Open();
-                    DataTable dt = new DataTable();
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    da.Fill(dt);
-
-                    GridViewRents.DataSource = dt;
-                    GridViewRents.DataBind();
-
-                    // После привязки данных, рассчитываем и отображаем оставшееся время
-                    CalculateAndDisplayRemainingTime();
-                }
+                int rentId = Convert.ToInt32(e.CommandArgument);
+                CancelRental(rentId);
             }
         }
 
-        protected string GetCarImageUrl(object carPlate)
+        private void CancelRental(int rentId)
         {
-            if (carPlate == null) return ResolveUrl("~/images/default_car.png");
-
-            string carPlateStr = carPlate.ToString();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "SELECT Brand, Model FROM CarTbl WHERE CPlateNum = @CarPlate";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CarPlate", carPlateStr);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            string brand = reader["Brand"].ToString();
-                            string model = reader["Model"].ToString();
-                            string carName = $"{brand} {model}";
+                SqlTransaction transaction = conn.BeginTransaction();
 
-                            if (specificCarImages.ContainsKey(carName))
+                try
+                {
+                    string getRentInfoQuery = @"SELECT r.Car, r.Customer, c.CustEmail 
+                                              FROM RentTbl r 
+                                              INNER JOIN CustomerAuthTbl c ON r.Customer = c.CustId 
+                                              WHERE r.RentId = @RentId";
+                    
+                    string carPlate = null;
+                    string userEmail = null;
+
+                    using (SqlCommand cmd = new SqlCommand(getRentInfoQuery, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@RentId", rentId);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
                             {
-                                return ResolveUrl(specificCarImages[carName]);
+                                carPlate = reader["Car"].ToString();
+                                userEmail = reader["CustEmail"].ToString();
                             }
                         }
                     }
+
+                    if (string.IsNullOrEmpty(carPlate))
+                    {
+                        throw new Exception("Аренда не найдена");
+                    }
+
+                    string deleteRentQuery = "DELETE FROM RentTbl WHERE RentId = @RentId";
+                    using (SqlCommand cmd = new SqlCommand(deleteRentQuery, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@RentId", rentId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    string updateCarStatusQuery = "UPDATE CarTbl SET Status = 'Available' WHERE CPlateNum = @CarPlate";
+                    using (SqlCommand cmd = new SqlCommand(updateCarStatusQuery, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@CarPlate", carPlate);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        SendCancellationEmail(userEmail, carPlate);
+                    }
+
+                    ShowMessage("Аренда успешно отменена", true);
+                    LoadRentals();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    ShowMessage("Ошибка при отмене аренды: " + ex.Message, false);
                 }
             }
-            return ResolveUrl("~/images/default_car.png");
         }
 
-        protected string GetCarDetails(object carPlate)
+        private void SendCancellationEmail(string userEmail, string carPlate)
         {
-            if (carPlate == null) return string.Empty;
+            try
+            {
+                using (MailMessage mail = new MailMessage())
+                {
+                    mail.From = new MailAddress("wheeldeal989@gmail.com", "WheelDeal Rentals");
+                    mail.To.Add(userEmail);
+                    mail.Subject = "Отмена аренды автомобиля";
+                    mail.Body = $"Здравствуйте,\n\nВаша аренда автомобиля {carPlate} была отменена.\n\nС уважением,\nКоманда WheelDeal";
+                    mail.IsBodyHtml = false;
+
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "xqwj lscl uvgw gusf");
+                        smtp.EnableSsl = true;
+                        smtp.Send(mail);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error sending cancellation email: {ex.Message}");
+            }
+        }
+
+        private void ShowMessage(string message, bool isSuccess)
+        {
+            lblMessage.Text = message;
+            lblMessage.CssClass = isSuccess ? "alert alert-success" : "alert alert-danger";
+            lblMessage.Visible = true;
+        }
+
+        protected void LoadRentals()
+        {
+            int? custId = GetCurrentUserId();
+            if (!custId.HasValue)
+            {
+                ShowMessage("Пожалуйста, войдите в систему", false);
+                return;
+            }
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "SELECT Brand, Model, Color FROM CarTbl WHERE CPlateNum = @CarPlate";
+                string query = @"SELECT r.RentId, r.Car, r.RentDate, r.ReturnDate, r.Fees 
+                               FROM RentTbl r 
+                               WHERE r.Customer = @CustId 
+                               AND r.ReturnDate >= GETDATE() 
+                               ORDER BY r.RentDate DESC";
+
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@CarPlate", carPlate.ToString());
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    cmd.Parameters.AddWithValue("@CustId", custId.Value);
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
-                        if (reader.Read())
-                        {
-                            string brand = reader["Brand"].ToString();
-                            string model = reader["Model"].ToString();
-                            string color = reader["Color"].ToString();
-                            return $"{brand} {model} • {color}";
-                        }
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        GridViewRents.DataSource = dt;
+                        GridViewRents.DataBind();
                     }
                 }
             }
-            return string.Empty;
         }
 
-        // Метод для получения CustId текущего пользователя из сессии
         private int? GetCurrentUserId()
         {
-            // Получаем UserId из сессии, который должен быть установлен при входе обычного пользователя
             if (Session["UserId"] != null)
             {
                 return (int)Session["UserId"];
@@ -134,57 +183,84 @@ namespace WebApplication1.view.admin
             return null;
         }
 
-         // Метод для расчета и отображения оставшегося времени аренды
-        private void CalculateAndDisplayRemainingTime()
+        protected string GetCarImageUrl(object carPlate)
         {
-            foreach (GridViewRow row in GridViewRents.Rows)
+            if (carPlate == null) return "";
+            string plate = carPlate.ToString();
+            
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                if (row.RowType == DataControlRowType.DataRow)
+                conn.Open();
+                string query = "SELECT Brand, Model, Color FROM CarTbl WHERE CPlateNum = @CarPlate";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    // Получаем дату окончания аренды из BoundField
-                    DateTime returnDate;
-                    if (DateTime.TryParse(row.Cells[2].Text, out returnDate))
+                    cmd.Parameters.AddWithValue("@CarPlate", plate);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        Label lblRemainingTime = (Label)row.FindControl("lblRemainingTime");
-                        if (lblRemainingTime != null)
+                        if (reader.Read())
                         {
-                            TimeSpan remaining = returnDate - DateTime.Now;
-
-                            if (remaining.TotalSeconds > 0)
-                            {
-                                if (remaining.TotalDays >= 1)
-                                {
-                                    lblRemainingTime.Text = $"{remaining.Days} д. {remaining.Hours} ч.";
-                                } else if (remaining.TotalHours >= 1)
-                                {
-                                     lblRemainingTime.Text = $"{remaining.Hours} ч. {remaining.Minutes} мин.";
-                                } else if (remaining.TotalMinutes >= 1)
-                                {
-                                    lblRemainingTime.Text = $"{remaining.Minutes} мин. {remaining.Seconds} сек.";
-                                } else
-                                {
-                                    lblRemainingTime.Text = $"{remaining.Seconds} сек.";
-                                }
-
-                            } else
-                            {
-                                lblRemainingTime.Text = "Срок истек";
-                                lblRemainingTime.CssClass = "text-danger";
-                            }
+                            string brand = reader["Brand"].ToString();
+                            string model = reader["Model"].ToString();
+                            string color = reader["Color"].ToString();
+                            return $"../../colorcars/{brand} {model}/{color}/1.jpg";
                         }
+                    }
+                }
+            }
+            return "";
+        }
+
+        protected string GetCarDetails(object carPlate)
+        {
+            if (carPlate == null) return "";
+            string plate = carPlate.ToString();
+            
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT Brand, Model, Color FROM CarTbl WHERE CPlateNum = @CarPlate";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CarPlate", plate);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string brand = reader["Brand"].ToString();
+                            string model = reader["Model"].ToString();
+                            string color = reader["Color"].ToString();
+                            return $"{brand} {model} ({color})";
+                        }
+                    }
+                }
+            }
+            return "";
+        }
+
+        protected void GridViewRents_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Label lblRemainingTime = (Label)e.Row.FindControl("lblRemainingTime");
+                if (lblRemainingTime != null)
+                {
+                    DateTime returnDate = Convert.ToDateTime(DataBinder.Eval(e.Row.DataItem, "ReturnDate"));
+                    TimeSpan remaining = returnDate - DateTime.Now;
+                    
+                    if (remaining.TotalDays > 0)
+                    {
+                        lblRemainingTime.Text = $"{(int)remaining.TotalDays} дн. {remaining.Hours} ч.";
+                    }
+                    else if (remaining.TotalHours > 0)
+                    {
+                        lblRemainingTime.Text = $"{(int)remaining.TotalHours} ч. {remaining.Minutes} мин.";
                     }
                     else
                     {
-                        // Если ReturnDate NULL или не парсится, возможно, это активная аренда без указанной даты конца
-                        Label lblRemainingTime = (Label)row.FindControl("lblRemainingTime");
-                         if (lblRemainingTime != null)
-                         {
-                            lblRemainingTime.Text = "Активная аренда";
-                         }
+                        lblRemainingTime.Text = $"{(int)remaining.TotalMinutes} мин.";
                     }
                 }
             }
         }
-
     }
 }

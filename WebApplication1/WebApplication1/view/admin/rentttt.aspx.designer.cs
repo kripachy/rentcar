@@ -27,5 +27,10 @@ namespace WebApplication1.view.admin
         /// GridViewRents control.
         /// </summary>
         protected global::System.Web.UI.WebControls.GridView GridViewRents;
+
+        /// <summary>
+        /// lblMessage control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblMessage;
     }
 }

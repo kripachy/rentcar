@@ -251,6 +251,7 @@
     <Content Include="Scripts\css\css\bootstrap.min.css.map" />
     <Content Include="Scripts\css\css\bootstrap.rtl.css.map" />
     <Content Include="Scripts\css\css\bootstrap.rtl.min.css.map" />
+    <Content Include="colorcars\Договор_аренды_WheelDeal.docx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\css\css\bootstrap-grid.css" />
     <Content Include="Scripts\css\css\bootstrap-grid.min.css" />
@@ -304,6 +305,7 @@
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="view\admin\adminprofile.aspx" />
     <Content Include="view\admin\AstonMartinVanquish.aspx" />
+    <Content Include="view\admin\AudiTT.aspx" />
     <Content Include="view\admin\carlistt.aspx" />
     <Content Include="view\admin\info.aspx" />
     <Content Include="view\admin\login.aspx" />
@@ -317,7 +319,6 @@
     <Content Include="view\admin\profile.aspx" />
     <Content Include="view\admin\register.aspx" />
     <Content Include="view\admin\rents.aspx" />
-    <Content Include="view\admin\returns.aspx" />
     <Content Include="view\admin\userdashboard.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -387,12 +388,22 @@
     <Compile Include="view\admin\AstonMartinVanquish.aspx.designer.cs">
       <DependentUpon>AstonMartinVanquish.aspx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\AudiTT.aspx.cs">
+      <DependentUpon>AudiTT.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\AudiTT.aspx.designer.cs">
+      <DependentUpon>AudiTT.aspx</DependentUpon>
+    </Compile>
     <Compile Include="view\admin\carlistt.aspx.cs">
       <DependentUpon>carlistt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="view\admin\carlistt.aspx.designer.cs">
       <DependentUpon>carlistt.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\CheckColorAvailability.aspx.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="view\admin\info.aspx.cs">
       <DependentUpon>info.aspx</DependentUpon>
@@ -474,13 +485,6 @@
     </Compile>
     <Compile Include="view\admin\rents.aspx.designer.cs">
       <DependentUpon>rents.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="view\admin\returns.aspx.cs">
-      <DependentUpon>returns.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="view\admin\returns.aspx.designer.cs">
-      <DependentUpon>returns.aspx</DependentUpon>
     </Compile>
     <Compile Include="view\admin\userdashboard.aspx.cs">
       <DependentUpon>userdashboard.aspx</DependentUpon>
