@@ -140,16 +140,18 @@ namespace WebApplication1.view.admin
                 }
 
                 string id = ViewState["SelectedCustomerId"].ToString().Trim();
-
                 if (!int.TryParse(id, out int custId))
                 {
                     ShowError("Недопустимый идентификатор клиента");
                     return;
                 }
+
                 string deleteRentsQuery = $"DELETE FROM RentTbl WHERE Customer = {custId}";
                 Conn.SetData(deleteRentsQuery);
+
                 string deleteAuthQuery = $"DELETE FROM CustomerAuthTbl WHERE CustId = {custId}";
                 Conn.SetData(deleteAuthQuery);
+
                 string deleteCustomerQuery = $"DELETE FROM CustomerTbl WHERE CustId = {custId}";
                 Conn.SetData(deleteCustomerQuery);
 

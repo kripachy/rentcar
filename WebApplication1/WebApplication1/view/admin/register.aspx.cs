@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace WebApplication1
 {
@@ -85,6 +86,9 @@ namespace WebApplication1
                 }
 
                 Session["UserEmail"] = email;
+                Session["UserId"] = newId;
+                Session["JustRegistered"] = true;
+
                 Response.Redirect("profile.aspx");
             }
         }

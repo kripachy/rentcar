@@ -51,6 +51,15 @@ namespace WebApplication1
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
 
         /// <summary>
+        /// ddlCity элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически созданное поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCity;
+
+        /// <summary>
         /// btnSave элемент управления.
         /// </summary>
         /// <remarks>

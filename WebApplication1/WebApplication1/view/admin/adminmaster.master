@@ -1,54 +1,85 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="adminmaster.master.cs" Inherits="WebApplication1.view.admin.adminmaster" %>
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="ru">
 <head runat="server">
-     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title><asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body style="background-color: #fff;">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - My ASP.NET Application</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+
+        /* Style for active link */
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        /* Optional: basic styling for user info and logout button */
+        .user-info {
+            color: white;
+            margin-right: 15px;
+        }
+
+        .btn-logout {
+            background-color: white;
+            color: #dc3545;
+            border: none;
+        }
+    </style>
+
+</head>
+<body>
     <form id="form1" runat="server">
-        <nav class="navbar navbar-expand-lg navbar bg-danger">
-            <div class="container-fluid">
-                <a class="navbar-brand text-white fw-bold" href="#">WheelDeal</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-danger">
+            <div class="container">
+                <a class="navbar-brand" runat="server" href="~/view/admin/home.aspx">WheelDeal Admin</a>
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("home.aspx") ? "active text-white fw-bold" : "text-white" %>' href="home.aspx">Главная</a>
+                            <asp:HyperLink ID="lnkHomeNav" runat="server" NavigateUrl="~/view/admin/home.aspx" CssClass="nav-link">
+                                <i class="fas fa-home me-1"></i>Главная
+                            </asp:HyperLink>
                         </li>
-                        <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("cars.aspx") ? "active text-white fw-bold" : "text-white" %>' href="cars.aspx">Автомобили</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("customers.aspx") ? "active text-white fw-bold" : "text-white" %>' href="customers.aspx">Клиенты</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rents.aspx") ? "active text-white fw-bold" : "text-white" %>' href="rents.aspx">Аренды</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("returns.aspx") ? "active text-white fw-bold" : "text-white" %>' href="returns.aspx">Возвраты</a>
-                        </li>
+                        <%-- Removed admin-specific links like Cars, Rents, Returns --%>
                     </ul>
+                    <%-- Removed user info and logout button from admin master for simplicity --%>
                 </div>
             </div>
         </nav>
 
-        <div class="container mt-4">
-            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        <div class="main-content">
+            <div class="container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
         </div>
 
-        <footer class="bg-dark text-white text-center py-3 mt-4">
+        <footer class="footer">
             <div class="container">
-                <p>&copy; 2025 WheelDeal. Все права защищены.</p>
+                <p class="text-center mb-0">&copy; 2025 WheelDeal. Все права защищены.</p>
             </div>
         </footer>
-
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

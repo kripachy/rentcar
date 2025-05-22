@@ -1,145 +1,94 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="profile.aspx.cs" Inherits="WebApplication1.profile" %>
-<!DOCTYPE html>
-<html>
-<head runat="server">
-    <title>Complete Profile - WheelDeal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body { background-color: #f8f9fa; padding-top: 40px; }
-        .container-box {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 12px;
-            background: #dc3545;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .form-control {
-            margin-bottom: 5px;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-        }
-        .form-control:focus {
-            border-color: #ffffff !important;
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
-        }
-        .btn-save {
-            background: white;
-            color: #dc3545;
-            font-weight: bold;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            width: 100%;
-            margin-top: 15px;
-            transition: all 0.3s;
-        }
-        .btn-save:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .error-message {
-            color: #ffcc00;
-            font-size: 12px;
-            margin-bottom: 15px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div class="container-box">
-            <h2 class="text-center mb-4">Заполните профиль</h2>
+﻿<%@ Page Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="profile.aspx.cs" Inherits="WebApplication1.profile" %>
 
-            <div class="form-group">
-                <asp:TextBox ID="txtName" runat="server" CssClass="form-control" autocomplete="off"
-                    Placeholder="ФИО"
-                    oninput="validateName(this, 'nameError')" />
-                <div id="nameError" class="error-message"></div>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="mb-0">Профиль пользователя</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="txtName" class="form-label">ФИО</label>
+                            <asp:TextBox ID="txtName" runat="server" CssClass="form-control" placeholder="Введите ФИО (например: Иванов Иван Иванович)"></asp:TextBox>
+                            <small class="text-muted">Формат: Фамилия Имя Отчество</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="txtPhone" class="form-label">Телефон</label>
+                            <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control" placeholder="Введите номер телефона (например: 80291234567)"></asp:TextBox>
+                            <small class="text-muted">Формат: 80XXXXXXXXX</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ddlCity" class="form-label">Город</label>
+                            <asp:DropDownList ID="ddlCity" runat="server" CssClass="form-select">
+                                <asp:ListItem Text="Выберите город" Value="" />
+                                <asp:ListItem Text="Минск" Value="Минск" />
+                                <asp:ListItem Text="Брест" Value="Брест" />
+                                <asp:ListItem Text="Витебск" Value="Витебск" />
+                                <asp:ListItem Text="Гомель" Value="Гомель" />
+                                <asp:ListItem Text="Гродно" Value="Гродно" />
+                                <asp:ListItem Text="Могилев" Value="Могилев" />
+                                <asp:ListItem Text="Барановичи" Value="Барановичи" />
+                                <asp:ListItem Text="Борисов" Value="Борисов" />
+                                <asp:ListItem Text="Пинск" Value="Пинск" />
+                                <asp:ListItem Text="Орша" Value="Орша" />
+                                <asp:ListItem Text="Мозырь" Value="Мозырь" />
+                                <asp:ListItem Text="Солигорск" Value="Солигорск" />
+                                <asp:ListItem Text="Новополоцк" Value="Новополоцк" />
+                                <asp:ListItem Text="Лида" Value="Лида" />
+                                <asp:ListItem Text="Молодечно" Value="Молодечно" />
+                                <asp:ListItem Text="Полоцк" Value="Полоцк" />
+                                <asp:ListItem Text="Жлобин" Value="Жлобин" />
+                                <asp:ListItem Text="Светлогорск" Value="Светлогорск" />
+                                <asp:ListItem Text="Речица" Value="Речица" />
+                                <asp:ListItem Text="Жодино" Value="Жодино" />
+                                <asp:ListItem Text="Слуцк" Value="Слуцк" />
+                                <asp:ListItem Text="Кобрин" Value="Кобрин" />
+                                <asp:ListItem Text="Волковыск" Value="Волковыск" />
+                                <asp:ListItem Text="Калинковичи" Value="Калинковичи" />
+                                <asp:ListItem Text="Сморгонь" Value="Сморгонь" />
+                                <asp:ListItem Text="Рогачев" Value="Рогачев" />
+                                <asp:ListItem Text="Дзержинск" Value="Дзержинск" />
+                                <asp:ListItem Text="Новогрудок" Value="Новогрудок" />
+                                <asp:ListItem Text="Бобруйск" Value="Бобруйск" />
+                            </asp:DropDownList>
+                        </div>
+
+                        <hr />
+
+                        <h5>Изменить Email и Пароль</h5>
+
+                        <div class="mb-3">
+                            <label for="txtNewEmail" class="form-label">Новый Email (необязательно)</label>
+                            <asp:TextBox ID="txtNewEmail" runat="server" CssClass="form-control" placeholder="Введите новую почту"></asp:TextBox>
+                             <small class="text-muted">Оставьте пустым, чтобы не менять</small>
+                        </div>
+
+                         <div class="mb-3">
+                            <label for="txtCurrentPassword" class="form-label">Текущий Пароль</label>
+                            <asp:TextBox ID="txtCurrentPassword" runat="server" TextMode="Password" CssClass="form-control" placeholder="Введите текущий пароль"></asp:TextBox>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="txtNewPassword" class="form-label">Новый Пароль (необязательно)</label>
+                            <asp:TextBox ID="txtNewPassword" runat="server" TextMode="Password" CssClass="form-control" placeholder="Введите новый пароль"></asp:TextBox>
+                             <small class="text-muted">Оставьте пустым, чтобы не менять. Мин. 8 символов.</small>
+                        </div>
+
+                         <div class="mb-3">
+                            <label for="txtConfirmNewPassword" class="form-label">Подтвердите Новый Пароль</label>
+                            <asp:TextBox ID="txtConfirmNewPassword" runat="server" TextMode="Password" CssClass="form-control" placeholder="Повторите новый пароль"></asp:TextBox>
+                        </div>
+
+                         <asp:Label ID="lblPasswordChangeMsg" runat="server" Visible="false" CssClass="d-block text-center"></asp:Label>
+
+                        <div class="d-grid gap-2">
+                            <asp:Button ID="btnSave" runat="server" Text="Сохранить Изменения" CssClass="btn btn-danger" OnClick="btnSave_Click" />
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control" autocomplete="off"
-                    Placeholder="Телефон"
-                    oninput="validatePhone(this, 'phoneError')" />
-                <div id="phoneError" class="error-message"></div>
-            </div>
-
-            <div class="form-group">
-                <asp:TextBox ID="txtAddress" runat="server" CssClass="form-control" autocomplete="off"
-                    Placeholder="Адрес"
-                    oninput="validateAddress(this, 'addressError')" />
-                <div id="addressError" class="error-message"></div>
-            </div>
-
-            <asp:Button ID="btnSave" runat="server" Text="СОХРАНИТЬ ПРОФИЛЬ"
-                CssClass="btn-save" OnClick="btnSave_Click" Enabled="false" />
         </div>
-
-        <script>
-            function validateInput(input, errorId, regex, errorMessage) {
-                const errorElement = document.getElementById(errorId);
-                const value = input.value;
-                if (!regex.test(value) && value !== "") {
-                    errorElement.textContent = errorMessage;
-                    errorElement.style.display = "block";
-                    return false;
-                } else {
-                    errorElement.style.display = "none";
-                    return true;
-                }
-            }
-
-            function validateName(input, errorId) {
-                const isValid = validateInput(
-                    input,
-                    errorId,
-                    /^[a-zA-Zа-яА-ЯёЁ\s'-]+$/g,
-                    "Допускаются только буквы"
-                );
-                checkForm();
-                return isValid;
-            }
-
-            function validatePhone(input, errorId) {
-                const isValid = validateInput(
-                    input,
-                    errorId,
-                    /^[0-9+\-()\s]{6,}$/g,
-                    "Допускаются только цифры и символы + - ( )"
-                );
-                checkForm();
-                return isValid;
-            }
-
-            function validateAddress(input, errorId) {
-                const isValid = validateInput(
-                    input,
-                    errorId,
-                    /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/g,
-                    "Недопустимые символы в адресе"
-                );
-                checkForm();
-                return isValid;
-            }
-
-            function checkForm() {
-                const nameValid = /^[a-zA-Zа-яА-ЯёЁ\s'-]+$/.test(document.getElementById('<%= txtName.ClientID %>').value);
-                const phoneValid = /^[0-9+\-()\s]{6,}$/.test(document.getElementById('<%= txtPhone.ClientID %>').value);
-                const addressValid = /^[a-zA-Zа-яА-ЯёЁ0-9\s,.-]+$/.test(document.getElementById('<%= txtAddress.ClientID %>').value);
-
-                document.getElementById('<%= btnSave.ClientID %>').disabled = !(nameValid && phoneValid && addressValid);
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('<%= txtName.ClientID %>').addEventListener('input', checkForm);
-                document.getElementById('<%= txtPhone.ClientID %>').addEventListener('input', checkForm);
-                document.getElementById('<%= txtAddress.ClientID %>').addEventListener('input', checkForm);
-                checkForm();
-            });
-        </script>
-    </form>
-</body>
-</html>
+    </div>
+</asp:Content>

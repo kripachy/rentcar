@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -61,6 +60,9 @@
     </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\lib\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -148,11 +150,6 @@
       <HintPath>..\packages\Microsoft.AspNet.FriendlyUrls.Core.1.0.2\lib\net45\Microsoft.AspNet.FriendlyUrls.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
@@ -305,14 +302,16 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="ViewSwitcher.ascx" />
+    <Content Include="view\admin\AstonMartinVanquish.aspx" />
+    <Content Include="view\admin\carlistt.aspx" />
     <Content Include="view\admin\info.aspx" />
-    <Content Include="view\admin\rentauto.aspx" />
+    <Content Include="view\admin\login.aspx" />
+    <Content Include="view\admin\logout.aspx" />
     <Content Include="view\admin\usermaster.master" />
     <None Include="view\admin\adminmaster.master" />
     <Content Include="view\admin\cars.aspx" />
     <Content Include="view\admin\customers.aspx" />
     <Content Include="view\admin\home.aspx" />
-    <Content Include="view\admin\login.aspx" />
     <Content Include="view\admin\profile.aspx" />
     <Content Include="view\admin\register.aspx" />
     <Content Include="view\admin\rents.aspx" />
@@ -321,6 +320,7 @@
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
+    <Content Include="view\login.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -372,6 +372,20 @@
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\AstonMartinVanquish.aspx.cs">
+      <DependentUpon>AstonMartinVanquish.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\AstonMartinVanquish.aspx.designer.cs">
+      <DependentUpon>AstonMartinVanquish.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\carlistt.aspx.cs">
+      <DependentUpon>carlistt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\carlistt.aspx.designer.cs">
+      <DependentUpon>carlistt.aspx</DependentUpon>
+    </Compile>
     <Compile Include="view\admin\info.aspx.cs">
       <DependentUpon>info.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -379,12 +393,16 @@
     <Compile Include="view\admin\info.aspx.designer.cs">
       <DependentUpon>info.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view\admin\rentauto.aspx.cs">
-      <DependentUpon>rentauto.aspx</DependentUpon>
+    <Compile Include="view\admin\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="view\admin\rentauto.aspx.designer.cs">
-      <DependentUpon>rentauto.aspx</DependentUpon>
+    <Compile Include="view\admin\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\logout.aspx.cs">
+      <DependentUpon>logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="view\admin\usermaster.master.cs">
       <DependentUpon>usermaster.master</DependentUpon>
@@ -421,13 +439,6 @@
     <Compile Include="view\admin\home.aspx.designer.cs">
       <DependentUpon>home.aspx</DependentUpon>
     </Compile>
-    <Compile Include="view\admin\login.aspx.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="view\admin\login.aspx.designer.cs">
-      <DependentUpon>login.aspx</DependentUpon>
-    </Compile>
     <Compile Include="view\admin\profile.aspx.cs">
       <DependentUpon>profile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -462,6 +473,13 @@
     </Compile>
     <Compile Include="view\admin\userdashboard.aspx.designer.cs">
       <DependentUpon>userdashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -511,11 +529,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

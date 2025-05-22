@@ -285,7 +285,7 @@
     <div class="cta-section">
         <h2 class="cta-title">Готовы к незабываемым впечатлениям?</h2>
         <p class="lead mb-4">Выберите автомобиль своей мечты прямо сейчас</p>
-        <a href="rentauto.aspx" class="btn-cta">Арендовать сейчас</a>
+        <a href="carlistt.aspx" class="btn-cta">Арендовать сейчас</a>
     </div>
 </div>
 

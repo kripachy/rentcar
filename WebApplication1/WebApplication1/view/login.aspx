@@ -154,9 +154,6 @@
             <asp:Label ID="ErrorMsg" runat="server" CssClass="error-message" Visible="false"></asp:Label>
 
             <div class="links">
-                <a href="~/view/forgotpassword.aspx" runat="server">
-                    <i class="fas fa-key me-1"></i>Забыли пароль?
-                </a>
                 <div class="divider">
                     <span>или</span>
                 </div>
