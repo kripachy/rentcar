@@ -58,7 +58,6 @@
                     </div>
                 </div>
 
-                <!-- Контактная информация и карта -->
                 <div class="card shadow">
                     <div class="card-body">
                         <h3 class="text-center mb-4">Наши контакты</h3>
@@ -114,6 +113,6 @@
         </div>
     </div>
 
-    <!-- Добавляем Font Awesome для иконок -->
+  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </asp:Content>

@@ -54,7 +54,7 @@ namespace WebApplication1.view.admin
             if (!IsPostBack)
             {
                 carImage.Src = "~/assets/images/Слой 1.png";
-                carImage.Visible = true;  // Убедимся, что картинка видна при загрузке страницы
+                carImage.Visible = true; 
                 ddlBrand.Items.Clear();
                 ddlBrand.Items.Insert(0, new ListItem("Выберите марку", ""));
                 foreach (var brand in brandModelMap.Keys)
@@ -342,8 +342,7 @@ namespace WebApplication1.view.admin
                 txtLicence.Text = row.Cells[1].Text;
                 string brand = row.Cells[2].Text;
                 ddlBrand.SelectedValue = brand;
-                
-                // Показываем логотип марки при выборе из таблицы
+           
                 if (brandImageMap.ContainsKey(brand))
                 {
                     carImage.Src = brandImageMap[brand];
@@ -352,7 +351,7 @@ namespace WebApplication1.view.admin
                 else
                 {
                     carImage.Src = "~/assets/images/Слой 1.png";
-                    carImage.Visible = true;  // Показываем дефолтную картинку
+                    carImage.Visible = true;  
                 }
 
                 ddlBrand_SelectedIndexChanged(null, null);
@@ -477,7 +476,7 @@ namespace WebApplication1.view.admin
             ViewState["SelectedCarKey"] = null;
             carlist.SelectedIndex = -1;
             carImage.Src = "~/assets/images/Слой 1.png";
-            carImage.Visible = true;  // Показываем дефолтную картинку при очистке полей
+            carImage.Visible = true; 
         }
     }
 }

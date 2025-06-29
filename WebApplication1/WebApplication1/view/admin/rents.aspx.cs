@@ -55,7 +55,7 @@ namespace WebApplication1.view.admin
                 string returnDate = ((TextBox)row.Cells[4].Controls[0]).Text.Trim();
                 string fees = ((TextBox)row.Cells[5].Controls[0]).Text.Trim();
 
-                // Обновляем только RentTbl, а имя клиента и номер машины лучше не менять в продакшене.
+                
                 string query = $"UPDATE RentTbl SET RentDate = '{rentDate}', ReturnDate = '{returnDate}', Fees = {fees} WHERE RentId = {rentId}";
                 Conn.SetData(query);
 
@@ -63,7 +63,7 @@ namespace WebApplication1.view.admin
             }
             catch (Exception ex)
             {
-                // For debugging, you could log the error or use Response.Write(ex.Message);
+                
             }
         }
 
@@ -74,17 +74,17 @@ namespace WebApplication1.view.admin
                 int rentId = Convert.ToInt32(gvCars.DataKeys[e.RowIndex].Value);
                 string carPlateNum = null;
 
-                // Define connection string locally
+                
                 string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbfilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    SqlTransaction transaction = conn.BeginTransaction(); // Start transaction
+                    SqlTransaction transaction = conn.BeginTransaction(); 
 
                     try
                     {
-                        // 1. Retrieve the Car Plate Number before deleting the rent record
+                        
                         string getCarPlateQuery = "SELECT Car FROM RentTbl WHERE RentId = @RentId";
                         using (SqlCommand cmd = new SqlCommand(getCarPlateQuery, conn, transaction))
                         {
@@ -96,7 +96,7 @@ namespace WebApplication1.view.admin
                             }
                         }
 
-                        // 2. Delete the rent record from RentTbl
+                      
                         string deleteRentQuery = "DELETE FROM RentTbl WHERE RentId = @RentId";
                         using (SqlCommand cmd = new SqlCommand(deleteRentQuery, conn, transaction))
                         {
@@ -104,7 +104,7 @@ namespace WebApplication1.view.admin
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 3. Update the car status to 'Available' in CarTbl if carPlateNum was found
+                     
                         if (!string.IsNullOrEmpty(carPlateNum))
                         {
                             string updateCarStatusQuery = "UPDATE CarTbl SET Status = 'Available' WHERE CPlateNum = @CPlateNum";
@@ -115,20 +115,20 @@ namespace WebApplication1.view.admin
                             }
                         }
 
-                        transaction.Commit(); // Commit transaction if all operations are successful
+                        transaction.Commit(); 
 
-                        ShowRents(); // Refresh the GridView
+                        ShowRents();
                     }
                     catch (Exception exT)
                     {
-                        transaction.Rollback(); // Rollback transaction on error
-                        throw exT; // Re-throw exception
+                        transaction.Rollback(); 
+                        throw exT;
                     }
                 }
             }
             catch (Exception ex)
             {
-                // For debugging, you could log the error or use Response.Write(ex.Message);
+               
             }
         }
     }

@@ -6,13 +6,13 @@
     body {
         display: flex;
         flex-direction: column;
-        min-height: 100vh; /* Minimum height of the viewport */
+        min-height: 100vh; 
         background-color: #f8f9fa;
         font-family: 'Segoe UI', sans-serif;
     }
 
     .main-content {
-        flex-grow: 1; /* Main content takes up all available space */
+        flex-grow: 1; 
         padding: 20px 0;
     }
 
@@ -142,7 +142,6 @@
 </div>
 
 <div class="container">
-    <!-- Быстрые действия -->
     <div class="row">
         <div class="col-md-12">
             <div class="quick-actions animate-fade-in">
@@ -166,12 +165,7 @@
                             Управление арендой
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="returns.aspx" class="action-button">
-                            <i class="fas fa-undo"></i>
-                            Возврат автомобилей
-                        </a>
-                    </div>
+                  
                 </div>
             </div>
         </div>

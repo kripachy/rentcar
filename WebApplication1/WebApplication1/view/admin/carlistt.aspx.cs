@@ -38,10 +38,8 @@ namespace WebApplication1.view.admin
         {
             if (!IsPostBack)
             {
-                // Check if user is logged in
                 if (Session["UserEmail"] == null)
                 {
-                    // Store the current URL in session to redirect back after login
                     Session["ReturnUrl"] = Request.RawUrl;
                     Response.Redirect("~/view/login.aspx");
                 }
@@ -190,7 +188,6 @@ namespace WebApplication1.view.admin
                 case "Audi TT":
                     return ResolveUrl("~/view/admin/AudiTT.aspx");
                 default:
-                    // Для других машин можно добавить дополнительные case или вернуть дефолтную страницу
                     return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
             }
         }

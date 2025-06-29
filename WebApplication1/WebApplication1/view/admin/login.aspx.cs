@@ -19,7 +19,7 @@ namespace WebApplication1.view.admin
         {
             functions = new WebApplication1.Models.Functions();
             
-            // Проверяем, не пытаемся ли мы выйти из системы
+            
             if (Request.QueryString["logout"] != null)
             {
                 Session.Clear();
@@ -27,7 +27,7 @@ namespace WebApplication1.view.admin
                 return;
             }
 
-            // Если это не постбэк и пользователь уже вошел, перенаправляем только если это не страница входа
+           
             if (!IsPostBack && Session["UserEmail"] != null && !Request.Path.EndsWith("login.aspx", StringComparison.OrdinalIgnoreCase))
             {
                 string userEmail = Session["UserEmail"].ToString();
@@ -65,16 +65,16 @@ namespace WebApplication1.view.admin
                 }
             }
 
-            // Проверяем учетные данные в таблице авторизации для обычных пользователей
+            
             string query = $"SELECT * FROM CustomerAuthTbl WHERE CustEmail = '{email}' AND CustPassword = '{password}'";
             DataTable dt = functions.GetData(query);
 
             if (dt.Rows.Count > 0)
             {
-                // Сохраняем email пользователя в сессии
+                
                 Session["UserEmail"] = email;
 
-                // Перенаправляем в зависимости от роли (для обычных пользователей)
+              
                 RedirectBasedOnRole(email);
             }
             else
@@ -87,12 +87,12 @@ namespace WebApplication1.view.admin
         {
             if (email.Equals("admin@gmail.com", StringComparison.OrdinalIgnoreCase))
             {
-                // Перенаправляем на страницу администратора
+                
                 Response.Redirect("~/view/admin/home.aspx");
             }
             else
             {
-                // Перенаправляем на страницу пользователя
+                
                 Response.Redirect("~/view/admin/userdashboard.aspx");
             }
         }
@@ -105,12 +105,12 @@ namespace WebApplication1.view.admin
 
         protected void btnSendCode_Click(object sender, EventArgs e)
         {
-            // Логика для кнопки "Получить временный пароль"
+            
         }
 
         protected void btnResetPassword_Click(object sender, EventArgs e)
         {
-            // Логика для кнопки "Сбросить пароль"
+            
         }
 
         protected void btnSendPassword_Click(object sender, EventArgs e)
@@ -123,7 +123,7 @@ namespace WebApplication1.view.admin
                 return;
             }
 
-            // Проверяем существование email в базе данных
+            
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -140,12 +140,12 @@ namespace WebApplication1.view.admin
                 }
             }
 
-            // Генерируем временный пароль
+           
             string tempPassword = GenerateTemporaryPassword();
 
             try
             {
-                // Отправляем email
+                
                 using (MailMessage mail = new MailMessage())
                 {
                     mail.From = new MailAddress("wheeldeal989@gmail.com");
@@ -162,12 +162,10 @@ namespace WebApplication1.view.admin
                     }
                 }
 
-                // Обновляем пароль в базе данных CustomerAuthTbl
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    // Обновляем пароль в CustomerAuthTbl
                     string updateAuthQuery = "UPDATE CustomerAuthTbl SET CustPassword = @Password WHERE CustEmail = @Email";
                     using (SqlCommand cmd = new SqlCommand(updateAuthQuery, conn))
                     {
@@ -176,9 +174,8 @@ namespace WebApplication1.view.admin
                         cmd.ExecuteNonQuery();
                     }
 
-                    // Находим CustId по Email из CustomerAuthTbl
                     string getCustIdQuery = "SELECT CustId FROM CustomerAuthTbl WHERE CustEmail = @Email";
-                    int custId = -1; // Default value if not found
+                    int custId = -1; 
                     using (SqlCommand cmd = new SqlCommand(getCustIdQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@Email", email);
@@ -189,7 +186,6 @@ namespace WebApplication1.view.admin
                         }
                     }
 
-                    // Обновляем пароль в CustomerTbl, если CustId найден
                     if (custId != -1)
                     {
                          string updateCustomerQuery = "UPDATE CustomerTbl SET CustPassword = @Password WHERE CustId = @CustId";
@@ -200,24 +196,22 @@ namespace WebApplication1.view.admin
                              int rowsAffected = cmd.ExecuteNonQuery();
                              if (rowsAffected > 0)
                              {
-                                 // Добавляем сообщение об успешном обновлении CustomerTbl (для отладки)
                                  ShowRecoveryMessage("Пароль обновлен в CustomerTbl", false);
                              }
                              else
                              {
-                                 // Добавляем сообщение о том, что CustId не найден в CustomerTbl (для отладки)
+                                 
                                  ShowRecoveryMessage("Ошибка: CustId не найден в CustomerTbl для обновления", true);
                              }
                          }
                     }
                      else
                     {
-                         // Добавляем сообщение о том, что CustId не найден в CustomerAuthTbl (для отладки)
+                        
                          ShowRecoveryMessage("Ошибка: Email найден в Auth, но не удалось получить CustId", true);
                     }
                 }
 
-                //showrecoverymessage("Временный пароль отправлен на ваш email", false);
             }
             catch (Exception ex)
             {
