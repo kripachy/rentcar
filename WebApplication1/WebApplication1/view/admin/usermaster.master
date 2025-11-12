@@ -7,6 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title><asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../Content/custom.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
     <style>
         html, body {
             height: 100%;
@@ -14,7 +16,8 @@
         }
 
         body {
-            background-color: #f8f9fa;
+            background-color: #121212;
+            color: #e0e0e0;
         }
 
         form {
@@ -23,22 +26,15 @@
             min-height: 100vh;
         }
 
-        .navbar {
-            margin-bottom: 0;
-        }
-
         .main-content {
             flex: 1 0 auto;
-            padding: 20px 0;
-        }
-
-        .main-content .container {
+            padding: 0;
         }
 
         .footer {
             flex-shrink: 0;
-            background-color: #343a40;
-            color: white;
+            background-color: #1a1a1a;
+            color: #00ffff;
             padding: 1rem 0;
             margin-top: auto;
         }
@@ -50,9 +46,9 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <nav class="navbar navbar-expand-lg navbar bg-danger">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand text-white fw-bold" href="#">WheelDeal</a>
+                <a class="navbar-brand text-white" href="#" style="font-weight: bold;">WheelDeal</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -60,18 +56,18 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("userdashboard.aspx") ? "active text-white fw-bold" : "text-white" %>' href="userdashboard.aspx">Главная</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("userdashboard.aspx") ? "active-cyan fw-bold" : "text-white" %>' href="userdashboard.aspx">Главная</a>
                         </li>
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("carlistt.aspx") ? "active text-white fw-bold" : "text-white" %>' href="carlistt.aspx">Арендовать</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("carlistt.aspx") ? "active-cyan fw-bold" : "text-white" %>' href="carlistt.aspx">Арендовать</a>
                         </li>
                         <% if (Session["UserEmail"] != null) { %>
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rentttt.aspx") ? "active text-white fw-bold" : "text-white" %>' href="rentttt.aspx">Просмотреть аренды</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("rentttt.aspx") ? "active-cyan fw-bold" : "text-white" %>' href="rentttt.aspx">Просмотреть аренды</a>
                         </li>
                         <% } %>
                         <li class="nav-item">
-                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("info.aspx") ? "active text-white fw-bold" : "text-white" %>' href="info.aspx">О нас</a>
+                            <a class='nav-link <% = Page.AppRelativeVirtualPath.Contains("info.aspx") ? "active-cyan fw-bold" : "text-white" %>' href="info.aspx">О нас</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav">
@@ -87,10 +83,10 @@
                             <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <%= Session["UserEmail"] %>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="profile.aspx">Профиль</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="logout.aspx">Выйти</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end bg-dark" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item text-light" href="profile.aspx">Профиль</a></li>
+                                <li><hr class="dropdown-divider border-secondary"></li>
+                                <li><a class="dropdown-item text-light" href="logout.aspx">Выйти</a></li>
                             </ul>
                         </li>
                         <% } %>
@@ -100,14 +96,14 @@
         </nav>
 
         <div class="main-content">
-            <div class="container">
+            <div>
                 <asp:ContentPlaceHolder ID="MainContent" runat="server" />
             </div>
         </div>
 
         <footer class="footer">
             <div class="container">
-                <p class="text-center mb-0">&copy; 2025 WheelDeal. Все права защищены.</p>
+                <p class="text-center mb-0">&copy; 2025 <span style="color: #00ffff;">WheelDeal</span>. Все права защищены.</p>
             </div>
         </footer>
     </form>
