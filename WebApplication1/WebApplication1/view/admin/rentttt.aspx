@@ -1,8 +1,40 @@
 ﻿<%@ Page Title="Мои Аренды" Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="rentttt.aspx.cs" Inherits="WebApplication1.view.admin.rentttt" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <style>
+        .table {
+            background-color: #212529;
+            color: #e0e0e0;
+        }
+        .table th {
+            color: #00ffff;
+        }
+        .table-bordered {
+            border: 1px solid #00ffff;
+        }
+        .table-bordered th, .table-bordered td {
+            border: 1px solid #00ffff;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #2c3e50;
+            color: #fff;
+        }
+        .btn-danger {
+            background-color: #00ffff;
+            border-color: #00ffff;
+            color: #000;
+        }
+        .btn-danger:hover {
+            background-color: #00e6e6;
+            border-color: #00e6e6;
+        }
+        .img-thumbnail {
+            background-color: #2c3e50;
+            border: 1px solid #00ffff;
+        }
+    </style>
     <div class="container mt-4">
-        <h1 class="text-center text-danger mb-4">Мои Текущие Аренды</h1>
+        <h1 class="text-center mb-4" style="color: #00ffff;">Мои Текущие Аренды</h1>
 
         <div class="row">
             <div class="col-12">

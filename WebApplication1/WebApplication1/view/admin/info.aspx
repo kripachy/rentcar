@@ -1,6 +1,49 @@
-﻿<%@ Page Title="О нас" Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="info.aspx.cs" Inherits="WebApplication1.view.admin.info" %>
+<%@ Page Title="О нас" Language="C#" MasterPageFile="~/view/admin/usermaster.master" AutoEventWireup="true" CodeBehind="info.aspx.cs" Inherits="WebApplication1.view.admin.info" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <style>
+        body {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+
+        .card {
+            background-color: #1a1a1a !important;
+            border: 1px solid #00ffff !important;
+            color: #fff !important;
+        }
+
+        .card-body h2,
+        .card-body h3,
+        .card-body h4,
+        .card-body h5 {
+            color: #00ffff !important;
+        }
+
+        .card-body p,
+        .card-body li {
+            color: #fff !important;
+        }
+
+        .text-danger {
+            color: #00ffff !important;
+        }
+
+        .btn-outline-danger {
+            color: #00ffff !important;
+            border-color: #00ffff !important;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #00ffff !important;
+            color: #000 !important;
+        }
+
+        .social-links .fab {
+            color: #00ffff !important;
+        }
+    </style>
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-12">
@@ -94,16 +137,8 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="map-container" style="height: 400px;">
-                                    <iframe 
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.692510629614!2d27.6783!3d53.9433!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcf0c9c0c3c3f%3A0x0!2z0KPQstC40YHRgtCw0L3QsCDQo9GA0YPQv9C-0YfQutCwLCAyMdCy!5e0!3m2!1sru!2sby!4v1647881234567!5m2!1sru!2sby" 
-                                        width="100%" 
-                                        height="100%" 
-                                        style="border:0;" 
-                                        allowfullscreen="" 
-                                        loading="lazy"
-                                        referrerpolicy="no-referrer-when-downgrade">
-                                    </iframe>
+                                <div class="map-container" style="height: 400px; filter: grayscale(1) invert(1);">
+                                    <iframe src="https://yandex.ru/maps/212/minsk/?ll=27.6800,53.9433&z=15&text=улица%20Уручская%2C%2021%D0%B2" width="100%" height="100%" frameborder="0" allowfullscreen="true" style="position:relative;"></iframe>
                                 </div>
                             </div>
                         </div>
