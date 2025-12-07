@@ -34,7 +34,7 @@ namespace WebApplication1
                 return;
             }
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True";
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {

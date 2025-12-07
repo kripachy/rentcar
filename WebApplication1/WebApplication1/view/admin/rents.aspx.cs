@@ -75,7 +75,7 @@ namespace WebApplication1.view.admin
                 string carPlateNum = null;
 
                 
-                string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbfilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+                string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {

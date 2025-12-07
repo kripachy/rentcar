@@ -56,7 +56,7 @@ namespace WebApplication1.view.admin
         private void LoadCars(string sortBy)
         {
             List<CarInfo> cars = new List<CarInfo>();
-            string constr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=False";
+            string constr = WebApplication1.Models.Functions.GetConnectionString();
             string defaultImageUrl = ResolveUrl("~/images/default_car.png");
             
             string workspaceRoot = Server.MapPath("~");

@@ -10,7 +10,7 @@ namespace WebApplication1.view.admin
 {
     public partial class usermaster : System.Web.UI.MasterPage
     {
-        protected string connStr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True";
+        protected string connStr = WebApplication1.Models.Functions.GetConnectionString();
 
         public int? GetCurrentUserId()
         {

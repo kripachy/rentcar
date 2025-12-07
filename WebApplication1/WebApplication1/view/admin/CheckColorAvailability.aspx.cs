@@ -14,7 +14,7 @@ namespace WebApplication1.view.admin
     [ScriptService]
     public class CheckColorAvailability : System.Web.Services.WebService
     {
-        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=False";
+        private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]

@@ -13,7 +13,7 @@ namespace WebApplication1.view.admin
 {
     public partial class AudiTT : System.Web.UI.Page
     {
-        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=False";
+        private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
         protected void Page_Load(object sender, EventArgs e)
         {

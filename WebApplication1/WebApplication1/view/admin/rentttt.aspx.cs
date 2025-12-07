@@ -12,7 +12,7 @@ namespace WebApplication1.view.admin
 {
     public partial class rentttt : System.Web.UI.Page
     {
-        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True";
+        private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
         private Dictionary<string, string> specificCarImages = new Dictionary<string, string>
         {
             {"Aston Martin Vanquish", "~/colorcars/Aston Martin Vanquish/white/1.jpg"},

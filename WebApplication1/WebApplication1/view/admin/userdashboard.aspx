@@ -119,9 +119,11 @@
 
         <!-- Почему выбирают нас -->
         <div class="section-block">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-6">
-                    <h2 class="benefits-title">Почему выбирают нас</h2>
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Почему выбирают нас</h2>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4 col-md-6">
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="benefit-content">
@@ -129,6 +131,8 @@
                             <p>Адаптируемся под ваши потребности и предлагаем удобные условия оплаты</p>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="benefit-content">
@@ -136,19 +140,13 @@
                             <p>Все автомобили регулярно обслуживаются и находятся в отличном состоянии</p>
                         </div>
                     </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
                     <div class="benefit-item">
                         <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
                         <div class="benefit-content">
                             <h4>Прозрачные цены</h4>
                             <p>Никаких скрытых платежей - вы платите только за то, что указано в договоре</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="benefits-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-car-side fa-5x"></i>
-                            <p>Премиум сервис</p>
                         </div>
                     </div>
                 </div>

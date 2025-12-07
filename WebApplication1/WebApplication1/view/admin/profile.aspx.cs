@@ -47,7 +47,7 @@ namespace WebApplication1
                  return;
             }
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -217,7 +217,7 @@ namespace WebApplication1
             if (Session["UserId"] == null)
                  return false;
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -237,7 +237,7 @@ namespace WebApplication1
              if (Session["UserId"] == null)
                  return false; // Или true, зависит от желаемой логики при отсутствии пользователя в сессии
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
             using (var connection = new SqlConnection(connectionString))
             {
@@ -311,7 +311,7 @@ namespace WebApplication1
                  throw new Exception("User ID not found in session."); // Бросаем исключение, если UserId отсутствует
             }
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True;Connect Timeout=30;";
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
             using (var connection = new SqlConnection(connectionString))
             {

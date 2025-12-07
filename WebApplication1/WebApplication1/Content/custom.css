@@ -3,11 +3,16 @@ body {
     background-color: #ffffff; /* White background */
     color: #000000; /* Black text */
     font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 /* Navbar */
 .navbar.bg-dark {
     background-color: #000000 !important; /* Black navbar */
+    position: relative;
+    z-index: 1000;
+    margin-bottom: 0;
 }
 
 .navbar-dark .nav-link {
@@ -29,38 +34,98 @@ body {
 /* Slider */
 .slider-container {
     background-color: #000000;
-    padding: 2rem 0;
+    padding: 0;
+    margin-top: 0;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+
+.hero-slider {
+    min-height: 500px;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-slider .carousel-inner {
+    min-height: 500px;
+}
+
+.hero-slider .carousel-item {
+    min-height: 500px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
 }
 
 .hero-slider .carousel-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.hero-slider .carousel-caption {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
 }
 
 .hero-slider .carousel-caption h1 {
-    color: #ffffff;
-    text-shadow: none !important;
+    color: #00bcd4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+    font-size: 2.5rem;
+    font-weight: 700;
 }
 .hero-slider .carousel-caption p {
     color: #f0f0f0;
 }
 
+.carousel-indicators {
+    z-index: 10;
+    margin-bottom: 1rem;
+}
+
 .carousel-indicators .active {
-    background-color: #ffffff;
+    background-color: #00bcd4;
 }
 .carousel-indicators button {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
+.carousel-control-prev,
+.carousel-control-next {
+    z-index: 10;
+    width: 5%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 2rem;
+    height: 2rem;
+}
+
 
 /* Title */
 .site-title-container {
-    background-color: #ffffff;
+    background-color: #000000;
     padding: 2rem 0;
     text-align: center;
+    position: relative;
+    z-index: 3;
+    margin-top: 0;
 }
 
 .site-title {
-    color: #000000 !important;
+    color: #ffffff !important;
     text-shadow: none !important;
     font-size: 3rem;
     font-weight: bold;
@@ -79,6 +144,9 @@ body {
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .feature-icon-light {
@@ -120,4 +188,553 @@ body {
 }
 .footer span {
     color: #ffffff !important;
+}
+
+/* Unified Section */
+.unified-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: 80px 0;
+}
+
+.section-block {
+    margin-bottom: 80px;
+}
+
+.section-block:last-child {
+    margin-bottom: 0;
+}
+
+.section-header {
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    font-weight: 300;
+}
+
+/* Process Cards - Как это работает */
+.process-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    border: 2px solid transparent;
+    overflow: hidden;
+}
+
+.process-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00bcd4, #0097a7);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.process-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 188, 212, 0.2);
+    border-color: #00bcd4;
+}
+
+.process-card:hover::before {
+    transform: scaleX(1);
+}
+
+.process-number {
+    position: absolute;
+    top: -15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #00bcd4, #0097a7);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0, 188, 212, 0.5);
+    z-index: 2;
+    border: 3px solid #ffffff;
+}
+
+.process-icon {
+    color: #00bcd4;
+    font-size: 3.5rem;
+    margin: 20px 0 25px 0;
+    transition: all 0.3s ease;
+}
+
+.process-card:hover .process-icon {
+    transform: scale(1.1) rotate(5deg);
+    color: #0097a7;
+}
+
+.process-card h4 {
+    color: #000000;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.process-card p {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Benefits Section - Почему выбирают нас */
+.benefits-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 40px;
+}
+
+/* Удаляем стили для benefits-image, так как блок удален */
+.benefits-image,
+.image-placeholder {
+    display: none;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.benefit-item:hover {
+    box-shadow: 0 5px 20px rgba(0, 188, 212, 0.15);
+    transform: translateY(-5px);
+}
+
+.benefit-icon {
+    color: #00bcd4;
+    font-size: 1.8rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.benefit-content h4 {
+    color: #000000;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.benefit-content p {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* Car List Page Styles */
+.car-list-container {
+    padding: 40px 0 80px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    min-height: calc(100vh - 200px);
+}
+
+.car-list-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.car-list-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    display: inline-block;
+}
+
+.car-list-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #00bcd4, #0097a7);
+    border-radius: 2px;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+    padding: 0 15px;
+}
+
+.custom-dropdown {
+    padding: 10px 40px 10px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 1rem;
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    font-weight: 500;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.custom-dropdown:hover {
+    border-color: #00bcd4;
+    box-shadow: 0 2px 8px rgba(0, 188, 212, 0.15);
+}
+
+.custom-dropdown:focus {
+    outline: none;
+    border-color: #00bcd4;
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+}
+
+/* Стили для элементов выпадающего списка - скругленные и одного цвета */
+.custom-dropdown option {
+    padding: 12px 15px;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    min-height: 40px;
+    line-height: 1.5;
+    border-radius: 8px;
+    margin: 2px 0;
+}
+
+.custom-dropdown option:hover,
+.custom-dropdown option:focus {
+    background-color: #00bcd4 !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+}
+
+.custom-dropdown option:checked,
+.custom-dropdown option[selected] {
+    background-color: #00bcd4 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* Для Firefox - скругление выпадающего списка */
+@-moz-document url-prefix() {
+    .custom-dropdown {
+        text-indent: 0.01px;
+        text-overflow: '';
+        border-radius: 8px;
+    }
+    
+    .custom-dropdown option {
+        border-radius: 8px;
+        background-color: #ffffff !important;
+    }
+}
+
+/* Для WebKit браузеров (Chrome, Safari, Edge) - скругление выпадающего списка */
+.custom-dropdown::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 8px;
+}
+
+.custom-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+.custom-dropdown::-webkit-scrollbar-thumb {
+    background: #00bcd4;
+    border-radius: 8px;
+}
+
+.custom-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #0097a7;
+}
+
+/* Стилизация выпадающего списка для единого цвета фона */
+select.custom-dropdown {
+    background-color: #ffffff;
+}
+
+select.custom-dropdown option {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+select.custom-dropdown option:checked,
+select.custom-dropdown option[selected] {
+    background-color: #00bcd4 !important;
+    color: #ffffff !important;
+}
+
+/* Car Card Styles */
+.car-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    margin-bottom: 30px;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+.car-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 188, 212, 0.25);
+    border-color: #00bcd4;
+    text-decoration: none;
+    color: inherit;
+}
+
+.car-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #00bcd4, #0097a7);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.car-card:hover::before {
+    transform: scaleX(1);
+}
+
+.image-wrapper {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: #f8f9fa;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.car-card:hover .image-wrapper img {
+    transform: scale(1.1);
+}
+
+.car-info {
+    padding: 20px;
+    background: #ffffff;
+}
+
+.car-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    min-height: 3.6rem;
+    display: flex;
+    align-items: center;
+}
+
+.car-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00bcd4;
+    margin-top: 8px;
+}
+
+.car-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.car-status.unavailable {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: #ffffff;
+}
+
+/* Ensure all cards have the same height */
+.row .col-md-4,
+.row .col-sm-6,
+.row .col-12 {
+    display: flex;
+    flex-direction: column;
+}
+
+.row .col-md-4 > .car-card,
+.row .col-sm-6 > .car-card,
+.row .col-12 > .car-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.car-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slider-container {
+        margin-top: 0; /* Навбар не фиксированный, отступ не нужен */
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .process-card {
+        padding: 30px 20px;
+        margin-bottom: 20px;
+    }
+    
+    .process-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+        top: -12px;
+        right: 12px;
+        border: 2px solid #ffffff;
+    }
+    
+    .process-icon {
+        font-size: 2.5rem;
+    }
+    
+    .process-card h4 {
+        font-size: 1.1rem;
+    }
+    
+    .unified-section {
+        padding: 50px 0;
+    }
+    
+    .section-block {
+        margin-bottom: 50px;
+    }
+    
+    .benefits-title {
+        font-size: 1.8rem;
+    }
+    
+    .image-placeholder {
+        padding: 40px 30px;
+        margin-top: 30px;
+    }
+    
+    /* Car List Responsive */
+    .car-list-container {
+        padding: 30px 0 60px 0;
+    }
+    
+    .car-list-title {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .custom-dropdown-wrapper {
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+    
+    .custom-dropdown {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .image-wrapper {
+        height: 220px;
+    }
+    
+    .car-name {
+        font-size: 1.2rem;
+        min-height: 3rem;
+    }
+    
+    .car-price {
+        font-size: 1.3rem;
+    }
+    
+    .car-status {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
 }

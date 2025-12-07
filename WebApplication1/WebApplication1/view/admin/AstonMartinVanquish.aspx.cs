@@ -13,7 +13,7 @@ namespace WebApplication1.view.admin
     public partial class AstonMartinVanquish : System.Web.UI.Page
     {
         // Добавляем строку подключения к базе данных
-        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True";
+        private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
 
         protected void Page_Load(object sender, EventArgs e)
         {
