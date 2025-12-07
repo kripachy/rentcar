@@ -162,8 +162,9 @@ body {
 /* CTA Section */
 .cta-section {
     background-color: #ffffff;
-    padding: 60px 0;
+    padding: 60px 0 80px 0;
     text-align: center;
+    margin-bottom: 0;
 }
 
 .cta-title {
@@ -185,9 +186,16 @@ body {
     background-color: #000000;
     color: #ffffff;
     padding: 2rem 0;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 10;
 }
 .footer span {
     color: #ffffff !important;
+}
+.footer p {
+    color: #ffffff !important;
+    margin: 0;
 }
 
 /* Unified Section */
