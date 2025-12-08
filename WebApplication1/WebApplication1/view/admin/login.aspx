@@ -5,36 +5,15 @@
 <head runat="server">
     <title>Вход - WheelDeal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="../../Content/custom.css?v=<%= DateTime.Now.Ticks %>" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
     <style>
-        body { 
-            background-color: #ffffff;
-            font-family: 'Segoe UI', sans-serif;
-            color: #000000;
-        }
+        body { background-color: #f8f9fa; }
         .container-box {
-            max-width: 450px; 
-            margin: 60px auto; 
-            padding: 40px;
-            border-radius: 16px; 
-            background: #ffffff;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            border: 1px solid #dee2e6;
+            max-width: 450px; margin: 60px auto; padding: 30px;
+            border-radius: 12px; background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.15);
         }
-        .btn-cyan { 
-            background-color: #00bcd4; 
-            color: white;
-            border: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .btn-cyan:hover { 
-            background-color: #0097a7;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
-        }
+        .btn-red { background-color: #dc3545; color: white; }
+        .btn-red:hover { background-color: #bb2d3b; }
         .error-message {
             color: #ff0000;
             font-size: 13px;
@@ -42,17 +21,8 @@
             display: none;
         }
         .form-control:focus {
-            border-color: #00bcd4 !important;
-            box-shadow: 0 0 0 0.2rem rgba(0, 188, 212, 0.25);
-        }
-        .form-control {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-        .form-control:hover {
-            border-color: #00bcd4;
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
         .forgot-password {
             text-align: center;
@@ -62,70 +32,16 @@
             color: #6c757d;
             text-decoration: none;
             font-size: 14px;
-            transition: color 0.3s ease;
         }
         .forgot-password a:hover {
-            color: #00bcd4;
-        }
-        .text-cyan {
-            color: #00bcd4 !important;
-        }
-        .text-cyan:hover {
-            color: #0097a7 !important;
-        }
-        h3.text-danger {
-            color: #000000 !important;
-            font-weight: 700;
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        h5 {
-            color: #000000;
-            font-weight: 600;
-        }
-        .navbar.bg-dark {
-            background-color: #000000 !important;
-        }
-        .navbar-dark .nav-link {
-            color: #ffffff !important;
-        }
-        .navbar-dark .nav-link:hover {
-            color: #00bcd4 !important;
-        }
-        .navbar-dark .navbar-brand {
-            color: #ffffff !important;
-            font-weight: bold;
+            color: #dc3545;
         }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="userdashboard.aspx" style="font-weight: bold;">WheelDeal</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="userdashboard.aspx">Главная</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="login.aspx">Войти</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="register.aspx">Регистрация</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
         <div class="container-box">
-            <h3 class="text-center">WheelDeal</h3>
+            <h3 class="text-center text-danger">WheelDeal</h3>
             <h5 class="mt-3 text-center">Вход в аккаунт</h5>
 
             <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control mb-3" Placeholder="Email" />
@@ -134,7 +50,7 @@
                          Placeholder="Пароль" oninput="validatePassword(this)" />
             <div id="passwordError" class="error-message">Кириллические символы не допускаются</div>
 
-            <asp:Button ID="btnLogin" runat="server" Text="Войти" CssClass="btn btn-cyan w-100 mb-2" OnClick="btnLogin_Click" />
+            <asp:Button ID="btnLogin" runat="server" Text="Войти" CssClass="btn btn-red w-100 mb-2" OnClick="btnLogin_Click" />
             <asp:Label ID="lblMsg" runat="server" CssClass="text-danger d-block text-center" Visible="false" />
 
             <div class="forgot-password">
@@ -142,7 +58,7 @@
             </div>
 
             <div class="text-center mt-3">
-                <a href="register.aspx" class="text-decoration-none text-cyan">Нет аккаунта? Зарегистрироваться</a>
+                <a href="register.aspx" class="text-decoration-none text-danger">Нет аккаунта? Зарегистрироваться</a>
             </div>
         </div>
 
@@ -158,7 +74,7 @@
                         <p>Введите ваш email для получения временного пароля:</p>
                         <asp:TextBox ID="txtRecoveryEmail" runat="server" CssClass="form-control mb-3" Placeholder="Ваш email" TextMode="Email" />
                         <asp:Button ID="btnSendPassword" runat="server" Text="Получить временный пароль" 
-                            CssClass="btn btn-cyan w-100" OnClick="btnSendPassword_Click" />
+                            CssClass="btn btn-red w-100" OnClick="btnSendPassword_Click" />
                         <asp:Label ID="lblRecoveryMessage" runat="server" CssClass="d-block text-center mt-2" Visible="false"></asp:Label>
                     </div>
                 </div>

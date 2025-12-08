@@ -9,8 +9,6 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
             display: flex;
             flex-direction: column;
             margin: 0;
-            background-color: #ffffff;
-            color: #000000;
         }
 
         .container {
@@ -19,35 +17,28 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
         }
 
         h3.fw-bold {
-            color: #000000;
+            color: #dc3545; /* Danger color for headers */
             margin-bottom: 20px;
-            font-weight: 700;
         }
 
         .card {
-            border: 1px solid #dee2e6;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px; /* Add margin below cards */
         }
 
         .card-header {
-            background-color: #000000;
-            color: #ffffff;
-            border-bottom: 1px solid #00bcd4;
+            background-color: #f8f9fa; /* Light background for header */
+            border-bottom: 1px solid #e0e0e0;
             font-weight: bold;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .card-body {
-            background-color: #ffffff;
         }
 
         /* Styling for the GridView */
         .table thead th {
-            background-color: #000000;
-            color: #ffffff;
-            border-color: #00bcd4;
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
             text-align: center;
         }
 
@@ -57,44 +48,31 @@ AutoEventWireup="true" CodeBehind="rents.aspx.cs" Inherits="WebApplication1.view
         }
 
         .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 188, 212, 0.05);
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
          .form-control:focus {
-            border-color: #00bcd4 !important;
-            box-shadow: 0 0 0 0.2rem rgba(0, 188, 212, 0.25);
-        }
-
-        .form-control {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:hover {
-            border-color: #00bcd4;
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
 
          /* Style for the car image */
         .img-fluid {
-            max-width: 150px;
+            max-width: 150px; /* Adjust as needed */
             height: auto;
             display: block;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 20px auto; /* Center and add space below */
         }
 
          /* Style for the action buttons, if they become visible */
         .btn-danger {
-            background-color: #00bcd4;
-            border-color: #00bcd4;
-            color: white;
-            transition: all 0.3s ease;
+            background-color: #dc3545;
+            border-color: #dc3545;
         }
 
         .btn-danger:hover {
-            background-color: #0097a7;
-            border-color: #0097a7;
-            color: white;
+            background-color: #bb2d3b;
+            border-color: #bb2d3b;
         }
 
     </style>

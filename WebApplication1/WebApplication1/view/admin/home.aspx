@@ -7,7 +7,7 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh; 
-        background-color: #ffffff;
+        background-color: #f8f9fa;
         font-family: 'Segoe UI', sans-serif;
     }
 
@@ -17,7 +17,7 @@
     }
 
     .hero-section {
-        background: linear-gradient(135deg, #000000 0%, #212529 100%);
+        background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
         color: white;
         padding: 3rem 0;
         margin-bottom: 2rem;
@@ -30,7 +30,6 @@
         font-weight: 700;
         margin-bottom: 1rem;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        color: #ffffff;
     }
 
     .hero-subtitle {
@@ -38,11 +37,6 @@
         font-weight: 300;
         margin-bottom: 1.5rem;
         opacity: 0.9;
-        color: #f0f0f0;
-    }
-
-    .hero-section i {
-        color: #00bcd4;
     }
 
     .stats-card {
@@ -50,27 +44,26 @@
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
         border: none;
-        border-left: 4px solid #00bcd4;
+        border-left: 4px solid #dc3545;
     }
 
     .stats-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 188, 212, 0.2);
     }
 
     .stats-icon {
         font-size: 2rem;
-        color: #00bcd4;
+        color: #dc3545;
         margin-bottom: 1rem;
     }
 
     .stats-number {
         font-size: 2rem;
         font-weight: 700;
-        color: #000000;
+        color: #343a40;
         margin-bottom: 0.5rem;
     }
 
@@ -85,8 +78,7 @@
         border-radius: 15px;
         padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        border: 1px solid #dee2e6;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
 
     .action-button {
@@ -96,18 +88,17 @@
         margin-bottom: 1rem;
         border-radius: 10px;
         background: #f8f9fa;
-        color: #000000;
+        color: #343a40;
         text-decoration: none;
         transition: all 0.3s ease;
-        border: 2px solid #dee2e6;
+        border: 1px solid #dee2e6;
     }
 
     .action-button:hover {
-        background: #00bcd4;
+        background: #dc3545;
         color: white;
         text-decoration: none;
         transform: translateX(5px);
-        border-color: #00bcd4;
     }
 
     .action-button i {
@@ -118,11 +109,11 @@
     }
 
     .section-title {
-        color: #000000;
+        color: #343a40;
         font-weight: 700;
         margin-bottom: 1.5rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #00bcd4;
+        border-bottom: 2px solid #dc3545;
         display: inline-block;
     }
 
