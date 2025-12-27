@@ -690,6 +690,127 @@ select.custom-dropdown option[selected] {
     justify-content: space-between;
 }
 
+/* Admin Panel Specific Styles */
+.admin-page-title {
+    color: #000000;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.admin-card {
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    height: 100%;
+}
+
+.admin-card .card-body {
+    padding: 2rem;
+}
+
+.admin-form-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 1.5rem;
+    display: block;
+    border-radius: 10px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #000000;
+}
+
+.form-control-admin {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control-admin:focus {
+    border-color: #00bcd4;
+    box-shadow: 0 0 0 0.2rem rgba(0, 188, 212, 0.25);
+}
+
+.btn-admin-primary {
+    background-color: #00bcd4;
+    border-color: #00bcd4;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.btn-admin-primary:hover {
+    background-color: #0097a7;
+    border-color: #0097a7;
+}
+
+.btn-admin-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
+}
+
+.btn-admin-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+
+.btn-admin-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #ffffff;
+}
+
+.btn-admin-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.admin-table thead th {
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: 600;
+    border-bottom: 2px solid #00bcd4;
+}
+
+.admin-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgba(0, 188, 212, 0.1);
+}
+
+.admin-table .btn-select {
+    border-color: #00bcd4;
+    color: #00bcd4;
+}
+
+.admin-table .btn-select:hover {
+    background-color: #00bcd4;
+    color: #ffffff;
+}
+
+.badge-available {
+    background-color: #00bcd4 !important;
+}
+
+.badge-booked {
+    background-color: #dc3545 !important;
+}
+
+.color-swatch {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .slider-container {
