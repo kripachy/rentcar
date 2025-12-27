@@ -61,19 +61,70 @@ namespace WebApplication1.Models
             if (string.IsNullOrEmpty(storedPath))
                 return null;
 
-            // If it's already an absolute path (backward compatibility), use it
-            if (Path.IsPathRooted(storedPath))
-                return storedPath;
-
-            // If it's a relative path (starts with "uploads/"), map it
-            if (storedPath.StartsWith("uploads/", StringComparison.OrdinalIgnoreCase) ||
-                storedPath.StartsWith("uploads\\", StringComparison.OrdinalIgnoreCase))
+            // If it's a relative path, map it to a physical path. This is the standard.
+            if (!Path.IsPathRooted(storedPath))
             {
                 return _server.MapPath("~/" + storedPath.Replace('\\', '/'));
             }
 
-            // Default: treat as relative from site root
-            return _server.MapPath("~/" + storedPath.Replace('\\', '/'));
+            // --- Handle absolute paths (for backward compatibility and recovery) ---
+
+            // 1. Check if the absolute path is valid as-is.
+            if (File.Exists(storedPath))
+            {
+                return storedPath;
+            }
+
+            // 2. If not valid, it's likely from a different environment. Try to recover the correct path.
+            // We assume the structure is '.../uploads/file-kind/filename.ext'.
+            // We'll find the 'uploads' folder in the path and use the part that comes after it.
+            string uploadsMarker = "\\uploads\\";
+            int uploadsIndex = storedPath.LastIndexOf(uploadsMarker, StringComparison.OrdinalIgnoreCase);
+            if (uploadsIndex == -1)
+            {
+                uploadsMarker = "/uploads/";
+                uploadsIndex = storedPath.LastIndexOf(uploadsMarker, StringComparison.OrdinalIgnoreCase);
+            }
+
+            if (uploadsIndex != -1)
+            {
+                // Get the part of the path *after* the ".../uploads/" marker.
+                int relativePathStartIndex = uploadsIndex + uploadsMarker.Length;
+                if (relativePathStartIndex < storedPath.Length)
+                {
+                    string pathWithinUploads = storedPath.Substring(relativePathStartIndex);
+                    // Combine it with the current environment's physical uploads folder path.
+                    string reconstructedPath = Path.Combine(_rootPath, pathWithinUploads.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar));
+                    if (File.Exists(reconstructedPath))
+                    {
+                        return reconstructedPath;
+                    }
+                }
+            }
+
+            // 3. Fallback: if 'uploads' marker is not found, try to guess based on the last two parts of the path.
+            try
+            {
+                string filename = Path.GetFileName(storedPath);
+                string directory = Path.GetFileName(Path.GetDirectoryName(storedPath)); // Assumes 'file-kind'
+                if (!string.IsNullOrEmpty(filename) && !string.IsNullOrEmpty(directory))
+                {
+                    // Combine with the root path for uploads, e.g., '.../uploads' + 'car-image' + 'file.jpg'
+                    string reconstructedPath = Path.Combine(_rootPath, directory, filename);
+                    if (File.Exists(reconstructedPath))
+                    {
+                        return reconstructedPath;
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+                // Path.Get... methods can throw if the path contains invalid characters. Ignore.
+            }
+
+            // 4. If all recovery attempts fail, return the original (broken) path.
+            // The calling code (e.g., ImageHandler) will then handle the "file not found" case.
+            return storedPath;
         }
 
         public int Save(HttpPostedFileBase file, string fileKind, int? userId)
