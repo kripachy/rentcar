@@ -111,7 +111,13 @@
                             <button type="button" data-bs-target="#carCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                         </div>
                         <div class="carousel-inner rounded">
-                            <!-- Images will be dynamically loaded based on selected color -->
+                            <asp:Repeater ID="rptImages" runat="server">
+                                <ItemTemplate>
+                                    <div class='carousel-item <%# Container.ItemIndex == 0 ? "active" : "" %>'>
+                                        <img src='<%# Container.DataItem %>' class="d-block w-100 rounded" alt="Audi TT" style="object-fit: cover; height: 500px;" />
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>

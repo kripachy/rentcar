@@ -94,6 +94,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" href="home.aspx">
@@ -127,6 +128,16 @@
                         <li class="nav-item">
                             <a class="nav-link <%= GetActiveClass("adminprofile.aspx") %>" href="adminprofile.aspx">
                                 <i class="fas fa-user-cog me-1"></i>Профиль
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= GetActiveClass("comments.aspx") %>" href="comments.aspx">
+                                <i class="fas fa-comments me-1"></i>Комментарии
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= GetActiveClass("ManageVerification.aspx") %>" href="ManageVerification.aspx">
+                                <i class="fas fa-check-circle me-1"></i>Проверка
                             </a>
                         </li>
                     </ul>

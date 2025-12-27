@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -32,6 +32,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1685</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,8 +42,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1685</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="App_Start\DatabaseInitializer.cs" />
+    <Compile Include="App_Start\FileStorageMigration.cs" />
+    <Compile Include="App_Start\CarImageBootstrapper.cs" />
+    <Compile Include="Models\FileStorageService.cs" />
+    <Compile Include="Models\RentalRules.cs" />
     <Reference Include="ClosedXML, Version=0.104.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ClosedXML.0.104.2\lib\netstandard2.0\ClosedXML.dll</HintPath>
     </Reference>
@@ -152,6 +159,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ImageHandler.ashx" />
     <Content Include="About.aspx" />
     <Content Include="assets\images\aston_martin.png" />
     <Content Include="assets\images\audi.png" />
@@ -252,6 +260,10 @@
     <Content Include="Scripts\css\css\bootstrap.rtl.css.map" />
     <Content Include="Scripts\css\css\bootstrap.rtl.min.css.map" />
     <Content Include="colorcars\Договор_аренды_WheelDeal.docx" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\css\css\bootstrap-grid.css" />
     <Content Include="Scripts\css\css\bootstrap-grid.min.css" />
@@ -320,6 +332,8 @@
     <Content Include="view\admin\register.aspx" />
     <Content Include="view\admin\rents.aspx" />
     <Content Include="view\admin\userdashboard.aspx" />
+    <Content Include="view\admin\comments.aspx" />
+    <Content Include="view\admin\ManageVerification.aspx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
     <Content Include="Site.Mobile.Master" />
@@ -353,6 +367,11 @@
     </Compile>
     <Compile Include="Models\Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -493,6 +512,17 @@
     <Compile Include="view\admin\userdashboard.aspx.designer.cs">
       <DependentUpon>userdashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="view\admin\comments.aspx.cs">
+      <DependentUpon>comments.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="view\admin\comments.aspx.designer.cs">
+      <DependentUpon>comments.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="view\admin\ManageVerification.aspx.cs">
+      <DependentUpon>ManageVerification.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -531,7 +561,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54991</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44323/</IISUrl>
+          <IISUrl>http://localhost:44313/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:44313/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

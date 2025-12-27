@@ -39,6 +39,11 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.Label lblRentalMessage;
 
         /// <summary>
+        /// rptImages control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Repeater rptImages;
+
+        /// <summary>
         /// btnRent  .
         /// </summary>
         /// <remarks>

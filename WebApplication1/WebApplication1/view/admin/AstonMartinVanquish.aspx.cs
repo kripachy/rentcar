@@ -7,6 +7,8 @@ using WebApplication1.Models;
 using System.Net.Mail;
 using System.IO;
 using System.Net;
+using System.Collections.Generic;
+using WebApplication1.App_Start;
 
 namespace WebApplication1.view.admin
 {
@@ -24,9 +26,18 @@ namespace WebApplication1.view.admin
 
             if (!IsPostBack)
             {
+                CarImageBootstrapper.EnsureSeeded(Server);
+                BindImages();
                 LoadCarDetails();
                 CheckUserRentals();
             }
+        }
+
+        private void BindImages()
+        {
+            var urls = CarImageBootstrapper.GetGalleryUrls(this, "Aston Martin", "Vanquish", 3);
+            rptImages.DataSource = urls;
+            rptImages.DataBind();
         }
 
         private void LoadCarDetails()
@@ -107,7 +118,15 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                // 3. Рассчитываем Fees
+                // 3. Проверяем ограничения по стажу/категории
+                var eligibility = RentalRules.CheckCustomerEligibility(carPlateNum, custId.Value);
+                if (!eligibility.Allowed)
+                {
+                    ShowRentalMessage("Бронирование отклонено: " + eligibility.Reason, false);
+                    return;
+                }
+
+                // 4. Рассчитываем Fees
                 decimal dailyPrice = 0;
                  if (!decimal.TryParse(lblPrice.Text.Replace(",", "."), out dailyPrice))
                  {
@@ -128,10 +147,10 @@ namespace WebApplication1.view.admin
 
                  int fees = (int)(dailyPrice * rentalDays);
 
-                 // 4. Определяем следующий RentId
+                // 5. Определяем следующий RentId
                  int nextRentId = GetNextRentId();
 
-                 // 5. Вставляем запись в RentTbl
+                // 6. Вставляем запись в RentTbl
                  string insertRentQuery = "INSERT INTO RentTbl (RentId, Car, Customer, RentDate, ReturnDate, Fees) " +
                                           "VALUES (@RentId, @Car, @Customer, @RentDate, @ReturnDate, @Fees)";
 

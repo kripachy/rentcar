@@ -11,19 +11,19 @@
                 <button type="button" data-bs-target="#dynamicSlider" data-bs-slide-to="2" aria-label="Slide 3"></button>
             </div>
             <div class="carousel-inner">
-                <div class="carousel-item active" style="background-image: url('../../colorcars/Aston Martin Vanquish/white/3.jpg');">
+                <div class="carousel-item active" id="slide1" runat="server">
                     <div class="carousel-caption">
                         <h1>Британская элегантность</h1>
                         <p>Aston Martin Vanquish для истинных ценителей.</p>
                     </div>
                 </div>
-                <div class="carousel-item" style="background-image: url('../../colorcars/Lamborghini Huracan/purple/3.jpg');">
+                <div class="carousel-item" id="slide2" runat="server">
                     <div class="carousel-caption">
                         <h1>Неукротимая мощь</h1>
                         <p>Lamborghini Huracan — эмоции в чистом виде.</p>
                     </div>
                 </div>
-                <div class="carousel-item" style="background-image: url('../../colorcars/Maserati GranTurismo/red/5.jpg');">
+                <div class="carousel-item" id="slide3" runat="server">
                     <div class="carousel-caption">
                         <h1>Итальянская страсть</h1>
                         <p>Maserati GranTurismo не оставит вас равнодушным.</p>
@@ -162,5 +162,115 @@
         <a href="carlistt.aspx" class="btn btn-outline-info btn-lg">Арендовать сейчас</a>
     </div>
 </section>
+
+<section class="reviews-section">
+    <div class="container">
+        <div class="section-header text-center mb-4">
+            <h2 class="section-title">Отзывы клиентов</h2>
+            <p class="section-subtitle">Оставьте впечатления о сервисе и авто</p>
+        </div>
+
+        <asp:Panel ID="pnlLoginRequired" runat="server" CssClass="alert alert-dark d-none" Visible="false">
+            Войдите в аккаунт, чтобы оставить комментарий.
+            <a href="login.aspx" class="link-info ms-1">Войти</a>
+        </asp:Panel>
+
+        <asp:Panel ID="pnlUsernameRequired" runat="server" CssClass="alert alert-info d-none" Visible="false">
+            Укажите имя пользователя в профиле, чтобы оставить отзыв.
+            <a href="profile.aspx" class="link-dark fw-semibold ms-1">Перейти в профиль</a>
+        </asp:Panel>
+
+        <asp:Panel ID="pnlCommentForm" runat="server" CssClass="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <div class="text-muted small">Вы авторизованы как</div>
+                        <div class="fw-bold" id="currentUserName" runat="server"><asp:Label ID="lblCurrentUserName" runat="server" /></div>
+                    </div>
+                    <div class="badge bg-dark text-uppercase">до 5 ★</div>
+                </div>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label d-block">Оценка</label>
+                        <div class="star-rating" id="starRating">
+                            <span data-value="1">&#9733;</span>
+                            <span data-value="2">&#9733;</span>
+                            <span data-value="3">&#9733;</span>
+                            <span data-value="4">&#9733;</span>
+                            <span data-value="5" class="active">&#9733;</span>
+                        </div>
+                        <asp:HiddenField ID="hfRating" runat="server" Value="5" />
+                    </div>
+                    <div class="col-md-7">
+                        <label for="txtComment" class="form-label">Комментарий</label>
+                        <asp:TextBox ID="txtComment" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="Поделитесь впечатлениями (до 1000 символов)"></asp:TextBox>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <asp:Button ID="btnSubmitComment" runat="server" CssClass="btn btn-dark mt-4" Text="Отправить" OnClick="btnSubmitComment_Click" />
+                    </div>
+                </div>
+                <asp:Label ID="lblCommentStatus" runat="server" Visible="false" CssClass="d-block mt-3"></asp:Label>
+            </div>
+        </asp:Panel>
+
+        <asp:Repeater ID="rptComments" runat="server" OnItemCommand="rptComments_ItemCommand">
+            <HeaderTemplate>
+                <div class="row g-3">
+            </HeaderTemplate>
+            <ItemTemplate>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 review-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div class="fw-bold"><%# Eval("UserName") %></div>
+                                    <div class="text-muted small"><%# Eval("CreatedAt", "{0:dd.MM.yyyy HH:mm}") %></div>
+                                    <asp:Label ID="lblHidden" runat="server" CssClass="badge bg-warning text-dark mt-1" Visible="false">Скрыт</asp:Label>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <asp:Literal ID="litStars" runat="server" Text='<%# RenderStars(Eval("Rating")) %>'></asp:Literal>
+                                    <asp:LinkButton ID="btnDelete" runat="server" CssClass="btn btn-sm btn-outline-danger"
+                                        CommandName="delete" CommandArgument='<%# Eval("Id") %>'
+                                        OnClientClick="return confirm('Удалить свой отзыв?');">
+                                        Удалить
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+                            <p class="mb-0 text-dark"><%# HttpUtility.HtmlEncode(Eval("CommentText").ToString()) %></p>
+                        </div>
+                    </div>
+                </div>
+            </ItemTemplate>
+            <FooterTemplate>
+                </div>
+            </FooterTemplate>
+        </asp:Repeater>
+    </div>
+</section>
+
+<script type="text/javascript">
+    (function () {
+        var stars = document.querySelectorAll('#starRating span');
+        var hidden = document.getElementById('<%= hfRating.ClientID %>');
+        function setActive(val) {
+            stars.forEach(function (s) {
+                var v = parseInt(s.getAttribute('data-value'));
+                if (v <= val) s.classList.add('active');
+                else s.classList.remove('active');
+            });
+            hidden.value = val;
+        }
+        stars.forEach(function (star) {
+            star.addEventListener('click', function () {
+                var val = parseInt(star.getAttribute('data-value'));
+                setActive(val);
+            });
+            star.addEventListener('mouseenter', function () {
+                var val = parseInt(star.getAttribute('data-value'));
+                setActive(val);
+            });
+        });
+    })();
+</script>
 
 </asp:Content>

@@ -6,6 +6,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
+using WebApplication1.App_Start;
 
 namespace WebApplication1
 {
@@ -16,6 +17,12 @@ namespace WebApplication1
             // Код, выполняемый при запуске приложения
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            DatabaseInitializer.EnsureSchema();
+            
+            // Migrate old absolute paths to relative paths (for project portability)
+            FileStorageMigration.EnsureMigrated(Server);
+            
+            CarImageBootstrapper.EnsureSeeded(Server);
         }
     }
 }

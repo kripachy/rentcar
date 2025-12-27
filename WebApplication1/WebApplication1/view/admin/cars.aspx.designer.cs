@@ -33,22 +33,22 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.TextBox txtLicence;
 
         /// <summary>
-        /// ddlBrand элемент управления.
+        /// txtBrand элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlBrand;
+        protected global::System.Web.UI.WebControls.TextBox txtBrand;
 
         /// <summary>
-        /// ddlModel элемент управления.
+        /// txtModel элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlModel;
+        protected global::System.Web.UI.WebControls.TextBox txtModel;
 
         /// <summary>
         /// txtPrice элемент управления.
@@ -67,6 +67,41 @@ namespace WebApplication1.view.admin
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlColor;
+
+        /// <summary>
+        /// ddlCategory элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCategory;
+
+        /// <summary>
+        /// imgMainPreview элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlImage imgMainPreview;
+
+        /// <summary>
+        /// hfSelectMode элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.HiddenField hfSelectMode;
+
+        /// <summary>
+        /// fileUpload элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.FileUpload fileUpload;
+
+        /// <summary>
+        /// btnUploadImage элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnUploadImage;
+
+        /// <summary>
+        /// panelNoImages элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel panelNoImages;
+
+        /// <summary>
+        /// repImages элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Repeater repImages;
 
         /// <summary>
         /// ddlAvailable элемент управления.

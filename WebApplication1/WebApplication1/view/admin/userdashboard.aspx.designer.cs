@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <автоматически создаваемое>
 //     Этот код создан программой.
 //
@@ -13,5 +13,66 @@ namespace WebApplication1.view.admin
 
     public partial class userdashboard
     {
+        /// <summary>
+        /// slide1 элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide1;
+
+        /// <summary>
+        /// slide2 элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide2;
+
+        /// <summary>
+        /// slide3 элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide3;
+
+        /// <summary>
+        /// pnlLoginRequired элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlLoginRequired;
+
+        /// <summary>
+        /// pnlUsernameRequired элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlUsernameRequired;
+
+        /// <summary>
+        /// pnlCommentForm элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlCommentForm;
+
+        /// <summary>
+        /// lblCurrentUserName элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblCurrentUserName;
+
+        /// <summary>
+        /// hfRating элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.HiddenField hfRating;
+
+        /// <summary>
+        /// txtComment элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.TextBox txtComment;
+
+        /// <summary>
+        /// btnSubmitComment элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Button btnSubmitComment;
+
+        /// <summary>
+        /// lblCommentStatus элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblCommentStatus;
+
+        /// <summary>
+        /// rptComments элемент управления.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Repeater rptComments;
+
+        /// <summary>
     }
 }

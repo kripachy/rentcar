@@ -12,35 +12,16 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Globalization;
 using ClosedXML.Excel;
+using WebApplication1.Models;
+using WebApplication1.App_Start;
 
 namespace WebApplication1.view.admin
 {
     public partial class cars : System.Web.UI.Page
     {
         Models.Functions Conn;
-        private Dictionary<string, string> brandModelMap = new Dictionary<string, string>()
-        {
-            {"Ford", "Mustang S550"},
-            {"Chevrolet", "Camaro"},
-            {"Lamborghini", "Huracan"},
-            {"Jaguar", "XJ"},
-            {"Porsche", "911"},
-            {"Maserati", "GranTurismo"},
-            {"Aston Martin", "Vanquish"},
-            {"Audi", "TT"}
-        };
-
-        private Dictionary<string, string> brandImageMap = new Dictionary<string, string>()
-        {
-            {"Aston Martin", "../../assets/images/logo/Aston-Martin-Logo.jpg"},
-            {"Ford","../../assets/images/logo/mustang.png"},
-            {"Chevrolet", "../../assets/images/logo/chevrolet.jpg"},
-            {"Lamborghini", "../../assets/images/logo/Lamborghini.jpg"},
-            {"Jaguar", "../../assets/images/logo/jaguar.jpg"},
-            {"Porsche", "../../assets/images/logo/porsche.png"},
-            {"Maserati", "../../assets/images/logo/MASERATI.jpg"},
-            {"Audi", "../../assets/images/logo/audi.jpg"}
-        };
+        private FileStorageService storage;
+        private const string CarImageKind = "car-image";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -50,22 +31,14 @@ namespace WebApplication1.view.admin
             Response.HeaderEncoding = Encoding.UTF8;
 
             Conn = new Models.Functions();
+            storage = new FileStorageService(server: Server);
 
             if (!IsPostBack)
             {
+                DatabaseInitializer.EnsureSchema();
+                CarImageBootstrapper.EnsureSeeded(Server);
                 carImage.Src = "~/assets/images/Слой 1.png";
                 carImage.Visible = true; 
-                ddlBrand.Items.Clear();
-                ddlBrand.Items.Insert(0, new ListItem("Выберите марку", ""));
-                foreach (var brand in brandModelMap.Keys)
-                {
-                    ddlBrand.Items.Add(brand);
-                }
-
-                ddlModel.Items.Clear();
-                ddlModel.Items.Add(new ListItem("Выберите модель", ""));
-                ddlModel.Enabled = false;
-
                 ddlColor.Items.Clear();
                 ddlColor.Items.Add(new ListItem("Выберите цвет", ""));
                 ddlColor.Items.Add(new ListItem("Красный", "Red"));
@@ -77,33 +50,21 @@ namespace WebApplication1.view.admin
                 ddlColor.Items.Add(new ListItem("Серый", "Gray"));
                 ddlColor.Items.Add(new ListItem("Оранжевый", "Orange"));
                 ddlColor.Items.Add(new ListItem("Фиолетовый", "Purple"));
+                LoadCategories();
+                BindImageLibrary(null);
                 LoadCars();
+                imgMainPreview.Src = "~/assets/images/Слой 1.png";
             }
-        }
-
-        private List<string> GetImagePaths(string directory)
-        {
-            var images = new List<string>();
-            if (Directory.Exists(directory))
-            {
-                for (int i = 1; i <= 5; i++)
-                {
-                    string imagePath = Path.Combine(directory, $"{i}.jpg");
-                    if (File.Exists(imagePath))
-                    {
-                        string relativePath = imagePath.Replace(Server.MapPath("~"), "").Replace("\\", "/");
-                        images.Add("~" + relativePath);
-                    }
-                }
-            }
-            return images;
         }
 
         private void LoadCars()
         {
             try
             {
-                string query = "SELECT * FROM CarTbl";
+                string query = @"SELECT c.CarId, c.CPlateNum, c.Brand, c.Model, c.Price, c.Color, c.Status, c.CategoryId,
+                                        cc.Name AS CategoryName
+                                 FROM CarTbl c
+                                 LEFT JOIN CarCategory cc ON c.CategoryId = cc.CategoryId";
                 carlist.DataSource = Conn.GetData(query);
                 carlist.DataBind();
             }
@@ -113,33 +74,242 @@ namespace WebApplication1.view.admin
             }
         }
 
-        protected void ddlBrand_SelectedIndexChanged(object sender, EventArgs e)
+        private void LoadCategories()
         {
-            string selectedBrand = ddlBrand.SelectedValue;
-            if (!string.IsNullOrEmpty(selectedBrand))
-            {
-                ddlModel.Enabled = true;
-                ddlModel.Items.Clear();
-                ddlModel.Items.Add(new ListItem(brandModelMap[selectedBrand], brandModelMap[selectedBrand]));
+            string query = "SELECT CategoryId, Name + ' (мин. стаж ' + CAST(MinExperienceYears AS NVARCHAR(10)) + ' лет)' AS Title FROM CarCategory ORDER BY MinExperienceYears";
+            var dt = Conn.GetData(query);
+            ddlCategory.DataSource = dt;
+            ddlCategory.DataTextField = "Title";
+            ddlCategory.DataValueField = "CategoryId";
+            ddlCategory.DataBind();
+            ddlCategory.Items.Insert(0, new ListItem("Выберите категорию", ""));
+        }
 
-                if (brandImageMap.ContainsKey(selectedBrand))
+        private void BindImageLibrary(List<int> selectedIds, int? mainId = null)
+        {
+            var files = storage.GetFiles(CarImageKind);
+            var data = files.Select(f => new
+            {
+                f.FileId,
+                f.OriginalName,
+                PreviewUrl = ResolveUrl("~/ImageHandler.ashx?id=" + f.FileId)
+            }).ToList();
+
+            repImages.DataSource = data;
+            repImages.DataBind();
+
+            panelNoImages.Visible = !data.Any();
+
+            foreach (RepeaterItem item in repImages.Items)
+            {
+                var hf = item.FindControl("hfFileId") as HiddenField;
+                var rb = item.FindControl("rbMain") as RadioButton;
+                var chk = item.FindControl("chkAttach") as CheckBox;
+                if (hf == null) continue;
+
+                if (int.TryParse(hf.Value, out int fileId))
                 {
-                    carImage.Src = brandImageMap[selectedBrand];
-                    carImage.Visible = true;
-                }
-                else
-                {
-                    carImage.Src = "~/assets/images/Слой 1.png";
-                    carImage.Visible = true; 
+                    if (selectedIds != null && selectedIds.Contains(fileId))
+                    {
+                        if (chk != null) chk.Checked = true;
+                    }
+                    if (mainId.HasValue && mainId.Value == fileId)
+                    {
+                        if (rb != null) rb.Checked = true;
+                        if (chk != null) chk.Checked = true;
+                    }
                 }
             }
-            else
+        }
+
+        private void GetSelectedImages(out int? mainImageId, out List<int> galleryImageIds)
+        {
+            mainImageId = null;
+            galleryImageIds = new List<int>();
+
+            foreach (RepeaterItem item in repImages.Items)
             {
-                ddlModel.Enabled = false;
-                ddlModel.Items.Clear();
-                ddlModel.Items.Add(new ListItem("Выберите модель", ""));
-                carImage.Src = "~/assets/images/Слой 1.png";
-                carImage.Visible = true;  
+                var hf = item.FindControl("hfFileId") as HiddenField;
+                var rb = item.FindControl("rbMain") as RadioButton;
+                var chk = item.FindControl("chkAttach") as CheckBox;
+
+                if (hf == null) continue;
+
+                if (int.TryParse(hf.Value, out int fileId))
+                {
+                    if (chk != null && chk.Checked)
+                    {
+                        galleryImageIds.Add(fileId);
+                    }
+                    if (rb != null && rb.Checked)
+                    {
+                        mainImageId = fileId;
+                    }
+                }
+            }
+
+            if (mainImageId.HasValue && !galleryImageIds.Contains(mainImageId.Value))
+            {
+                galleryImageIds.Insert(0, mainImageId.Value);
+            }
+        }
+
+        protected void repImages_ItemCommand(object sender, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "DeleteImage")
+            {
+                // Preserve selection if possible
+                GetSelectedImages(out int? currentMain, out List<int> currentGallery);
+
+                int fileId = Convert.ToInt32(e.CommandArgument);
+                DeleteImage(fileId);
+
+                // Remove deleted ID from preserved selection
+                if (currentMain == fileId) currentMain = null;
+                currentGallery.Remove(fileId);
+
+                BindImageLibrary(currentGallery, currentMain);
+            }
+        }
+
+        private void DeleteImage(int fileId)
+        {
+            string cs = Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(cs))
+            {
+                conn.Open();
+                // Get physical path using FileStorageService
+                var storage = new FileStorageService(server: Server);
+                var file = storage.GetFile(fileId);
+                string path = file?.FilePath;
+
+                var delRefs = new SqlCommand("DELETE FROM CarImages WHERE FileId=@id", conn);
+                delRefs.Parameters.AddWithValue("@id", fileId);
+                delRefs.ExecuteNonQuery();
+
+                var del = new SqlCommand("DELETE FROM FileStorage WHERE FileId=@id", conn);
+                del.Parameters.AddWithValue("@id", fileId);
+                del.ExecuteNonQuery();
+
+                // Delete physical file
+                if (!string.IsNullOrEmpty(path) && File.Exists(path))
+                {
+                    try
+                    {
+                        File.Delete(path);
+                    }
+                    catch
+                    {
+                        // Ignore deletion errors - file may already be deleted
+                    }
+                }
+            }
+        }
+
+        private void UpsertCarImages(string plate, int? mainImageId, List<int> galleryImageIds)
+        {
+            string cs = Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(cs))
+            {
+                conn.Open();
+                using (var tran = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        var delCmd = new SqlCommand("DELETE FROM CarImages WHERE CarPlate = @plate", conn, tran);
+                        delCmd.Parameters.AddWithValue("@plate", plate);
+                        delCmd.ExecuteNonQuery();
+
+                        if (galleryImageIds != null && galleryImageIds.Count > 0)
+                        {
+                            foreach (var fileId in galleryImageIds.Distinct())
+                            {
+                                var ins = new SqlCommand(@"INSERT INTO CarImages (CarPlate, FileId, IsPrimary) 
+VALUES (@plate, @fileId, @isPrimary)", conn, tran);
+                                ins.Parameters.AddWithValue("@plate", plate);
+                                ins.Parameters.AddWithValue("@fileId", fileId);
+                                ins.Parameters.AddWithValue("@isPrimary", mainImageId.HasValue && mainImageId.Value == fileId);
+                                ins.ExecuteNonQuery();
+                            }
+                        }
+
+                        var updateMain = new SqlCommand("UPDATE CarTbl SET MainImageFileId = @main WHERE CPlateNum = @plate", conn, tran);
+                        updateMain.Parameters.AddWithValue("@main", (object)mainImageId ?? DBNull.Value);
+                        updateMain.Parameters.AddWithValue("@plate", plate);
+                        updateMain.ExecuteNonQuery();
+
+                        tran.Commit();
+                    }
+                    catch
+                    {
+                        tran.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        private (List<int> galleryIds, int? mainId) LoadImageSelection(string plate)
+        {
+            var ids = new List<int>();
+            int? mainId = null;
+            string cs = Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(cs))
+            {
+                conn.Open();
+                var cmd = new SqlCommand("SELECT FileId, IsPrimary FROM CarImages WHERE CarPlate = @plate", conn);
+                cmd.Parameters.AddWithValue("@plate", plate);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int fileId = reader.GetInt32(0);
+                        bool isPrimary = reader.GetBoolean(1);
+                        ids.Add(fileId);
+                        if (isPrimary)
+                        {
+                            mainId = fileId;
+                        }
+                    }
+                }
+            }
+
+            return (ids, mainId);
+        }
+
+        private int GetOrCreateBrandId(string brand)
+        {
+            string cs = Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(cs))
+            {
+                conn.Open();
+                var get = new SqlCommand("SELECT BrandId FROM Brand WHERE Name = @name", conn);
+                get.Parameters.AddWithValue("@name", brand);
+                var existing = get.ExecuteScalar();
+                if (existing != null) return Convert.ToInt32(existing);
+
+                var ins = new SqlCommand("INSERT INTO Brand (Name) OUTPUT INSERTED.BrandId VALUES (@name)", conn);
+                ins.Parameters.AddWithValue("@name", brand);
+                return (int)ins.ExecuteScalar();
+            }
+        }
+
+        private int GetOrCreateModelId(int brandId, string model)
+        {
+            string cs = Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(cs))
+            {
+                conn.Open();
+                var get = new SqlCommand("SELECT ModelId FROM CarModel WHERE BrandId=@brandId AND Name=@name", conn);
+                get.Parameters.AddWithValue("@brandId", brandId);
+                get.Parameters.AddWithValue("@name", model);
+                var existing = get.ExecuteScalar();
+                if (existing != null) return Convert.ToInt32(existing);
+
+                var ins = new SqlCommand("INSERT INTO CarModel (BrandId, Name) OUTPUT INSERTED.ModelId VALUES (@brandId, @name)", conn);
+                ins.Parameters.AddWithValue("@brandId", brandId);
+                ins.Parameters.AddWithValue("@name", model);
+                return (int)ins.ExecuteScalar();
             }
         }
 
@@ -282,13 +452,49 @@ namespace WebApplication1.view.admin
             ErrorMsg.InnerText = message;
         }
 
+        protected void btnUploadImage_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!fileUpload.HasFile)
+                {
+                    ShowError("Выберите файл для загрузки.");
+                    return;
+                }
+
+                int? uploader = null;
+                if (Session["UserId"] != null)
+                {
+                    uploader = Convert.ToInt32(Session["UserId"]);
+                }
+
+                storage.Save(new HttpPostedFileWrapper(fileUpload.PostedFile), CarImageKind, uploader);
+                List<int> selected = null;
+                int? mainId = null;
+                if (ViewState["SelectedCarKey"] != null)
+                {
+                    var res = LoadImageSelection(ViewState["SelectedCarKey"].ToString());
+                    selected = res.galleryIds;
+                    mainId = res.mainId;
+                }
+
+                BindImageLibrary(selected, mainId);
+                ErrorMsg.Style["color"] = "green";
+                ErrorMsg.InnerText = "Фото загружено на сервер.";
+            }
+            catch (Exception ex)
+            {
+                ShowError("Ошибка загрузки: " + ex.Message);
+            }
+        }
+
         protected void Save_Click(object sender, EventArgs e)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(txtLicence.Text) ||
-                    ddlBrand.SelectedIndex <= 0 ||
-                    ddlModel.SelectedIndex < 0 ||
+                    string.IsNullOrWhiteSpace(txtBrand.Text) ||
+                    string.IsNullOrWhiteSpace(txtModel.Text) ||
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
                     ddlColor.SelectedIndex <= 0)
                 {
@@ -306,8 +512,13 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string Brand = ddlBrand.SelectedValue.Replace("'", "''");
-                string Model = brandModelMap.ContainsKey(Brand) ? brandModelMap[Brand] : "";
+                string Brand = txtBrand.Text.Trim();
+                string Model = txtModel.Text.Trim();
+                int? categoryId = string.IsNullOrEmpty(ddlCategory.SelectedValue) ? (int?)null : int.Parse(ddlCategory.SelectedValue);
+
+                int brandId = GetOrCreateBrandId(Brand);
+                int modelId = GetOrCreateModelId(brandId, Model);
+
                 string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
                 if (!int.TryParse(cleanPrice, out int Price))
                 {
@@ -318,8 +529,33 @@ namespace WebApplication1.view.admin
                 string Color = ddlColor.SelectedValue;
                 string Status = ddlAvailable.SelectedValue == "1" ? "Available" : "Booked";
 
-                string Query = $"INSERT INTO CarTbl VALUES(N'{CPlateNum}',N'{Brand}',N'{Model}',{Price},N'{Color}',N'{Status}')";
-                Conn.SetData(Query);
+                GetSelectedImages(out int? mainImageId, out List<int> galleryImageIds);
+
+                string cs = Models.Functions.GetConnectionString();
+                using (var conn = new SqlConnection(cs))
+                {
+                    conn.Open();
+                    var cmd = new SqlCommand(@"
+INSERT INTO CarTbl (CPlateNum, Brand, Model, Price, Color, Status, BrandId, ModelId, CategoryId, MainImageFileId)
+VALUES (@plate, @brand, @model, @price, @color, @status, @brandId, @modelId, @categoryId, @mainImageId)", conn);
+                    cmd.Parameters.AddWithValue("@plate", CPlateNum);
+                    cmd.Parameters.AddWithValue("@brand", Brand);
+                    cmd.Parameters.AddWithValue("@model", Model);
+                    cmd.Parameters.AddWithValue("@price", Price);
+                    cmd.Parameters.AddWithValue("@color", Color);
+                    cmd.Parameters.AddWithValue("@status", Status);
+                    cmd.Parameters.AddWithValue("@brandId", brandId);
+                    cmd.Parameters.AddWithValue("@modelId", modelId);
+                    cmd.Parameters.AddWithValue("@categoryId", (object)categoryId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@mainImageId", (object)mainImageId ?? DBNull.Value);
+                    cmd.ExecuteNonQuery();
+                }
+
+                if (galleryImageIds.Any())
+                {
+                    UpsertCarImages(CPlateNum, mainImageId, galleryImageIds);
+                }
+
                 LoadCars();
                 ClearFields();
                 ErrorMsg.Style["color"] = "green";
@@ -339,42 +575,58 @@ namespace WebApplication1.view.admin
 
                 GridViewRow row = carlist.SelectedRow;
 
-                txtLicence.Text = row.Cells[1].Text;
-                string brand = row.Cells[2].Text;
-                ddlBrand.SelectedValue = brand;
-           
-                if (brandImageMap.ContainsKey(brand))
+                string plate = row.Cells[1].Text;
+                ViewState["SelectedCarKey"] = plate;
+
+                string cs = Models.Functions.GetConnectionString();
+                using (var conn = new SqlConnection(cs))
                 {
-                    carImage.Src = brandImageMap[brand];
-                    carImage.Visible = true;
+                    conn.Open();
+                    var cmd = new SqlCommand(@"SELECT Brand, Model, Price, Color, CategoryId, MainImageFileId 
+FROM CarTbl WHERE CPlateNum = @plate", conn);
+                    cmd.Parameters.AddWithValue("@plate", plate);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            txtLicence.Text = plate;
+                            txtBrand.Text = reader["Brand"].ToString();
+                            txtModel.Text = reader["Model"].ToString();
+                            txtPrice.Text = reader["Price"].ToString();
+
+                            string color = reader["Color"].ToString();
+                            ListItem item = ddlColor.Items.Cast<ListItem>()
+                                .FirstOrDefault(i => i.Value.Equals(color, StringComparison.OrdinalIgnoreCase));
+                            if (item != null)
+                            {
+                                ddlColor.ClearSelection();
+                                item.Selected = true;
+                            }
+
+                            string categoryId = reader["CategoryId"] == DBNull.Value ? "" : reader["CategoryId"].ToString();
+                            if (!string.IsNullOrEmpty(categoryId) && ddlCategory.Items.FindByValue(categoryId) != null)
+                            {
+                                ddlCategory.SelectedValue = categoryId;
+                            }
+
+                            int? mainImageId = reader["MainImageFileId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["MainImageFileId"]);
+                            var (galleryIds, selectedMain) = LoadImageSelection(plate);
+                            if (mainImageId == null) mainImageId = selectedMain;
+                            BindImageLibrary(galleryIds, mainImageId);
+
+                            if (mainImageId.HasValue)
+                            {
+                                carImage.Src = "~/ImageHandler.ashx?id=" + mainImageId.Value;
+                                imgMainPreview.Src = "~/ImageHandler.ashx?id=" + mainImageId.Value;
+                            }
+                            else
+                            {
+                                carImage.Src = "~/assets/images/Слой 1.png";
+                                imgMainPreview.Src = "~/assets/images/Слой 1.png";
+                            }
+                        }
+                    }
                 }
-                else
-                {
-                    carImage.Src = "~/assets/images/Слой 1.png";
-                    carImage.Visible = true;  
-                }
-
-                ddlBrand_SelectedIndexChanged(null, null);
-
-                int price = Convert.ToInt32(carlist.SelectedDataKey["Price"]);
-                txtPrice.Text = price.ToString();
-
-                string color = row.Cells[5].Text;
-
-                ListItem item = ddlColor.Items.Cast<ListItem>()
-                    .FirstOrDefault(i => i.Value.Equals(color, StringComparison.OrdinalIgnoreCase));
-
-                if (item != null)
-                {
-                    ddlColor.ClearSelection();
-                    item.Selected = true;
-                }
-                else
-                {
-                    ErrorMsg.InnerText = $"Цвет '{color}' не найден в списке.";
-                }
-
-                ViewState["SelectedCarKey"] = txtLicence.Text;
             }
             catch (Exception ex)
             {
@@ -394,7 +646,7 @@ namespace WebApplication1.view.admin
                 }
 
                 if (string.IsNullOrWhiteSpace(txtLicence.Text) ||
-                    ddlBrand.SelectedIndex <= 0 ||
+                    string.IsNullOrWhiteSpace(txtBrand.Text) ||
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
                     ddlColor.SelectedIndex <= 0)
                 {
@@ -404,8 +656,12 @@ namespace WebApplication1.view.admin
 
                 string originalPlate = ViewState["SelectedCarKey"].ToString().Replace("'", "''");
                 string newPlate = txtLicence.Text.Trim().Replace("'", "''");
-                string Brand = ddlBrand.SelectedValue.Replace("'", "''");
-                string Model = brandModelMap.ContainsKey(Brand) ? brandModelMap[Brand] : "";
+                string Brand = txtBrand.Text.Trim();
+                string Model = txtModel.Text.Trim();
+
+                int brandId = GetOrCreateBrandId(Brand);
+                int modelId = GetOrCreateModelId(brandId, Model);
+                int? categoryId = string.IsNullOrEmpty(ddlCategory.SelectedValue) ? (int?)null : int.Parse(ddlCategory.SelectedValue);
 
                 string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
                 if (!int.TryParse(cleanPrice, out int Price))
@@ -428,8 +684,32 @@ namespace WebApplication1.view.admin
                     }
                 }
 
-                string query = $"UPDATE CarTbl SET CPlateNum=N'{newPlate}', Brand=N'{Brand}', Model=N'{Model}', Price={Price}, Color=N'{Color}', Status=N'{Status}' WHERE CPlateNum=N'{originalPlate}'";
-                Conn.SetData(query);
+                GetSelectedImages(out int? mainImageId, out List<int> galleryImageIds);
+
+                string cs = Models.Functions.GetConnectionString();
+                using (var conn = new SqlConnection(cs))
+                {
+                    conn.Open();
+                    var cmd = new SqlCommand(@"
+UPDATE CarTbl 
+SET CPlateNum=@plate, Brand=@brand, Model=@model, Price=@price, Color=@color, Status=@status,
+    BrandId=@brandId, ModelId=@modelId, CategoryId=@categoryId, MainImageFileId=@mainImageId
+WHERE CPlateNum=@originalPlate", conn);
+                    cmd.Parameters.AddWithValue("@plate", newPlate);
+                    cmd.Parameters.AddWithValue("@brand", Brand);
+                    cmd.Parameters.AddWithValue("@model", Model);
+                    cmd.Parameters.AddWithValue("@price", Price);
+                    cmd.Parameters.AddWithValue("@color", Color);
+                    cmd.Parameters.AddWithValue("@status", Status);
+                    cmd.Parameters.AddWithValue("@brandId", brandId);
+                    cmd.Parameters.AddWithValue("@modelId", modelId);
+                    cmd.Parameters.AddWithValue("@categoryId", (object)categoryId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@mainImageId", (object)mainImageId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@originalPlate", originalPlate);
+                    cmd.ExecuteNonQuery();
+                }
+
+                UpsertCarImages(newPlate, mainImageId, galleryImageIds);
                 LoadCars();
                 ClearFields();
                 ErrorMsg.InnerText = "Автомобиль успешно обновлён";
@@ -451,8 +731,31 @@ namespace WebApplication1.view.admin
                 }
 
                 string CPlateNum = ViewState["SelectedCarKey"].ToString().Replace("'", "''");
-                string query = $"DELETE FROM CarTbl WHERE CPlateNum='{CPlateNum}'";
-                Conn.SetData(query);
+                string cs = Models.Functions.GetConnectionString();
+                using (var conn = new SqlConnection(cs))
+                {
+                    conn.Open();
+                    using (var tran = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            var delImgs = new SqlCommand("DELETE FROM CarImages WHERE CarPlate=@plate", conn, tran);
+                            delImgs.Parameters.AddWithValue("@plate", CPlateNum);
+                            delImgs.ExecuteNonQuery();
+
+                            var delCar = new SqlCommand("DELETE FROM CarTbl WHERE CPlateNum=@plate", conn, tran);
+                            delCar.Parameters.AddWithValue("@plate", CPlateNum);
+                            delCar.ExecuteNonQuery();
+
+                            tran.Commit();
+                        }
+                        catch
+                        {
+                            tran.Rollback();
+                            throw;
+                        }
+                    }
+                }
                 LoadCars();
                 ClearFields();
                 ErrorMsg.InnerText = "Автомобиль успешно удалён";
@@ -466,17 +769,18 @@ namespace WebApplication1.view.admin
         private void ClearFields()
         {
             txtLicence.Text = "";
-            ddlBrand.SelectedIndex = 0;
-            ddlModel.Items.Clear();
-            ddlModel.Items.Add(new ListItem("Выберите модель", ""));
-            ddlModel.Enabled = false;
+            txtBrand.Text = "";
+            txtModel.Text = "";
             txtPrice.Text = "";
             ddlColor.SelectedIndex = 0;
             ddlAvailable.SelectedIndex = 0;
+            ddlCategory.SelectedIndex = 0;
             ViewState["SelectedCarKey"] = null;
             carlist.SelectedIndex = -1;
             carImage.Src = "~/assets/images/Слой 1.png";
-            carImage.Visible = true; 
+            carImage.Visible = true;
+            imgMainPreview.Src = "~/assets/images/Слой 1.png";
+            BindImageLibrary(null, null);
         }
     }
 }

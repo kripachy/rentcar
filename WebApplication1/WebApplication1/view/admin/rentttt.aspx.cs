@@ -7,28 +7,19 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Collections.Generic;
+using WebApplication1.App_Start;
 
 namespace WebApplication1.view.admin
 {
     public partial class rentttt : System.Web.UI.Page
     {
         private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
-        private Dictionary<string, string> specificCarImages = new Dictionary<string, string>
-        {
-            {"Aston Martin Vanquish", "~/colorcars/Aston Martin Vanquish/white/1.jpg"},
-            {"Audi TT", "~/colorcars/Audi TT/blue/1.jpg"},
-            {"Chevrolet Camaro", "~/colorcars/Chevrolet Camaro/yellow/1.jpg"},
-            {"Ford Mustang S550", "~/colorcars/Ford Mustang S550/orange/1.jpg"},
-            {"Jaguar XJ", "~/colorcars/Jaguar XJ/black/1.jpg"},
-            {"Lamborghini Huracan", "~/colorcars/Lamborghini Huracan/purple/1.jpg"},
-            {"Maserati GranTurismo", "~/colorcars/Maserati GranTurismo/yellow/2.jpg"},
-            {"Porsche 911", "~/colorcars/Porsche 911/green/1.jpeg"}
-        };
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                CarImageBootstrapper.EnsureSeeded(Server);
                 LoadRentals();
             }
         }
@@ -185,13 +176,13 @@ namespace WebApplication1.view.admin
 
         protected string GetCarImageUrl(object carPlate)
         {
-            if (carPlate == null) return "";
+            if (carPlate == null) return ResolveUrl("~/assets/images/Слой 1.png");
             string plate = carPlate.ToString();
-            
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "SELECT Brand, Model, Color FROM CarTbl WHERE CPlateNum = @CarPlate";
+                string query = "SELECT Brand, Model FROM CarTbl WHERE CPlateNum = @CarPlate";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@CarPlate", plate);
@@ -201,13 +192,12 @@ namespace WebApplication1.view.admin
                         {
                             string brand = reader["Brand"].ToString();
                             string model = reader["Model"].ToString();
-                            string color = reader["Color"].ToString();
-                            return $"../../colorcars/{brand} {model}/{color}/1.jpg";
+                            return CarImageBootstrapper.BuildImageUrl(this, plate, brand, model);
                         }
                     }
                 }
             }
-            return "";
+            return ResolveUrl("~/assets/images/Слой 1.png");
         }
 
         protected string GetCarDetails(object carPlate)

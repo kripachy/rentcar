@@ -70,15 +70,13 @@
                             <button type="button" data-bs-target="#carCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                         </div>
                         <div class="carousel-inner rounded">
-                            <div class="carousel-item active">
-                                <img src="../../colorcars/Aston Martin Vanquish/white/1.jpg" class="d-block w-100 rounded" alt="Aston Martin Vanquish White 1" style="object-fit: cover; height: 450px;">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="../../colorcars/Aston Martin Vanquish/white/2.jpg" class="d-block w-100 rounded" alt="Aston Martin Vanquish White 2" style="object-fit: cover; height: 450px;">
-                            </div>
-                            <div class="carousel-item">
-                                <img src="../../colorcars/Aston Martin Vanquish/white/3.jpg" class="d-block w-100 rounded" alt="Aston Martin Vanquish White 3" style="object-fit: cover; height: 450px;">
-                            </div>
+                            <asp:Repeater ID="rptImages" runat="server">
+                                <ItemTemplate>
+                                    <div class='carousel-item <%# Container.ItemIndex == 0 ? "active" : "" %>'>
+                                        <img src='<%# Container.DataItem %>' class="d-block w-100 rounded" alt="Aston Martin Vanquish" style="object-fit: cover; height: 450px;" />
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>

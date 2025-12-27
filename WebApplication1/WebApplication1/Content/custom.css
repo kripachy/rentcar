@@ -181,6 +181,43 @@ body {
     color: #ffffff;
 }
 
+/* Reviews */
+.reviews-section {
+    background-color: #f8f9fa;
+    padding: 60px 0;
+}
+
+.review-card {
+    border-radius: 14px;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.review-card .fa-star {
+    margin-left: 2px;
+}
+
+.star-rating {
+    display: inline-flex;
+    gap: 6px;
+    font-size: 1.6rem;
+    color: #d6d6d6;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star-rating span.active {
+    color: #ffb400;
+}
+
+.reviews-section .card-header,
+.reviews-section .card-body {
+    border-radius: 14px;
+}
 /* Footer */
 .footer {
     background-color: #000000;

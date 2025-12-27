@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -7,14 +7,17 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WebApplication1.App_Start;
 
 namespace WebApplication1.view.admin
 {
     public partial class carlistt : Page
     {
+        protected global::System.Web.UI.WebControls.Label lblError;
         
         public class CarInfo
         {
+            public string Plate { get; set; }
             public string Brand { get; set; }
             public string Model { get; set; }
             public int Price { get; set; }
@@ -22,127 +25,137 @@ namespace WebApplication1.view.admin
             public string ImageUrl { get; set; }
         }
 
-        private Dictionary<string, string> specificCarImages = new Dictionary<string, string>
-        {
-            {"Aston Martin Vanquish", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Aston Martin Vanquish\white\1.jpg"},
-            {"Audi TT", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Audi TT\orange\3.jpg"},
-            {"Chevrolet Camaro", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Chevrolet Camaro\yellow\1.jpg"},
-            {"Ford Mustang S550", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Ford Mustang S550\orange\1.jpg"},
-            {"Jaguar XJ", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Jaguar XJ\black\1.jpg"},
-            {"Lamborghini Huracan", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Lamborghini Huracan\purple\1.jpg"},
-            {"Maserati GranTurismo", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Maserati GranTurismo\yellow\2.jpg"},
-            {"Porsche 911", @"C:\Users\kiril\OneDrive\Документы\rentcar\WebApplication1\WebApplication1\colorcars\Porsche 911\green\1.jpeg"}
-        };
-
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            try
             {
-                if (Session["UserEmail"] == null)
+                if (!IsPostBack)
                 {
-                    Session["ReturnUrl"] = Request.RawUrl;
-                    Response.Redirect("~/view/login.aspx");
+                    if (Session["UserEmail"] == null)
+                    {
+                        Session["ReturnUrl"] = Request.RawUrl;
+                        Response.Redirect("~/view/admin/login.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
+                        return;
+                    }
+
+                    CarImageBootstrapper.EnsureSeeded(Server);
+                    ddlSort.SelectedValue = "Price ASC";
+                    LoadCars(ddlSort.SelectedValue);
+                } 
+                else 
+                {
+                    LoadCars(ddlSort.SelectedValue);
                 }
-
-                ddlSort.SelectedValue = "Price ASC";
-
-                LoadCars(ddlSort.SelectedValue);
-            } else {
-                
-                 LoadCars(ddlSort.SelectedValue);
+            }
+            catch (Exception ex)
+            {
+                lblError.Text = "Ошибка загрузки: " + ex.Message + "<br/>" + ex.StackTrace;
+                lblError.Visible = true;
             }
         }
 
         private void LoadCars(string sortBy)
         {
-            List<CarInfo> cars = new List<CarInfo>();
-            string constr = WebApplication1.Models.Functions.GetConnectionString();
-            string defaultImageUrl = ResolveUrl("~/images/default_car.png");
-            
-            string workspaceRoot = Server.MapPath("~");
-
-            using (SqlConnection conn = new SqlConnection(constr))
+            try
             {
-                conn.Open();
-             
-                string query = "SELECT Brand, Model, Price, Status FROM CarTbl GROUP BY Brand, Model, Price, Status";
+                List<CarInfo> cars = new List<CarInfo>();
+                string constr = WebApplication1.Models.Functions.GetConnectionString();
+                
+                // Пробуем получить lookup, если упадет - просто пустой словарь
+                Dictionary<string, int?> imageLookup = new Dictionary<string, int?>();
+                try {
+                     imageLookup = CarImageBootstrapper.GetMainImageLookup();
+                } catch { }
 
-                 if (!string.IsNullOrEmpty(sortBy))
-                 {
+                using (SqlConnection conn = new SqlConnection(constr))
+                {
+                    conn.Open();
+                    
+                    // Группируем по Бренду и Модели, чтобы в каталоге не было дубликатов одной и той же машины
+                    // Выбираем минимальную цену и лучший статус (Available приоритетнее из-за алфавитного порядка)
+                    string query = @"
+                        SELECT 
+                            MIN(CPlateNum) as CPlateNum, 
+                            Brand, 
+                            Model, 
+                            MIN(Color) as Color, 
+                            MIN(Price) as Price, 
+                            MIN(Status) as Status 
+                        FROM CarTbl 
+                        GROUP BY Brand, Model";
 
-                    if (sortBy.Contains(";") || sortBy.Contains("--") || sortBy.Contains("/") ||
-   !(sortBy == "Price ASC" || sortBy == "Price DESC"))
+                     if (!string.IsNullOrEmpty(sortBy))
+                     {
+                        if (sortBy.Contains(";") || sortBy.Contains("--") || sortBy.Contains("/") ||
+                           !(sortBy == "Price ASC" || sortBy == "Price DESC"))
+                        {
+                            sortBy = "Price ASC";
+                        }
+                        query += " ORDER BY " + sortBy;
+                     }
+                    else
                     {
-                        sortBy = "Price ASC";
+                        query += " ORDER BY Price ASC";
                     }
 
-                    query += " ORDER BY " + sortBy;
-                 }
-                else
-                {
-                    query += " ORDER BY Price ASC";
-                }
-
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                       
-                        HashSet<string> addedCarModels = new HashSet<string>();
-
-                        while (reader.Read())
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            string brand = reader["Brand"].ToString().Trim();
-                            string model = reader["Model"].ToString().Trim();
-                            string fullCarName = brand + " " + model;
+                            HashSet<string> addedCarModels = new HashSet<string>();
 
-                            if (!addedCarModels.Contains(fullCarName))
+                            while (reader.Read())
                             {
-                                string status = reader["Status"].ToString().Trim();
-                                int price = Convert.ToInt32(reader["Price"]);
+                                string brand = reader["Brand"].ToString().Trim();
+                                string model = reader["Model"].ToString().Trim();
+                                string carKey = (brand + "|" + model).ToLower();
 
-                                string imageUrl = defaultImageUrl;
-
-                                if (specificCarImages.ContainsKey(fullCarName))
+                                if (!addedCarModels.Contains(carKey))
                                 {
-                                    string absolutePath = specificCarImages[fullCarName];
-                                
-                                    if (absolutePath.StartsWith(workspaceRoot, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        string relativePath = absolutePath.Substring(workspaceRoot.Length).Replace("\\", "/").TrimStart('/');
-                                        imageUrl = ResolveUrl("~/" + relativePath);
-                                    } else {
-                                         System.Diagnostics.Debug.WriteLine($"Absolute path {absolutePath} is not within the workspace root {workspaceRoot}");
-                                        
-                                         imageUrl = defaultImageUrl;
+                                    string plate = reader["CPlateNum"].ToString();
+                                    string color = reader["Color"]?.ToString().Trim() ?? "";
+                                    string status = reader["Status"] == DBNull.Value ? "Available" : reader["Status"].ToString().Trim();
+                                    int price = reader["Price"] == DBNull.Value ? 0 : Convert.ToInt32(reader["Price"]);
+
+                                    string imageUrl = "";
+                                    try {
+                                        imageUrl = CarImageBootstrapper.BuildImageUrl(this, plate, brand, model, color, imageLookup);
+                                    } catch {
+                                        imageUrl = ResolveUrl("~/assets/images/default-car.png.png");
                                     }
+
+                                    cars.Add(new CarInfo
+                                    {
+                                        Plate = plate,
+                                        Brand = brand,
+                                        Model = model,
+                                        Price = price,
+                                        Status = status,
+                                        ImageUrl = imageUrl
+                                    });
+
+                                    addedCarModels.Add(carKey);
                                 }
-                                
-
-                                cars.Add(new CarInfo
-                                {
-                                    Brand = brand,
-                                    Model = model,
-                                    Price = price,
-                                    Status = status,
-                                    ImageUrl = imageUrl
-                                });
-
-                                addedCarModels.Add(fullCarName);
                             }
                         }
                     }
                 }
-            }
 
-            rptCars.DataSource = cars;
-            rptCars.DataBind();
+                rptCars.DataSource = cars;
+                rptCars.DataBind();
+            }
+            catch (Exception ex)
+            {
+                lblError.Text = "Ошибка в LoadCars: " + ex.Message + "<br/>Stack: " + ex.StackTrace;
+                lblError.Visible = true;
+            }
         }
 
         
         protected string GetPrice(object price, object status)
         {
+            if (status == null || status == DBNull.Value) return "";
             string carStatus = status.ToString();
             if (carStatus != "Available")
             {
@@ -156,6 +169,7 @@ namespace WebApplication1.view.admin
 
         protected string GetStatusText(object status)
         {
+             if (status == null || status == DBNull.Value) return "Нет в наличии";
              string carStatus = status.ToString();
              if (carStatus != "Available")
              {
@@ -163,8 +177,10 @@ namespace WebApplication1.view.admin
              }
              return ""; 
         }
+
          protected string GetStatusClass(object status)
         {
+             if (status == null || status == DBNull.Value) return "unavailable";
              string carStatus = status.ToString();
              if (carStatus != "Available")
              {
@@ -178,18 +194,14 @@ namespace WebApplication1.view.admin
             
         }
 
-        protected string GetCarDetailUrl(object brand, object model)
+        protected string GetCarDetailUrl(object plate)
         {
-            string carName = $"{brand} {model}";
-            switch (carName)
-            {
-                case "Aston Martin Vanquish":
-                    return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
-                case "Audi TT":
-                    return ResolveUrl("~/view/admin/AudiTT.aspx");
-                default:
-                    return ResolveUrl("~/view/admin/AstonMartinVanquish.aspx");
-            }
+            return ResolveUrl($"~/view/admin/CarDetails.aspx?plate={plate}");
+        }
+
+        protected string GetOnErrorScript()
+        {
+            return "this.onerror=null; this.src='" + ResolveUrl("~/assets/images/default-car.png.png") + "';";
         }
     }
 }

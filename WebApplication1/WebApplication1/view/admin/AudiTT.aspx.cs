@@ -8,6 +8,8 @@ using System.Net.Mail;
 using System.IO;
 using System.Net;
 using WebApplication1.Models;
+using WebApplication1.App_Start;
+using System.Collections.Generic;
 
 namespace WebApplication1.view.admin
 {
@@ -29,16 +31,26 @@ namespace WebApplication1.view.admin
                 {
                     // Store the current URL in session to redirect back after login
                     Session["ReturnUrl"] = Request.RawUrl;
-                    Response.Redirect("~/view/login.aspx");
+                    Response.Redirect("~/view/admin/login.aspx");
                 }
 
+                CarImageBootstrapper.EnsureSeeded(Server);
+                BindImages();
                 LoadCarDetails();
             }
             else
             {
                 // Reload price when color changes
                 LoadCarDetails();
+                BindImages();
             }
+        }
+
+        private void BindImages()
+        {
+            var urls = CarImageBootstrapper.GetGalleryUrls(this, "Audi", "TT", 5);
+            rptImages.DataSource = urls;
+            rptImages.DataBind();
         }
 
         private void LoadCarDetails()
@@ -140,7 +152,15 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                // 3. Рассчитываем Fees
+                // 3. Проверка допуска по стажу и категории
+                var eligibility = RentalRules.CheckCustomerEligibility(carPlateNum, custId.Value);
+                if (!eligibility.Allowed)
+                {
+                    ShowRentalMessage("Бронирование отклонено: " + eligibility.Reason, false);
+                    return;
+                }
+
+                // 4. Рассчитываем Fees
                 decimal dailyPrice = GetCarPrice("Audi", "TT", selectedColor);
                 if (dailyPrice <= 0)
                 {
@@ -156,10 +176,10 @@ namespace WebApplication1.view.admin
 
                 int fees = (int)(dailyPrice * rentalDays);
 
-                // 4. Определяем следующий RentId
+                // 5. Определяем следующий RentId
                 int nextRentId = GetNextRentId();
 
-                // 5. Вставляем запись в RentTbl
+                // 6. Вставляем запись в RentTbl
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();

@@ -13,11 +13,19 @@ namespace WebApplication1.view.admin
     public partial class login : Page
     {
         private WebApplication1.Models.Functions functions;
-        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\kiril\OneDrive\Документы\WheelDeal.mdf;Integrated Security=True";
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
             functions = new WebApplication1.Models.Functions();
+            
+            // Если открыт старый путь /view/login, перенаправляем на актуальный /view/admin/login
+            if (Request.Path.IndexOf("/view/login.aspx", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                Request.Path.IndexOf("/view/admin/login.aspx", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                Response.Redirect("~/view/admin/login.aspx");
+                return;
+            }
             
             
             if (Request.QueryString["logout"] != null)
@@ -31,7 +39,7 @@ namespace WebApplication1.view.admin
             if (!IsPostBack && Session["UserEmail"] != null && !Request.Path.EndsWith("login.aspx", StringComparison.OrdinalIgnoreCase))
             {
                 string userEmail = Session["UserEmail"].ToString();
-                RedirectBasedOnRole(userEmail);
+                RedirectAfterLogin(userEmail);
             }
         }
 
@@ -66,16 +74,27 @@ namespace WebApplication1.view.admin
             }
 
             
-            string query = $"SELECT * FROM CustomerAuthTbl WHERE CustEmail = '{email}' AND CustPassword = '{password}'";
-            DataTable dt = functions.GetData(query);
-
-            if (dt.Rows.Count > 0)
+            // Проверяем учетные данные и получаем CustId
+            int? custId = null;
+            string connectionString = WebApplication1.Models.Functions.GetConnectionString();
+            using (var conn = new SqlConnection(connectionString))
             {
-                
-                Session["UserEmail"] = email;
+                conn.Open();
+                var cmd = new SqlCommand("SELECT CustId FROM CustomerAuthTbl WHERE CustEmail = @Email AND CustPassword = @Password", conn);
+                cmd.Parameters.AddWithValue("@Email", email);
+                cmd.Parameters.AddWithValue("@Password", password);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    custId = Convert.ToInt32(result);
+                }
+            }
 
-              
-                RedirectBasedOnRole(email);
+            if (custId.HasValue)
+            {
+                Session["UserEmail"] = email;
+                Session["UserId"] = custId.Value;
+                RedirectAfterLogin(email);
             }
             else
             {
@@ -83,8 +102,17 @@ namespace WebApplication1.view.admin
             }
         }
 
-        private void RedirectBasedOnRole(string email)
+        private void RedirectAfterLogin(string email)
         {
+            // Если есть ReturnUrl (например, после попытки открыть carlistt без логина), отправляем туда
+            string returnUrl = Session["ReturnUrl"] as string;
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                Session["ReturnUrl"] = null;
+                Response.Redirect(returnUrl);
+                return;
+            }
+
             if (email.Equals("admin@gmail.com", StringComparison.OrdinalIgnoreCase))
             {
                 
@@ -124,6 +152,7 @@ namespace WebApplication1.view.admin
             }
 
             
+            string connectionString = Functions.GetConnectionString();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -156,7 +185,7 @@ namespace WebApplication1.view.admin
 
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                     {
-                        smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "xqwj lscl uvgw gusf");
+                        smtp.Credentials = new NetworkCredential("wheeldeal989@gmail.com", "whnj wcbz vesg wwqo");
                         smtp.EnableSsl = true;
                         smtp.Send(mail);
                     }
@@ -196,7 +225,7 @@ namespace WebApplication1.view.admin
                              int rowsAffected = cmd.ExecuteNonQuery();
                              if (rowsAffected > 0)
                              {
-                                 ShowRecoveryMessage("Пароль обновлен в CustomerTbl", false);
+                                 ShowRecoveryMessage("Проверьте пароль на почте", false);
                              }
                              else
                              {
