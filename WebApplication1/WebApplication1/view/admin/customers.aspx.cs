@@ -40,17 +40,13 @@ namespace WebApplication1.view.admin
                     ViewState["SelectedCustomerId"] = custId;
 
                     txtCustomerName.Text = HttpUtility.HtmlDecode(row.Cells[2].Text);
-                    txtCustomerAdress.Text = HttpUtility.HtmlDecode(row.Cells[3].Text);
+                    string city = HttpUtility.HtmlDecode(row.Cells[3].Text);
                     txtCustomerPhone.Text = HttpUtility.HtmlDecode(row.Cells[4].Text);
 
-                    Label lblPassword = (Label)row.FindControl("lblPassword");
-                    if (lblPassword != null)
+                    if (ddlCustomerCity.Items.FindByValue(city) != null)
                     {
-                        txtCustomerPassword.Text = HttpUtility.HtmlDecode(lblPassword.Text);
-                    }
-                    else
-                    {
-                        txtCustomerPassword.Text = HttpUtility.HtmlDecode(row.Cells[5].Text);
+                        ddlCustomerCity.ClearSelection();
+                        ddlCustomerCity.Items.FindByValue(city).Selected = true;
                     }
                 }
             }
@@ -72,9 +68,14 @@ namespace WebApplication1.view.admin
 
                 string id = ViewState["SelectedCustomerId"].ToString();
                 string name = txtCustomerName.Text.Trim().Replace("'", "''");
-                string address = txtCustomerAdress.Text.Trim().Replace("'", "''");
+                string address = ddlCustomerCity.SelectedValue.Replace("'", "''");
                 string phone = txtCustomerPhone.Text.Trim().Replace("'", "''");
-                string password = txtCustomerPassword.Text.Trim().Replace("'", "''");
+
+                if (string.IsNullOrEmpty(address))
+                {
+                    ShowError("Пожалуйста, выберите город");
+                    return;
+                }
 
                 if (!IsValidPhoneNumber(phone))
                 {
@@ -91,8 +92,7 @@ namespace WebApplication1.view.admin
                     return;
                 }
 
-                string query = $"UPDATE CustomerTbl SET CustName=N'{name}', CustAdd=N'{address}', CustPhone='{phone}', CustPassword=N'{password}' WHERE CustId={id}";
-
+                string query = $"UPDATE CustomerTbl SET CustName=N'{name}', CustAdd=N'{address}', CustPhone='{phone}' WHERE CustId={id}";
                 Conn.SetData(query);
 
                 ShowCustomers();
@@ -168,9 +168,8 @@ namespace WebApplication1.view.admin
         private void ClearFields()
         {
             txtCustomerName.Text = "";
-            txtCustomerAdress.Text = "";
+            ddlCustomerCity.ClearSelection();
             txtCustomerPhone.Text = "";
-            txtCustomerPassword.Text = "";
             ViewState["SelectedCustomerId"] = null;
         }
 
@@ -192,12 +191,11 @@ namespace WebApplication1.view.admin
             ErrorMsg.CssClass = "text-success";
             ErrorMsg.Visible = true;
         }
-
         protected void btnExport_Click(object sender, EventArgs e)
         {
             try
             {
-                string query = "SELECT CustId, CustName, CustAdd, CustPhone, CustPassword FROM CustomerTbl";
+                string query = "SELECT CustId, CustName, CustAdd, CustPhone FROM CustomerTbl";
                 DataTable dt = Conn.GetData(query);
 
                 if (dt.Rows.Count > 0)

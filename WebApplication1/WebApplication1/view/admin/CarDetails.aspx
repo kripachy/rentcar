@@ -230,7 +230,6 @@
                 const lblPrice = document.getElementById('<%= lblPrice.ClientID %>');
                 const hfCarName = document.getElementById('<%= hfCarName.ClientID %>');
 
-                // Set only minimum dates, not values
                 if (startDateInput) {
                     startDateInput.min = minDateTime;
                 }
@@ -239,7 +238,6 @@
                     endDateInput.min = endDate.toISOString().slice(0, 16);
                 }
 
-                // Add click handler for rent button
                 if (btnRent) {
                     btnRent.addEventListener('click', function (e) {
                         if (!startDateInput.value || !endDateInput.value) {
@@ -270,7 +268,6 @@
                     });
                 }
 
-                // Update end date when start date changes
                 if (startDateInput && endDateInput) {
                     startDateInput.addEventListener('change', function () {
                         if (startDateInput.value) {
@@ -285,7 +282,6 @@
                     });
                 }
 
-                // Initialize carousel
                 var carousel = new bootstrap.Carousel(document.getElementById('carCarousel'), {
                     interval: 5000,
                     wrap: true

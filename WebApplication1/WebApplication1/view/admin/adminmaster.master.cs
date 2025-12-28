@@ -34,8 +34,42 @@ namespace WebApplication1.view.admin
 
         protected string GetActiveClass(string pageName)
         {
-            string currentPage = System.IO.Path.GetFileName(Request.PhysicalPath);
+            string currentPage = System.IO.Path.GetFileName(Request.Path);
+            if (string.IsNullOrWhiteSpace(currentPage))
+            {
+                currentPage = "home.aspx";
+            }
             return currentPage.Equals(pageName, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+        }
+
+        protected string GetCurrentPageTitle()
+        {
+            string currentPage = System.IO.Path.GetFileName(Request.Path);
+            if (string.IsNullOrWhiteSpace(currentPage))
+            {
+                currentPage = "home.aspx";
+            }
+            switch (currentPage?.ToLowerInvariant())
+            {
+                case "home.aspx":
+                    return "Главная";
+                case "cars.aspx":
+                    return "Автомобили";
+                case "customers.aspx":
+                    return "Клиенты";
+                case "rents.aspx":
+                    return "Аренды";
+                case "adminprofile.aspx":
+                    return "Профиль";
+                case "comments.aspx":
+                    return "Комментарии";
+                case "manageverification.aspx":
+                    return "Проверка";
+                case "slider.aspx":
+                    return "Слайдер";
+                default:
+                    return "";
+            }
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

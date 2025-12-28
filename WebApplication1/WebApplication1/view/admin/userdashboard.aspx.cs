@@ -8,6 +8,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using WebApplication1.App_Start;
+using WebApplication1.Models;
 
 namespace WebApplication1.view.admin
 {
@@ -23,7 +24,7 @@ namespace WebApplication1.view.admin
             if (!IsPostBack)
             {
                 CarImageBootstrapper.EnsureSeeded(Server);
-                ConfigureSliderImages();
+                ConfigureSlider();
                 EnsureSchema();
                 ConfigureCommentUi();
                 LoadComments();
@@ -54,35 +55,90 @@ namespace WebApplication1.view.admin
             pnlCommentForm.Visible = hasUserName;
         }
 
-        private void ConfigureSliderImages()
+        private void ConfigureSlider()
         {
-            var urls = GetStaticHeroImages();
-            if (urls.Count == 0)
+            DatabaseInitializer.EnsureSchema();
+
+            var slides = LoadActiveHeroSlides();
+
+            RenderSlider(slides);
+        }
+
+        private List<HeroSlide> LoadActiveHeroSlides()
+        {
+            var result = new List<HeroSlide>();
+            string cs = Functions.GetConnectionString();
+
+            using (var conn = new SqlConnection(cs))
             {
-                urls = CarImageBootstrapper.GetLatestImageUrls(this, 3);
+                conn.Open();
+                var cmd = new SqlCommand(@"
+SELECT SlideId, Title, Subtitle, ImageFileId, SortOrder
+FROM HeroSlider
+WHERE IsActive = 1
+ORDER BY SortOrder, SlideId;", conn);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int? fileId = reader.IsDBNull(3) ? (int?)null : reader.GetInt32(3);
+                        string imgUrl = fileId.HasValue
+                            ? ResolveUrl("~/ImageHandler.ashx?id=" + fileId.Value)
+                            : ResolveUrl("~/assets/images/Слой 1.png");
+
+                        result.Add(new HeroSlide
+                        {
+                            Title = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                            Subtitle = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                            ImageUrl = imgUrl
+                        });
+                    }
+                }
             }
-            SetSlideBackground(slide1, urls, 0);
-            SetSlideBackground(slide2, urls, 1);
-            SetSlideBackground(slide3, urls, 2);
+
+            return result;
         }
 
-        private static void SetSlideBackground(HtmlGenericControl slide, System.Collections.Generic.List<string> urls, int index)
+        private void RenderSlider(List<HeroSlide> slides)
         {
-            if (slide == null) return;
-            string url = (urls.Count > index ? urls[index] : null) ?? "~/assets/images/Слой 1.png";
-            slide.Style["background-image"] = $"url('{url}')";
-            slide.Style["background-size"] = "cover";
-            slide.Style["background-position"] = "center";
-        }
-
-        private List<string> GetStaticHeroImages()
-        {
-            return new List<string>
+            if (slides == null || slides.Count == 0)
             {
-                ResolveUrl("~/colorcars/Aston Martin Vanquish/white/3.jpg"),
-                ResolveUrl("~/colorcars/Lamborghini Huracan/purple/3.jpg"),
-                ResolveUrl("~/colorcars/Maserati GranTurismo/red/5.jpg")
-            };
+                litSliderIndicators.Text = string.Empty;
+                litSliderItems.Text = string.Empty;
+                return;
+            }
+
+            var indicators = new StringBuilder();
+            var items = new StringBuilder();
+
+            for (int i = 0; i < slides.Count; i++)
+            {
+                bool isActive = i == 0;
+                indicators.Append($"<button type='button' data-bs-target='#dynamicSlider' data-bs-slide-to='{i}' {(isActive ? "class='active' aria-current='true'" : string.Empty)} aria-label='Slide {i + 1}'></button>");
+
+                string title = HttpUtility.HtmlEncode(slides[i].Title ?? string.Empty);
+                string subtitle = HttpUtility.HtmlEncode(slides[i].Subtitle ?? string.Empty);
+                string imgUrl = slides[i].ImageUrl ?? ResolveUrl("~/assets/images/Слой 1.png");
+
+                items.Append($@"
+<div class='carousel-item {(isActive ? "active" : string.Empty)}' style=""background-image:url('{imgUrl}');background-size:cover;background-position:center;"">
+    <div class='carousel-caption'>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+    </div>
+</div>");
+            }
+
+            litSliderIndicators.Text = indicators.ToString();
+            litSliderItems.Text = items.ToString();
+        }
+
+        private class HeroSlide
+        {
+            public string Title { get; set; }
+            public string Subtitle { get; set; }
+            public string ImageUrl { get; set; }
         }
 
         protected void btnSubmitComment_Click(object sender, EventArgs e)

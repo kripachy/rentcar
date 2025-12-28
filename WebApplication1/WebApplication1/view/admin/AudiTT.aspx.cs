@@ -26,10 +26,8 @@ namespace WebApplication1.view.admin
 
             if (!IsPostBack)
             {
-                // Check if user is logged in
                 if (Session["UserEmail"] == null)
                 {
-                    // Store the current URL in session to redirect back after login
                     Session["ReturnUrl"] = Request.RawUrl;
                     Response.Redirect("~/view/admin/login.aspx");
                 }
@@ -40,7 +38,6 @@ namespace WebApplication1.view.admin
             }
             else
             {
-                // Reload price when color changes
                 LoadCarDetails();
                 BindImages();
             }
@@ -59,7 +56,6 @@ namespace WebApplication1.view.admin
             {
                 string selectedColor = hdnSelectedColor?.Value ?? "Black";
                 string query = "SELECT Price FROM CarTbl WHERE Brand = 'Audi' AND Model = 'TT' AND Color = @Color";
-                
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -74,20 +70,19 @@ namespace WebApplication1.view.admin
                         }
                         else
                         {
-                            lblPrice.Text = "500.00"; // Default price if not found
+                            lblPrice.Text = "500.00"; 
                         }
                     }
                 }
             }
             catch
             {
-                lblPrice.Text = "500.00"; // Default price on error
+                lblPrice.Text = "500.00"; 
             }
         }
 
         protected void btnRent_Click(object sender, EventArgs e)
         {
-            // Get the selected color from the hidden field
             string selectedColor = hdnSelectedColor.Value;
             
             // Валидация выбранных дат и времени
@@ -169,14 +164,12 @@ namespace WebApplication1.view.admin
                 }
 
                 double numberOfDays = rentalDuration.TotalDays;
-                // Округляем дни до большего целого, если есть дробная часть
                 int rentalDays = (int)Math.Ceiling(numberOfDays);
                 if (rentalDays < 1 && rentalDuration.TotalHours > 0) rentalDays = 1;
                 else if (rentalDays < 0) rentalDays = 0;
 
                 int fees = (int)(dailyPrice * rentalDays);
 
-                // 5. Определяем следующий RentId
                 int nextRentId = GetNextRentId();
 
                 // 6. Вставляем запись в RentTbl
@@ -216,7 +209,6 @@ namespace WebApplication1.view.admin
                         string instructionsMessage = "<br/>Вам на почту придет примерный договор аренды. Вы сможете подъехать к нам, подписать его и забрать машину.";
                         lblRentalMessage.Text += instructionsMessage;
 
-                        // Get user email and send the agreement
                         string userEmail = GetUserEmail(custId.Value);
                         if (!string.IsNullOrEmpty(userEmail))
                         {
@@ -298,7 +290,6 @@ namespace WebApplication1.view.admin
 
                 if (!File.Exists(attachmentPath))
                 {
-                    System.Diagnostics.Debug.WriteLine($"Rental agreement file not found at: {attachmentPath}");
                     return;
                 }
 
@@ -358,7 +349,6 @@ namespace WebApplication1.view.admin
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                // Find car by brand, model, color and availability status
                 string findCarQuery = "SELECT TOP 1 CPlateNum FROM CarTbl WHERE Brand = @Brand AND Model = @Model AND Color = @Color AND Status = 'Available'";
                 using (SqlCommand cmd = new SqlCommand(findCarQuery, conn))
                 {
@@ -372,7 +362,6 @@ namespace WebApplication1.view.admin
                     }
                 }
 
-                // Check if the car is not booked for the selected dates
                 if (carPlate != null)
                 {
                     string checkBookingQuery = @"SELECT COUNT(*) FROM RentTbl 
@@ -386,7 +375,7 @@ namespace WebApplication1.view.admin
                         int bookingCount = Convert.ToInt32(cmd.ExecuteScalar());
                         if (bookingCount > 0)
                         {
-                            carPlate = null; // Car is booked for these dates
+                            carPlate = null; 
                         }
                     }
                 }

@@ -24,13 +24,13 @@ namespace WebApplication1.view.admin
         protected global::System.Web.UI.WebControls.TextBox txtCustomerName;
 
         /// <summary>
-        /// txtCustomerAdress элемент управления.
+        /// ddlCustomerCity элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически созданное поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCustomerAdress;
+        protected global::System.Web.UI.WebControls.DropDownList ddlCustomerCity;
 
         /// <summary>
         /// txtCustomerPhone элемент управления.
@@ -41,14 +41,7 @@ namespace WebApplication1.view.admin
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtCustomerPhone;
 
-        /// <summary>
-        /// txtCustomerPassword элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически созданное поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCustomerPassword;
+
 
         /// <summary>
         /// Edit элемент управления.

@@ -44,7 +44,6 @@ WHERE c.CPlateNum = @plate", conn);
                     }
                 }
 
-                // 1. FIRST check admin-assigned classes (Manual verification)
                 var classCheck = new SqlCommand(@"
 SELECT COUNT(*) FROM CustomerAllowedCategory 
 WHERE CustomerId = @custId AND CategoryId = (SELECT CategoryId FROM CarTbl WHERE CPlateNum = @plate)", conn);
@@ -54,11 +53,9 @@ WHERE CustomerId = @custId AND CategoryId = (SELECT CategoryId FROM CarTbl WHERE
                 int count = (int)classCheck.ExecuteScalar();
                 if (count > 0)
                 {
-                    // Admin explicitly allowed this class for this user.
                     return new EligibilityResult { Allowed = true };
                 }
 
-                // 2. If not explicitly allowed, check if user has ANY allowed classes
                 var allowedClassesCmd = new SqlCommand(@"
                     SELECT cc.Name 
                     FROM CustomerAllowedCategory cac
@@ -82,7 +79,6 @@ WHERE CustomerId = @custId AND CategoryId = (SELECT CategoryId FROM CarTbl WHERE
                     };
                 }
 
-                // 3. Automated check (based on experience) if no manual classes assigned yet
                 int experienceYears = 0;
                 DateTime? issueDate = null;
 
@@ -125,7 +121,6 @@ WHERE CustId = @custId", conn);
                     };
                 }
 
-                // 4. Fallback to documents status
                 var docCheck = new SqlCommand("SELECT Status FROM DrivingLicense WHERE CustomerId = @custId ORDER BY CreatedAt DESC", conn);
                 docCheck.Parameters.AddWithValue("@custId", customerId);
                 string docStatus = docCheck.ExecuteScalar()?.ToString();

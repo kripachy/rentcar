@@ -19,7 +19,6 @@ namespace WebApplication1
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             DatabaseInitializer.EnsureSchema();
             
-            // Migrate old absolute paths to relative paths (for project portability)
             FileStorageMigration.EnsureMigrated(Server);
             
             CarImageBootstrapper.EnsureSeeded(Server);

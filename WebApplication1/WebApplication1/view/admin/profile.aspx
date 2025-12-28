@@ -148,7 +148,8 @@
                             <div class="p-4 rounded border bg-white mb-4 shadow-sm">
                                 <h5 class="mb-4 d-flex align-items-center">
                                     <i class="fas fa-id-card me-2 text-info"></i>
-                                    Водительское удостоверение
+                                    Водительское удостоверение <small class="text-muted fw-normal">(необязательно
+                                        сейчас)</small>
                                 </h5>
 
                                 <asp:Panel ID="pnlLicensePreview" runat="server" Visible="false"

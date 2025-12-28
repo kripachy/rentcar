@@ -55,26 +55,7 @@ namespace WebApplication1.view.admin
             }
 
             
-            if (email.Equals("admin@gmail.com", StringComparison.OrdinalIgnoreCase))
-            {
-               
-                string adminPassword = "11111111"; 
-
-                if (password == adminPassword)
-                {
-                    Session["UserEmail"] = email;
-                    Response.Redirect("~/view/admin/home.aspx");
-                    return;
-                }
-                else
-                {
-                    ShowError("Неверный email или пароль");
-                    return;
-                }
-            }
-
-            
-            // Проверяем учетные данные и получаем CustId
+            // 1. Сначала пытаемся найти в базе данных (для всех пользователей, включая админов, если они там есть)
             int? custId = null;
             string connectionString = WebApplication1.Models.Functions.GetConnectionString();
             using (var conn = new SqlConnection(connectionString))
@@ -95,11 +76,23 @@ namespace WebApplication1.view.admin
                 Session["UserEmail"] = email;
                 Session["UserId"] = custId.Value;
                 RedirectAfterLogin(email);
+                return;
             }
-            else
+
+            // 2. Если в базе не найдено, проверяем хардкорного админа (резервный вход)
+            if (email.Equals("admin@gmail.com", StringComparison.OrdinalIgnoreCase))
             {
-                ShowError("Неверный email или пароль");
+                string adminPassword = "11111111"; 
+                if (password == adminPassword)
+                {
+                    Session["UserEmail"] = email;
+                    // Для хардкорного админа UserId не всегда есть в базе, но мы можем его найти или оставить null
+                    Response.Redirect("~/view/admin/home.aspx");
+                    return;
+                }
             }
+
+            ShowError("Неверный email или пароль");
         }
 
         private void RedirectAfterLogin(string email)
@@ -217,27 +210,11 @@ namespace WebApplication1.view.admin
 
                     if (custId != -1)
                     {
-                         string updateCustomerQuery = "UPDATE CustomerTbl SET CustPassword = @Password WHERE CustId = @CustId";
-                         using (SqlCommand cmd = new SqlCommand(updateCustomerQuery, conn))
-                         {
-                             cmd.Parameters.AddWithValue("@Password", tempPassword);
-                             cmd.Parameters.AddWithValue("@CustId", custId);
-                             int rowsAffected = cmd.ExecuteNonQuery();
-                             if (rowsAffected > 0)
-                             {
-                                 ShowRecoveryMessage("Проверьте пароль на почте", false);
-                             }
-                             else
-                             {
-                                 
-                                 ShowRecoveryMessage("Ошибка: CustId не найден в CustomerTbl для обновления", true);
-                             }
-                         }
+                        ShowRecoveryMessage("Проверьте пароль на почте", false);
                     }
-                     else
+                    else
                     {
-                        
-                         ShowRecoveryMessage("Ошибка: Email найден в Auth, но не удалось получить CustId", true);
+                        ShowRecoveryMessage("Ошибка: Email найден в Auth, но не удалось получить CustId", true);
                     }
                 }
 

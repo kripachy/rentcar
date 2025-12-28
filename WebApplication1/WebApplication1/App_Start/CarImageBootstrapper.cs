@@ -9,31 +9,21 @@ using WebApplication1.Models;
 
 namespace WebApplication1.App_Start
 {
-    /// <summary>
-    /// Centralized helper to keep car images in FileStorage and provide URLs for UI.
-    /// </summary>
     public static class CarImageBootstrapper
     {
         private const string CarImageKind = "car-image";
         private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
 
-        /// <summary>
-        /// Ensures images are imported from legacy folders and cars have main images assigned.
-        /// Safe to call multiple times.
-        /// </summary>
         public static void EnsureSeeded(HttpServerUtility server)
         {
-            var storage = new FileStorageService(server: server);
-
-            // Always run import to catch new files in legacy folders, with duplicate checks in the method itself
-            ImportLegacyImages(storage, server);
-
-            AssignMissingCarImages(storage, server);
+            // Отключено по запросу пользователя для ручного управления библиотекой
+            // ImportLegacyImages(storage, server);
+            // AssignMissingCarImages(storage, server);
+            
+            // Оставляем только очистку записей, для которых нет физических файлов
+            CleanupOrphanRecords(server);
         }
 
-        /// <summary>
-        /// Returns handler-based URL for a specific car or a safe default.
-        /// </summary>
         public static string BuildImageUrl(Page page, string plate, string brand, string model, string color = "", IDictionary<string, int?> cache = null, int? explicitFileId = null)
         {
             CarImageData imageData = new CarImageData
@@ -60,9 +50,6 @@ namespace WebApplication1.App_Start
             return page.ResolveUrl("~/assets/images/default-car.png.png");
         }
 
-        /// <summary>
-        /// Provides latest stored car images (for sliders/banners).
-        /// </summary>
         public static List<string> GetLatestImageUrls(Page page, int take)
         {
             var storage = new FileStorageService(server: page.Server);
@@ -72,9 +59,6 @@ namespace WebApplication1.App_Start
                           .ToList();
         }
 
-        /// <summary>
-        /// Caches main images per brand/model to reduce DB lookups on list pages.
-        /// </summary>
         public static Dictionary<string, int?> GetMainImageLookup()
         {
             var map = new Dictionary<string, int?>(StringComparer.OrdinalIgnoreCase);
@@ -101,9 +85,6 @@ namespace WebApplication1.App_Start
             return map;
         }
 
-        /// <summary>
-        /// Retrieves gallery URLs for a car. Falls back to latest images if no linked gallery exists.
-        /// </summary>
         public static List<string> GetGalleryUrls(Page page, string brand, string model, int take = 5)
         {
             var urls = new List<string>();
@@ -151,10 +132,8 @@ ORDER BY ci.IsPrimary DESC, ci.CarImageId DESC", conn);
                 server.MapPath("~/assets/images")
             };
 
-            // 1. Cleanup: Remove DB entries for files that don't exist physically
             CleanupOrphanRecords(server);
 
-            // 2. Get existing files to avoid duplicates
             var existingFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             using (var conn = new SqlConnection(Functions.GetConnectionString()))
             {
@@ -192,12 +171,10 @@ ORDER BY ci.IsPrimary DESC, ci.CarImageId DESC", conn);
                     }
                     catch
                     {
-                        // Ignore individual import errors
                     }
                 }
             }
 
-            // 3. Register files already in uploads folder
             RegisterUploads(storage, server);
         }
 
@@ -221,13 +198,11 @@ ORDER BY ci.IsPrimary DESC, ci.CarImageId DESC", conn);
                     string ext = Path.GetExtension(file).ToLowerInvariant();
                     if (!AllowedExtensions.Contains(ext)) continue;
 
-                    // Get relative path as stored in DB: "uploads/car-image/name.jpg"
                     string siteRoot = server.MapPath("~/");
                     string relativePath = file.Substring(siteRoot.Length).Replace('\\', '/');
 
                     if (existingPaths.Contains(relativePath)) continue;
 
-                    // Add to DB without copying
                     var ins = new SqlCommand(@"
 INSERT INTO FileStorage (FilePath, OriginalName, ContentType, FileKind, CreatedAt)
 VALUES (@path, @name, @type, @kind, @date)", conn);
@@ -310,7 +285,6 @@ VALUES (@path, @name, @type, @kind, @date)", conn);
                     update.Parameters.AddWithValue("@plate", car.plate);
                     update.ExecuteNonQuery();
 
-                    // Update CarImages: ensure this file is the primary one
                     var resetPrimary = new SqlCommand("UPDATE CarImages SET IsPrimary=0 WHERE CarPlate=@plate", conn);
                     resetPrimary.Parameters.AddWithValue("@plate", car.plate);
                     resetPrimary.ExecuteNonQuery();
@@ -336,7 +310,6 @@ ELSE
                 !(f.FilePath?.IndexOf("logo", StringComparison.OrdinalIgnoreCase) >= 0)
             ).ToList();
 
-            // 1. Exact brand + color match (User's new naming convention: "brand+color" or "brand_color")
             if (!string.IsNullOrWhiteSpace(color))
             {
                 var matchByColor = candidates.FirstOrDefault(f =>
@@ -345,26 +318,22 @@ ELSE
                 if (matchByColor != null) return matchByColor;
             }
 
-            // 2. Exact brand + model in colorcars
             var match = candidates.FirstOrDefault(f =>
                 f.FilePath?.IndexOf("colorcars", StringComparison.OrdinalIgnoreCase) >= 0 &&
                 f.FilePath?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0 &&
                 (!string.IsNullOrWhiteSpace(model) && f.FilePath?.IndexOf(model, StringComparison.OrdinalIgnoreCase) >= 0));
             if (match != null) return match;
 
-            // 3. Exact brand + model anywhere
             match = candidates.FirstOrDefault(f =>
                 (f.OriginalName?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0 || f.FilePath?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0) &&
                 (!string.IsNullOrWhiteSpace(model) && (f.OriginalName?.IndexOf(model, StringComparison.OrdinalIgnoreCase) >= 0 || f.FilePath?.IndexOf(model, StringComparison.OrdinalIgnoreCase) >= 0)));
             if (match != null) return match;
 
-            // 4. Brand in colorcars
             match = candidates.FirstOrDefault(f =>
                 f.FilePath?.IndexOf("colorcars", StringComparison.OrdinalIgnoreCase) >= 0 &&
                 f.FilePath?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0);
             if (match != null) return match;
 
-            // 5. Brand anywhere
             return candidates.FirstOrDefault(f =>
                 f.OriginalName?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0 || 
                 f.FilePath?.IndexOf(brand, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -372,7 +341,6 @@ ELSE
 
         private static int? FindBestFileId(string brand, string model, string color = "")
         {
-            // Use HttpContext.Current for static method
             if (HttpContext.Current == null) return null;
             var storage = new FileStorageService(server: HttpContext.Current.Server);
             var file = FindBestFile(storage.GetFiles(CarImageKind), brand, model, color);

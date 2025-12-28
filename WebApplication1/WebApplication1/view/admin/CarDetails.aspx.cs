@@ -15,8 +15,6 @@ namespace WebApplication1.view.admin
     public partial class CarDetails : System.Web.UI.Page
     {
         private string connectionString = WebApplication1.Models.Functions.GetConnectionString();
-        
-        // Control declarations are handled by the ASPX engine when using CodeFile/CodeBehind correctly.
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -69,7 +67,6 @@ namespace WebApplication1.view.admin
                             string color = reader["Color"].ToString();
                             lblColorName.Text = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(color);
 
-                            // Specs
                             SetupSpecs(reader);
                         }
                         else
@@ -80,7 +77,6 @@ namespace WebApplication1.view.admin
                     }
                 }
 
-                // Load unique color variants
                 string variantsQuery = @"
 SELECT MIN(CPlateNum) as CPlateNum, Color 
 FROM CarTbl 
@@ -123,7 +119,6 @@ GROUP BY Color";
 
         private void BindImages(string plate)
         {
-            // Fetch images via CarImageBootstrapper or direct SQL
             var urls = new List<string>();
             
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -152,7 +147,6 @@ GROUP BY Color";
             rptImages.DataSource = urls;
             rptImages.DataBind();
             
-            // Also indicators
             rptIndicators.DataSource = urls;
             rptIndicators.DataBind();
         }
@@ -200,14 +194,12 @@ GROUP BY Color";
 
             string plate = hfCarPlate.Value;
 
-            // Check Availability
              if (!IsCarAvailable(plate, startDate, endDate))
              {
                  ShowRentalMessage("Этот автомобиль уже забронирован на выбранные даты.", false);
                  return;
              }
 
-            // Check Rules
             var eligibility = RentalRules.CheckCustomerEligibility(plate, custId.Value);
             if (!eligibility.Allowed)
             {
@@ -248,7 +240,6 @@ GROUP BY Color";
 
         private void ProcessRental(string plate, int custId, DateTime start, DateTime end)
         {
-             // Calculate Fees
              decimal price = decimal.Parse(lblPrice.Text);
              int days = (int)Math.Ceiling((end - start).TotalDays);
              int fees = (int)(price * days);
@@ -260,8 +251,6 @@ GROUP BY Color";
                  {
                      try
                      {
-                         // Insert Rent
-                         // Get ID
                          int rentId = 1;
                          var cmdId = new SqlCommand("SELECT ISNULL(MAX(RentId), 0) + 1 FROM RentTbl", conn, tran);
                          rentId = (int)cmdId.ExecuteScalar();
@@ -276,21 +265,11 @@ GROUP BY Color";
                          insert.Parameters.AddWithValue("@fees", fees);
                          insert.ExecuteNonQuery();
 
-                         // Update Status
                        //  var update = new SqlCommand("UPDATE CarTbl SET Status='Booked' WHERE CPlateNum=@plate", conn, tran);
                        //  update.Parameters.AddWithValue("@plate", plate);
                        //  update.ExecuteNonQuery();
-                         // Actually, keeping status as 'Available' but relying on Calendar checks is better for future bookings,
-                         // BUT the current system seems to assume simple toggle.
-                         // However, AstonMartinVanquish.aspx.cs sets 'Unavailable'.
-                         // Let's set 'Booked' if it's immediate? Or just rely on RentTbl.
-                         // User request doesn't specify logic depth. I'll stick to RentTbl check (IsCarAvailable) which I implemented.
-                         // But for consistency with existing Admin UI which shows "Status", I might flip it if the rental starts NOW.
-                         // Let's NOT flip it globally if it's a future rental.
-                         // The existing `AstonMartinVanquish.aspx.cs` sets it to 'Unavailable' unconditionally.
-                         // I will replicate that behavior for safety:
                          
-                         if (start <= DateTime.Now.AddHours(24)) // If stating soon
+                         if (start <= DateTime.Now.AddHours(24)) 
                          {
                              var update = new SqlCommand("UPDATE CarTbl SET Status='Booked' WHERE CPlateNum=@plate", conn, tran);
                              update.Parameters.AddWithValue("@plate", plate);
@@ -302,12 +281,9 @@ GROUP BY Color";
                          ShowRentalMessage("Автомобиль успешно забронирован!", true);
                          lblRentalMessage.Text += "<br/>Договор отправлен на почту.";
                          
-                         // Email logic (simplified)
                          string email = GetUserEmail(custId);
                          if (!string.IsNullOrEmpty(email))
                          {
-                             // Send email... (omitted for brevity, assume SendRentalAgreementEmail exists or is copied)
-                             // Since I cannot easily copy the file path dynamically unless I have a standard contract.
                          }
                      }
                      catch

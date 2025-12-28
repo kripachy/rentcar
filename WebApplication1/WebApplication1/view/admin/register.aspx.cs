@@ -10,8 +10,8 @@ namespace WebApplication1
         protected void btnRegister_Click(object sender, EventArgs e)
         {
             string email = txtEmail.Text.Trim();
-            string password = txtPassword.Text;
-            string confirmation = txtConfirmPassword.Text;
+            string password = txtPassword.Text.Trim();
+            string confirmation = txtConfirmPassword.Text.Trim();
 
             if (!ValidateEmail(email))
             {
@@ -64,15 +64,14 @@ namespace WebApplication1
                 string defaultAddress = "Не указан";
                 string defaultPhone = "0000000000";
 
-                string insertCustomer = "INSERT INTO CustomerTbl (CustId, CustName, CustAdd, CustPhone, CustPassword) " +
-                                    "VALUES (@CustId, @Name, @Address, @Phone, @Password)";
+                string insertCustomer = "INSERT INTO CustomerTbl (CustId, CustName, CustAdd, CustPhone) " +
+                                    "VALUES (@CustId, @Name, @Address, @Phone)";
                 using (SqlCommand customerCmd = new SqlCommand(insertCustomer, conn))
                 {
                     customerCmd.Parameters.AddWithValue("@CustId", newId);
                     customerCmd.Parameters.AddWithValue("@Name", defaultName);
                     customerCmd.Parameters.AddWithValue("@Address", defaultAddress);
                     customerCmd.Parameters.AddWithValue("@Phone", defaultPhone);
-                    customerCmd.Parameters.AddWithValue("@Password", password);
                     customerCmd.ExecuteNonQuery();
                 }
 

@@ -14,19 +14,14 @@ namespace WebApplication1.view.admin
     public partial class userdashboard
     {
         /// <summary>
-        /// slide1 элемент управления.
+        /// litSliderIndicators элемент управления.
         /// </summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide1;
+        protected global::System.Web.UI.WebControls.Literal litSliderIndicators;
 
         /// <summary>
-        /// slide2 элемент управления.
+        /// litSliderItems элемент управления.
         /// </summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide2;
-
-        /// <summary>
-        /// slide3 элемент управления.
-        /// </summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl slide3;
+        protected global::System.Web.UI.WebControls.Literal litSliderItems;
 
         /// <summary>
         /// pnlLoginRequired элемент управления.

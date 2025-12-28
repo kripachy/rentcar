@@ -37,8 +37,7 @@ namespace WebApplication1.view.admin
             {
                 DatabaseInitializer.EnsureSchema();
                 CarImageBootstrapper.EnsureSeeded(Server);
-                carImage.Src = "~/assets/images/Слой 1.png";
-                carImage.Visible = true; 
+                
                 ddlColor.Items.Clear();
                 ddlColor.Items.Add(new ListItem("Выберите цвет", ""));
                 ddlColor.Items.Add(new ListItem("Красный", "Red"));
@@ -50,10 +49,10 @@ namespace WebApplication1.view.admin
                 ddlColor.Items.Add(new ListItem("Серый", "Gray"));
                 ddlColor.Items.Add(new ListItem("Оранжевый", "Orange"));
                 ddlColor.Items.Add(new ListItem("Фиолетовый", "Purple"));
+                
                 LoadCategories();
                 BindImageLibrary(null);
                 LoadCars();
-                imgMainPreview.Src = "~/assets/images/Слой 1.png";
             }
         }
 
@@ -70,16 +69,16 @@ namespace WebApplication1.view.admin
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = "Ошибка загрузки автомобилей: " + ex.Message;
+                Notify("Ошибка загрузки автомобилей: " + ex.Message);
             }
         }
 
         private void LoadCategories()
         {
-            string query = "SELECT CategoryId, Name + ' (мин. стаж ' + CAST(MinExperienceYears AS NVARCHAR(10)) + ' лет)' AS Title FROM CarCategory ORDER BY MinExperienceYears";
+            string query = "SELECT CategoryId, Name FROM CarCategory ORDER BY MinExperienceYears";
             var dt = Conn.GetData(query);
             ddlCategory.DataSource = dt;
-            ddlCategory.DataTextField = "Title";
+            ddlCategory.DataTextField = "Name";
             ddlCategory.DataValueField = "CategoryId";
             ddlCategory.DataBind();
             ddlCategory.Items.Insert(0, new ListItem("Выберите категорию", ""));
@@ -151,6 +150,20 @@ namespace WebApplication1.view.admin
             if (mainImageId.HasValue && !galleryImageIds.Contains(mainImageId.Value))
             {
                 galleryImageIds.Insert(0, mainImageId.Value);
+            }
+
+            // Sync with UI
+            if (mainImageId.HasValue)
+            {
+                imgSummary.InnerText = $"Выбрано: Главное + {galleryImageIds.Count - 1} галерея";
+                imgSummary.Style["display"] = "inline-block";
+            }
+            else
+            {
+                imgSummary.InnerText = galleryImageIds.Count > 0 
+                    ? $"Выбрано {galleryImageIds.Count} фото" 
+                    : "";
+                imgSummary.Style["display"] = galleryImageIds.Count > 0 ? "inline-block" : "none";
             }
         }
 
@@ -315,150 +328,91 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
 
         protected void btnExport_Click(object sender, EventArgs e)
         {
-            var colorMapping = new Dictionary<string, XLColor>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "красный", XLColor.Red },
-        { "синий", XLColor.Blue },
-        { "зелёный", XLColor.Green },
-        { "чёрный", XLColor.Black },
-        { "белый", XLColor.White },
-        { "жёлтый", XLColor.Yellow },
-        { "оранжевый", XLColor.Orange }
-    };
-
-            var statusMapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "Available", "Доступен" },
-        { "Booked", "Забронирован" }
-    };
-
-            string constr = WebApplication1.Models.Functions.GetConnectionString();
-
-            DataTable dt = new DataTable();
-
-            using (SqlConnection con = new SqlConnection(constr))
+            try
             {
-                using (SqlCommand cmd = new SqlCommand("SELECT * FROM CarTbl", con))
+                string constr = Models.Functions.GetConnectionString();
+                DataTable dt = new DataTable();
+
+                using (SqlConnection con = new SqlConnection(constr))
                 {
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    // Выбираем только понятные пользователю данные
+                    string query = @"SELECT c.CPlateNum as [Госномер], 
+                                            c.Brand as [Марка], 
+                                            c.Model as [Модель], 
+                                            c.Price as [Цена в день ($)], 
+                                            c.Color as [Цвет], 
+                                            CASE WHEN c.Status = 'Available' THEN N'Свободен' ELSE N'Занят' END as [Статус]
+                                     FROM CarTbl c";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        da.Fill(dt);
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+                    }
+                }
+
+                if (dt.Rows.Count == 0)
+                {
+                    ShowError("Нет данных для экспорта. Сначала добавьте хотя бы один автомобиль.");
+                    return;
+                }
+
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Автопарк");
+
+                    // Загружаем данные
+                    ws.Cell(1, 1).InsertTable(dt);
+
+                    // Стилизация заголовков
+                    var header = ws.Row(1);
+                    header.Style.Font.Bold = true;
+                    header.Style.Fill.BackgroundColor = XLColor.FromHtml("#1a202c");
+                    header.Style.Font.FontColor = XLColor.White;
+
+                    // Форматирование колонки цен
+                    ws.Column(4).Style.NumberFormat.Format = "#,##0";
+
+                    ws.Columns().AdjustToContents();
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        wb.SaveAs(stream);
+                        byte[] bytes = stream.ToArray();
+
+                        Response.Clear();
+                        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                        Response.AddHeader("content-disposition", $"attachment;filename=Cars_Export_{DateTime.Now:yyyyMMdd}.xlsx");
+                        Response.BinaryWrite(bytes);
+                        Response.Flush();
+                        Response.End();
                     }
                 }
             }
-
-            using (XLWorkbook wb = new XLWorkbook())
+            catch (Exception ex)
             {
-                var ws = wb.Worksheets.Add("Экспорт автомобилей");
-
-                string[] russianColumnNames = {
-            "Номер лицензии",
-            "Марка",
-            "Модель",
-            "Цена",
-            "Цвет",
-            "Статус"
-        };
-
-                for (int i = 0; i < dt.Columns.Count; i++)
-                {
-                    if (i < russianColumnNames.Length)
-                    {
-                        ws.Cell(1, i + 1).Value = russianColumnNames[i];
-                    }
-                    else
-                    {
-                        ws.Cell(1, i + 1).Value = dt.Columns[i].ColumnName;
-                    }
-                    ws.Cell(1, i + 1).Style.Font.Bold = true;
-                }
-
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    for (int j = 0; j < dt.Columns.Count; j++)
-                    {
-                        var value = dt.Rows[i][j].ToString();
-                        var columnName = dt.Columns[j].ColumnName;
-                        var cell = ws.Cell(i + 2, j + 1);
-
-                        if (columnName.Equals("Color", StringComparison.OrdinalIgnoreCase) ||
-                            columnName.Equals("Цвет", StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (colorMapping.TryGetValue(value.Trim().ToLower(), out var xlColor))
-                            {
-                                cell.Style.Fill.BackgroundColor = xlColor;
-                                
-                                var russianColor = colorMapping.FirstOrDefault(x => x.Value.Equals(xlColor)).Key;
-                                cell.Value = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(russianColor);
-                            }
-                            else
-                            {
-                                cell.Value = value;
-                            }
-                        }
-                       
-                        else if (columnName.Equals("Status", StringComparison.OrdinalIgnoreCase) ||
-                                 columnName.Equals("Статус", StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (statusMapping.TryGetValue(value, out var russianStatus))
-                            {
-                                cell.Value = russianStatus;
-                            }
-                            else
-                            {
-                                cell.Value = value;
-                            }
-                        }
-                       
-                        else if (columnName.Equals("Price", StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (int.TryParse(value, out int price))
-                            {
-                                cell.Value = price;
-                                cell.Style.NumberFormat.Format = "#,##0"; 
-                            }
-                            else
-                            {
-                                cell.Value = value;
-                            }
-                        }
-                        else
-                        {
-                            cell.Value = value;
-                        }
-                    }
-                }
-
-                ws.Columns().AdjustToContents();
-
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    wb.SaveAs(stream);
-                    byte[] bytes = stream.ToArray();
-
-                    Response.Clear();
-                    Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    Response.AddHeader("content-disposition", "attachment;filename=Экспорт_автомобилей.xlsx");
-                    Response.BinaryWrite(bytes);
-                    Response.Flush();
-                    Response.End();
-                }
+                ShowError("Ошибка при экспорте: " + ex.Message);
             }
         }
 
-        private void ShowError(string message)
+        private void Notify(string message, bool isError = true)
         {
-            ErrorMsg.Style["color"] = "red";
             ErrorMsg.InnerText = message;
+            statusAlert.Attributes["class"] = isError ? "alert-toast show alert-danger-custom" : "alert-toast show alert-success-custom";
+            statusIcon.Attributes["class"] = isError ? "fas fa-exclamation-circle" : "fas fa-check-circle";
         }
+
+        private void ShowError(string message) => Notify(message, true);
+        private void ShowSuccess(string message) => Notify(message, false);
 
         protected void btnUploadImage_Click(object sender, EventArgs e)
         {
             try
             {
-                if (!fileUpload.HasFile)
+                if (!fileUpload.HasFiles)
                 {
-                    ShowError("Выберите файл для загрузки.");
+                    ShowError("Выберите файлы для загрузки.");
                     return;
                 }
 
@@ -468,7 +422,16 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
                     uploader = Convert.ToInt32(Session["UserId"]);
                 }
 
-                storage.Save(new HttpPostedFileWrapper(fileUpload.PostedFile), CarImageKind, uploader);
+                int uploadCount = 0;
+                foreach (HttpPostedFile postedFile in fileUpload.PostedFiles)
+                {
+                    if (postedFile.ContentLength > 0)
+                    {
+                        storage.Save(new HttpPostedFileWrapper(postedFile), CarImageKind, uploader);
+                        uploadCount++;
+                    }
+                }
+
                 List<int> selected = null;
                 int? mainId = null;
                 if (ViewState["SelectedCarKey"] != null)
@@ -479,8 +442,7 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
                 }
 
                 BindImageLibrary(selected, mainId);
-                ErrorMsg.Style["color"] = "green";
-                ErrorMsg.InnerText = "Фото загружено на сервер.";
+                ShowSuccess($"Загружено {uploadCount} фото на сервер.");
             }
             catch (Exception ex)
             {
@@ -498,7 +460,7 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
                     ddlColor.SelectedIndex <= 0)
                 {
-                    ErrorMsg.InnerText = "Заполните все обязательные поля";
+                    ShowError("Заполните все обязательные поля");
                     return;
                 }
 
@@ -508,7 +470,7 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
 
                 if (Convert.ToInt32(result.Rows[0]["Count"]) > 0)
                 {
-                    ErrorMsg.InnerText = "Автомобиль с таким номером уже существует";
+                    ShowError("Автомобиль с таким номером уже существует");
                     return;
                 }
 
@@ -522,7 +484,7 @@ VALUES (@plate, @fileId, @isPrimary)", conn, tran);
                 string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
                 if (!int.TryParse(cleanPrice, out int Price))
                 {
-                    ErrorMsg.InnerText = "Некорректная цена";
+                    ShowError("Некорректная цена");
                     return;
                 }
 
@@ -558,12 +520,11 @@ VALUES (@plate, @brand, @model, @price, @color, @status, @brandId, @modelId, @ca
 
                 LoadCars();
                 ClearFields();
-                ErrorMsg.Style["color"] = "green";
-                ErrorMsg.InnerText = "Автомобиль успешно добавлен";
+                ShowSuccess("Автомобиль успешно добавлен");
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = "Ошибка при сохранении: " + ex.Message;
+                ShowError("Ошибка при сохранении: " + ex.Message);
             }
         }
 
@@ -573,9 +534,7 @@ VALUES (@plate, @brand, @model, @price, @color, @status, @brandId, @modelId, @ca
             {
                 if (carlist.SelectedRow == null || carlist.SelectedDataKey == null) return;
 
-                GridViewRow row = carlist.SelectedRow;
-
-                string plate = row.Cells[1].Text;
+                string plate = carlist.SelectedDataKey.Value.ToString();
                 ViewState["SelectedCarKey"] = plate;
 
                 string cs = Models.Functions.GetConnectionString();
@@ -616,13 +575,11 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
 
                             if (mainImageId.HasValue)
                             {
-                                carImage.Src = "~/ImageHandler.ashx?id=" + mainImageId.Value;
-                                imgMainPreview.Src = "~/ImageHandler.ashx?id=" + mainImageId.Value;
+                                imgSummary.InnerText = "Изображения загружены";
                             }
                             else
                             {
-                                carImage.Src = "~/assets/images/Слой 1.png";
-                                imgMainPreview.Src = "~/assets/images/Слой 1.png";
+                                imgSummary.InnerText = "Нет фото";
                             }
                         }
                     }
@@ -630,7 +587,7 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = "Ошибка при выборе автомобиля: " + ex.Message;
+                ShowError("Ошибка при выборе автомобиля: " + ex.Message);
             }
         }
 
@@ -641,7 +598,7 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
             {
                 if (ViewState["SelectedCarKey"] == null)
                 {
-                    ErrorMsg.InnerText = "Выберите автомобиль для редактирования";
+                    ShowError("Выберите автомобиль для редактирования");
                     return;
                 }
 
@@ -650,7 +607,7 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
                     string.IsNullOrWhiteSpace(txtPrice.Text) ||
                     ddlColor.SelectedIndex <= 0)
                 {
-                    ErrorMsg.InnerText = "Заполните все обязательные поля";
+                    ShowError("Заполните все обязательные поля");
                     return;
                 }
 
@@ -666,7 +623,7 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
                 string cleanPrice = Regex.Replace(txtPrice.Text, @"[^\d]", "");
                 if (!int.TryParse(cleanPrice, out int Price))
                 {
-                    ErrorMsg.InnerText = "Некорректная цена";
+                    ShowError("Некорректная цена");
                     return;
                 }
 
@@ -679,7 +636,7 @@ FROM CarTbl WHERE CPlateNum = @plate", conn);
                     var result = Conn.GetData(checkQuery);
                     if (Convert.ToInt32(result.Rows[0]["Count"]) > 0)
                     {
-                        ErrorMsg.InnerText = "Автомобиль с таким номером уже существует";
+                        ShowError("Автомобиль с таким номером уже существует");
                         return;
                     }
                 }
@@ -712,11 +669,11 @@ WHERE CPlateNum=@originalPlate", conn);
                 UpsertCarImages(newPlate, mainImageId, galleryImageIds);
                 LoadCars();
                 ClearFields();
-                ErrorMsg.InnerText = "Автомобиль успешно обновлён";
+                ShowSuccess("Автомобиль успешно обновлён");
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = "Ошибка при редактировании: " + ex.Message;
+                ShowError("Ошибка при редактировании: " + ex.Message);
             }
         }
 
@@ -726,7 +683,7 @@ WHERE CPlateNum=@originalPlate", conn);
             {
                 if (ViewState["SelectedCarKey"] == null)
                 {
-                    ErrorMsg.InnerText = "Выберите автомобиль для удаления";
+                    ShowError("Выберите автомобиль для удаления");
                     return;
                 }
 
@@ -758,11 +715,11 @@ WHERE CPlateNum=@originalPlate", conn);
                 }
                 LoadCars();
                 ClearFields();
-                ErrorMsg.InnerText = "Автомобиль успешно удалён";
+                ShowSuccess("Автомобиль успешно удалён");
             }
             catch (Exception ex)
             {
-                ErrorMsg.InnerText = "Ошибка при удалении: " + ex.Message;
+                ShowError("Ошибка при удалении: " + ex.Message);
             }
         }
 
@@ -777,9 +734,8 @@ WHERE CPlateNum=@originalPlate", conn);
             ddlCategory.SelectedIndex = 0;
             ViewState["SelectedCarKey"] = null;
             carlist.SelectedIndex = -1;
-            carImage.Src = "~/assets/images/Слой 1.png";
-            carImage.Visible = true;
-            imgMainPreview.Src = "~/assets/images/Слой 1.png";
+            imgSummary.InnerText = "Управление изображениями";
+            statusAlert.Attributes["class"] = "alert-toast";
             BindImageLibrary(null, null);
         }
     }

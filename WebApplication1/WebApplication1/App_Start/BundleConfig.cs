@@ -35,6 +35,11 @@ namespace WebApplication1
             // готово к выпуску, используйте средство сборки по адресу https://modernizr.com, чтобы выбрать только необходимые тесты.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                             "~/Scripts/modernizr-*"));
+
+            bundles.Add(new StyleBundle("~/Content/css").Include(
+                      "~/Content/bootstrap.min.css",
+                      "~/Content/Site.css",
+                      "~/Content/custom.css"));
         }
 
         public static void RegisterJQueryScriptManager()

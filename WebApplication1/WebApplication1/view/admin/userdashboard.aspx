@@ -6,29 +6,10 @@
     <div class="container">
         <div id="dynamicSlider" class="carousel slide hero-slider" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#dynamicSlider" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#dynamicSlider" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#dynamicSlider" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <asp:Literal ID="litSliderIndicators" runat="server" />
             </div>
             <div class="carousel-inner">
-                <div class="carousel-item active" id="slide1" runat="server">
-                    <div class="carousel-caption">
-                        <h1>Британская элегантность</h1>
-                        <p>Aston Martin Vanquish для истинных ценителей.</p>
-                    </div>
-                </div>
-                <div class="carousel-item" id="slide2" runat="server">
-                    <div class="carousel-caption">
-                        <h1>Неукротимая мощь</h1>
-                        <p>Lamborghini Huracan — эмоции в чистом виде.</p>
-                    </div>
-                </div>
-                <div class="carousel-item" id="slide3" runat="server">
-                    <div class="carousel-caption">
-                        <h1>Итальянская страсть</h1>
-                        <p>Maserati GranTurismo не оставит вас равнодушным.</p>
-                    </div>
-                </div>
+                <asp:Literal ID="litSliderItems" runat="server" />
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#dynamicSlider" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>

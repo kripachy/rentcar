@@ -4,10 +4,6 @@ using WebApplication1.Models;
 
 namespace WebApplication1.App_Start
 {
-    /// <summary>
-    /// Ensures that the database schema required for the extended rental features exists.
-    /// Executed on application start – safe to run multiple times.
-    /// </summary>
     public static class DatabaseInitializer
     {
         public static void EnsureSchema()
@@ -18,7 +14,6 @@ namespace WebApplication1.App_Start
             {
                 conn.Open();
 
-                // Core lookup tables
                 Execute(conn, @"
 IF OBJECT_ID('Brand', 'U') IS NULL
 BEGIN
@@ -51,7 +46,6 @@ BEGIN
     );
 END");
 
-                // Storage for any files (car photos, licenses, etc.)
                 Execute(conn, @"
 IF OBJECT_ID('FileStorage', 'U') IS NULL
 BEGIN
@@ -75,6 +69,49 @@ BEGIN
         FileId INT NOT NULL FOREIGN KEY REFERENCES FileStorage(FileId),
         IsPrimary BIT NOT NULL DEFAULT(0)
     );
+END");
+
+                Execute(conn, @"
+IF OBJECT_ID('HeroSlider', 'U') IS NULL
+BEGIN
+    CREATE TABLE HeroSlider(
+        SlideId INT IDENTITY(1,1) PRIMARY KEY,
+        Title NVARCHAR(200) NULL,
+        Subtitle NVARCHAR(400) NULL,
+        ImageFileId INT NULL FOREIGN KEY REFERENCES FileStorage(FileId),
+        SortOrder INT NOT NULL DEFAULT(0),
+        IsActive BIT NOT NULL DEFAULT(1),
+        CreatedAt DATETIME NOT NULL DEFAULT(GETDATE())
+    );
+    CREATE INDEX IX_HeroSlider_Active_Order ON HeroSlider (IsActive, SortOrder, SlideId);
+END");
+
+                Execute(conn, @"
+IF NOT EXISTS (SELECT 1 FROM HeroSlider)
+BEGIN
+    DECLARE @p1 NVARCHAR(400) = N'colorcars/Aston Martin Vanquish/white/3.jpg';
+    DECLARE @p2 NVARCHAR(400) = N'colorcars/Lamborghini Huracan/purple/3.jpg';
+    DECLARE @p3 NVARCHAR(400) = N'colorcars/Maserati GranTurismo/red/5.jpg';
+
+    IF NOT EXISTS (SELECT 1 FROM FileStorage WHERE FilePath = @p1)
+        INSERT INTO FileStorage (FilePath, OriginalName, ContentType, FileKind, CreatedAt)
+        VALUES (@p1, N'3.jpg', N'image/jpeg', N'hero-slide', GETDATE());
+    IF NOT EXISTS (SELECT 1 FROM FileStorage WHERE FilePath = @p2)
+        INSERT INTO FileStorage (FilePath, OriginalName, ContentType, FileKind, CreatedAt)
+        VALUES (@p2, N'3.jpg', N'image/jpeg', N'hero-slide', GETDATE());
+    IF NOT EXISTS (SELECT 1 FROM FileStorage WHERE FilePath = @p3)
+        INSERT INTO FileStorage (FilePath, OriginalName, ContentType, FileKind, CreatedAt)
+        VALUES (@p3, N'5.jpg', N'image/jpeg', N'hero-slide', GETDATE());
+
+    DECLARE @f1 INT = (SELECT TOP 1 FileId FROM FileStorage WHERE FilePath = @p1 ORDER BY FileId DESC);
+    DECLARE @f2 INT = (SELECT TOP 1 FileId FROM FileStorage WHERE FilePath = @p2 ORDER BY FileId DESC);
+    DECLARE @f3 INT = (SELECT TOP 1 FileId FROM FileStorage WHERE FilePath = @p3 ORDER BY FileId DESC);
+
+    INSERT INTO HeroSlider (Title, Subtitle, ImageFileId, SortOrder, IsActive)
+    VALUES
+        (N'Британская элегантность', N'Aston Martin Vanquish для истинных ценителей.', @f1, 0, 1),
+        (N'Неукротимая мощь', N'Lamborghini Huracan — эмоции в чистом виде.', @f2, 1, 1),
+        (N'Итальянская страсть', N'Maserati GranTurismo не оставит вас равнодушным.', @f3, 2, 1);
 END");
 
                 Execute(conn, @"
@@ -108,8 +145,9 @@ BEGIN
         Comment NVARCHAR(MAX) NULL,
         CreatedAt DATETIME NOT NULL DEFAULT(GETDATE())
     );
-END
+END");
 
+                Execute(conn, @"
 IF OBJECT_ID('CustomerAllowedCategory', 'U') IS NULL
 BEGIN
     CREATE TABLE CustomerAllowedCategory(
@@ -119,7 +157,6 @@ BEGIN
     );
 END");
 
-                // Extend existing tables
                 Execute(conn, @"
 IF COL_LENGTH('CarTbl', 'CarId') IS NULL
     ALTER TABLE CarTbl ADD CarId INT IDENTITY(1,1);
@@ -138,7 +175,6 @@ IF COL_LENGTH('CustomerTbl', 'DrivingExperienceYears') IS NULL
 IF COL_LENGTH('CustomerTbl', 'LicenseIssueDate') IS NULL
     ALTER TABLE CustomerTbl ADD LicenseIssueDate DATE NULL;");
 
-                // Seed categories if empty
                 Execute(conn, @"
 IF NOT EXISTS (SELECT 1 FROM CarCategory)
 BEGIN
@@ -149,31 +185,24 @@ BEGIN
     (N'Премиум', 3, 1, NULL);
 END");
 
-                // SEED UPDATE: Assign categories to existing cars based on price/model if they are null
-                // This fills the database logic requested by the user.
                 Execute(conn, @"
                 DECLARE @EcoId INT = (SELECT Top 1 CategoryId FROM CarCategory WHERE Name = N'Эконом');
                 DECLARE @StdId INT = (SELECT Top 1 CategoryId FROM CarCategory WHERE Name = N'Стандарт');
                 DECLARE @BusId INT = (SELECT Top 1 CategoryId FROM CarCategory WHERE Name = N'Бизнес');
                 DECLARE @PremId INT = (SELECT Top 1 CategoryId FROM CarCategory WHERE Name = N'Премиум');
 
-                -- Assign Premium (Price > 300 or specific models)
                 UPDATE CarTbl SET CategoryId = @PremId 
                 WHERE CategoryId IS NULL AND (Price > 300 OR Model LIKE '%Vanquish%' OR Brand LIKE '%Aston Martin%' OR Brand LIKE '%Ferrari%' OR Brand LIKE '%Lamborghini%');
 
-                -- Assign Business (Price between 150 and 300)
                 UPDATE CarTbl SET CategoryId = @BusId
                 WHERE CategoryId IS NULL AND (Price > 150 AND Price <= 300);
 
-                -- Assign Standard (Price between 80 and 150)
                 UPDATE CarTbl SET CategoryId = @StdId
                 WHERE CategoryId IS NULL AND (Price > 80 AND Price <= 150);
 
-                -- Assign Economy (Price <= 80)
                 UPDATE CarTbl SET CategoryId = @EcoId
                 WHERE CategoryId IS NULL AND (Price <= 80);
 
-                -- Fallback: Assign Standard to anything remaining
                 UPDATE CarTbl SET CategoryId = @StdId WHERE CategoryId IS NULL;
                 ");
             }

@@ -102,9 +102,9 @@ namespace WebApplication1
 
             string userName = txtUsername.Text.Trim();
             string newEmail = txtNewEmail.Text.Trim();
-            string currentPassword = txtCurrentPassword.Text;
-            string newPassword = txtNewPassword.Text;
-            string confirmNewPassword = txtConfirmNewPassword.Text;
+            string currentPassword = txtCurrentPassword.Text.Trim();
+            string newPassword = txtNewPassword.Text.Trim();
+            string confirmNewPassword = txtConfirmNewPassword.Text.Trim();
 
             bool emailChanged = !string.IsNullOrEmpty(newEmail);
             bool passwordChanged = !string.IsNullOrEmpty(newPassword);
@@ -287,13 +287,16 @@ namespace WebApplication1
             if (string.IsNullOrWhiteSpace(text))
                 return false;
 
+            if (text == "Новый пользователь")
+                return true;
+
             var parts = text.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 3)
+            if (parts.Length < 2)
                 return false;
 
             foreach (var part in parts)
             {
-                if (!Regex.IsMatch(part, @"^[A-ZА-ЯЁ][a-zа-яё-]*$"))
+                if (!Regex.IsMatch(part, @"^[A-ZА-ЯЁa-zа-яё][a-zа-яё-]*$"))
                     return false;
             }
 
@@ -337,8 +340,8 @@ namespace WebApplication1
             {
                 if (!fuLicense.HasFile)
                 {
-                    lblLicenseStatus.Text = "Добавьте скан/фото водительского удостоверения.";
-                    lblLicenseStatus.CssClass = "text-danger";
+                    lblLicenseStatus.Text = "Вы можете загрузить документы позже. Они потребуются только при попытке забронировать автомобиль.";
+                    lblLicenseStatus.CssClass = "text-primary";
                     return;
                 }
 

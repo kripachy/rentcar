@@ -17,7 +17,7 @@ namespace WebApplication1.view.admin
         {
             if (!IsPostBack)
             {
-               // Check admin access if needed
+               
                LoadData();
             }
         }
@@ -65,8 +65,7 @@ ORDER BY l.CreatedAt DESC";
                             cbl.DataBind();
                         }
                     }
-                    // By default, pre-check 'Эконом' and 'Стандарт' or based on experience? 
-                    // Let's leave it to admin as requested.
+                   
                 }
             }
         }
@@ -108,12 +107,12 @@ ORDER BY l.CreatedAt DESC";
                 {
                     try
                     {
-                        // Clean existing
+                        
                         var del = new SqlCommand("DELETE FROM CustomerAllowedCategory WHERE CustomerId=@c", conn, tran);
                         del.Parameters.AddWithValue("@c", customerId);
                         del.ExecuteNonQuery();
 
-                        // Add new
+                        
                         foreach (ListItem item in cbl.Items)
                         {
                             if (item.Selected)
@@ -153,14 +152,14 @@ ORDER BY l.CreatedAt DESC";
             using (var conn = new SqlConnection(Functions.GetConnectionString()))
             {
                 conn.Open();
-                // Get CustomerId
+              
                 var getCust = new SqlCommand("SELECT CustomerId FROM DrivingLicense WHERE LicenseId=@id", conn);
                 getCust.Parameters.AddWithValue("@id", licenseId);
                 object custIdObj = getCust.ExecuteScalar();
                 if (custIdObj != null) 
                 {
                     int custId = (int)custIdObj;
-                    // Reset experience
+                    
                     var reset = new SqlCommand("UPDATE CustomerTbl SET DrivingExperienceYears=0, LicenseIssueDate=NULL WHERE CustId=@c", conn);
                     reset.Parameters.AddWithValue("@c", custId);
                     reset.ExecuteNonQuery();
